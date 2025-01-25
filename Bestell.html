@@ -57,9 +57,9 @@
         padding: 10mm;
       }
 
+      /* Logo im Druckmodus ausblenden */
       .logo {
-        width: 50px; /* Logo in der Rechnung auf 50px Breite verkleinern */
-        height: auto;
+        display: none;
       }
 
       .receipt-footer {
@@ -246,7 +246,6 @@
       const receiptWindow = window.open("", "_blank", "width=600,height=600");
       const receiptContent = `
         <h1>Rechnung</h1>
-        <img src="logo.png" alt="Logo" class="logo">
         <table border="1" cellpadding="5" cellspacing="0">
           <tr><th>Produkt</th><th>Preis (€)</th><th>Menge</th><th>Gesamt (€)</th></tr>
           ${order.map(item => `
