@@ -17,15 +17,19 @@
       cursor: pointer;
       border: none;
       border-radius: 5px;
+      font-size: 16px;
     }
 
+    /* Stil für Essenschaltflächen (hellgelb mit schwarzer Schrift) */
     .food-button {
-      background-color: #f1c40f; /* Hellgelb für Essen */
+      background-color: #f1c40f; /* Hellgelb */
+      color: #000000; /* Schwarz */
     }
 
+    /* Stil für Getränkeschaltflächen (blau mit weißer Schrift) */
     .drink-button {
-      background-color: #3498db; /* Blau für Getränke */
-      color: white;
+      background-color: #3498db; /* Blau */
+      color: #ffffff; /* Weiß */
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -42,63 +46,11 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
-
-    .logo {
-      width: 75px; /* Logo um die Hälfte kleiner */
-      height: auto;
-    }
-
-    /* DIN A6 Papiergröße für Rechnung */
-    @media print {
-      body {
-        width: 105mm; /* Breite von DIN A6 */
-        height: 148mm; /* Höhe von DIN A6 */
-        margin: 0;
-        padding: 10mm;
-      }
-
-      /* Logo im Druckmodus ausblenden */
-      .logo {
-        display: none;
-      }
-
-      .receipt-footer {
-        text-align: center;
-        font-style: italic;
-        margin-top: 20px;
-      }
-
-      .receipt-footer strong {
-        text-decoration: underline;
-      }
-
-      h1, h3 {
-        text-align: center;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 10mm;
-      }
-
-      table th, table td {
-        padding: 5px;
-        text-align: left;
-      }
-
-      button {
-        display: none; /* Den Drucken-Button im Druck-Modus ausblenden */
-      }
-    }
   </style>
 </head>
 <body>
 
   <h1>Bestellübersicht</h1>
-
-  <!-- Logo anzeigen -->
-  <img src="logo.png" alt="Logo" class="logo">
 
   <div id="productButtons"></div>
   
@@ -187,7 +139,10 @@
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
-          <td>${item.quantity}</td>
+          <td>
+            <input type="number" value="${item.quantity}" min="1" style="width: 60px;" 
+                   onchange="updateQuantity(${index}, this.value)" />
+          </td>
           <td>${(item.price * item.quantity).toFixed(2)}</td>
           <td>
             <button onclick="removeProduct(${index})">Entfernen</button>
@@ -196,6 +151,17 @@
         tbody.appendChild(row);
       });
       document.getElementById("totalPrice").innerText = calculateTotalPrice();
+    }
+
+    // Menge aktualisieren
+    function updateQuantity(index, value) {
+      const newQuantity = parseInt(value, 10);
+      if (newQuantity > 0) {
+        order[index].quantity = newQuantity;
+        updateOrderTable();
+      } else {
+        alert("Ungültige Menge! Bitte mindestens 1 eingeben.");
+      }
     }
 
     // Produkt entfernen
@@ -218,6 +184,8 @@
     // Bezahlung durchführen
     document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
       const totalPrice = parseFloat(calculateTotalPrice());
+      
+      // Ändere hier den Prompt zu einer Eingabeaufforderung mit einem Ziffernblock (input type="number")
       const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
 
       if (isNaN(payment) || payment < totalPrice) {
@@ -229,7 +197,6 @@
         order = [];
         updateOrderTable();
         document.getElementById("proceedToPaymentBtn").disabled = true;
-        generateReceipt(payment, change); // Rechnung erstellen
       }
     });
 
@@ -239,34 +206,6 @@
       if (order.length === 0) {
         proceedBtn.disabled = true;
       }
-    }
-
-    // Rechnung anzeigen
-    function generateReceipt(payment, change) {
-      const receiptWindow = window.open("", "_blank", "width=600,height=600");
-      const receiptContent = `
-        <h1>Rechnung</h1>
-        <table border="1" cellpadding="5" cellspacing="0">
-          <tr><th>Produkt</th><th>Preis (€)</th><th>Menge</th><th>Gesamt (€)</th></tr>
-          ${order.map(item => `
-            <tr>
-              <td>${item.name}</td>
-              <td>${item.price.toFixed(2)}</td>
-              <td>${item.quantity}</td>
-              <td>${(item.price * item.quantity).toFixed(2)}</td>
-            </tr>
-          `).join('')}
-        </table>
-        <h3>Gesamtpreis: ${calculateTotalPrice()}€</h3>
-        <h3>Gezahlter Betrag: ${payment.toFixed(2)}€</h3>
-        <h3>Rückgeld: ${change}€</h3>
-        <div class="receipt-footer">
-          <p><i>Vielen Dank dass Du mit uns feierst!</i></p>
-          <p><strong>Bitte gehe mit der Rechnung an die entsprechenden Ausgabetheken</strong></p>
-        </div>
-      `;
-      receiptWindow.document.write(receiptContent);
-      receiptWindow.document.close();
     }
 
     // Seite initialisieren
