@@ -184,6 +184,8 @@
     // Bezahlung durchführen
     document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
       const totalPrice = parseFloat(calculateTotalPrice());
+      
+      // Ändere hier den Prompt zu einer Eingabeaufforderung mit einem Ziffernblock (input type="number")
       const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
 
       if (isNaN(payment) || payment < totalPrice) {
@@ -212,4 +214,3 @@
   </script>
 
 </body>
-</html>
