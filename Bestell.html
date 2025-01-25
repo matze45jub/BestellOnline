@@ -47,7 +47,6 @@
       cursor: not-allowed;
     }
 
-    /* Dynamische Anzeige nach Bezahlung */
     .order-summary {
       margin-top: 20px;
       border-top: 2px solid #ccc;
@@ -64,24 +63,15 @@
       text-decoration: underline;
     }
 
-    /* @media query für den Druck */
     @media print {
-      /* Verstecke die Produktauswahl und die Schaltflächen */
-      #productButtons, #reviewOrderBtn, #proceedToPaymentBtn {
+      #productButtons, #reviewOrderBtn, #proceedToPaymentBtn, #newCustomerBtn, #printReceiptBtn {
         display: none;
       }
 
-      /* Verstecke die Schaltfläche 'Neuer Kunde' */
-      #newCustomerBtn {
-        display: none;
+      #orderSummary {
+        margin-top: 20px;
       }
 
-      /* Verstecke die Schaltfläche 'Rechnung drucken' */
-      #printReceiptBtn {
-        display: none;
-      }
-
-      /* Den Gesamtsummenbereich beim Drucken beibehalten */
       #finalTotalPrice {
         font-weight: bold;
       }
@@ -113,7 +103,7 @@
 
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
 
-  <button id="reviewOrderBtn">Bestellung prüfen</button>
+  <button id="completeOrderBtn">Bestellung abschließen</button>
   <button id="proceedToPaymentBtn" class="disabled" disabled>Zur Bezahlung</button>
 
   <div id="orderSummary" class="order-summary" style="display:none;">
@@ -219,12 +209,13 @@
       checkOrder(); // Prüfen, ob die Bestellung leer ist
     }
 
-    // Bestellung überprüfen (Schaltfläche aktivieren)
-    document.getElementById("reviewOrderBtn").addEventListener("click", () => {
+    // Bestellung abschließen (Schaltfläche aktivieren)
+    document.getElementById("completeOrderBtn").addEventListener("click", () => {
       if (order.length === 0) {
         alert("❌ Es befinden sich keine Produkte in der Bestellung.");
       } else {
-        alert("✅ Bestellung überprüft! Du kannst nun zur Bezahlung fortfahren.");
+        // Bestellübersicht anzeigen und zur Bezahlung weiterleiten
+        document.getElementById("orderSummary").style.display = "block";
         document.getElementById("proceedToPaymentBtn").disabled = false;
       }
     });
