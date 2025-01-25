@@ -63,6 +63,30 @@
     .receipt-footer strong {
       text-decoration: underline;
     }
+
+    /* @media query für den Druck */
+    @media print {
+      /* Verstecke die Produktauswahl und die Schaltflächen */
+      #productButtons, #reviewOrderBtn, #proceedToPaymentBtn {
+        display: none;
+      }
+
+      /* Verstecke die Schaltfläche 'Neuer Kunde' */
+      #newCustomerBtn {
+        display: none;
+      }
+
+      /* Verstecke die Schaltfläche 'Rechnung drucken' */
+      #printReceiptBtn {
+        display: none;
+      }
+
+      /* Den Gesamtsummenbereich beim Drucken beibehalten */
+      #finalTotalPrice {
+        font-weight: bold;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -71,7 +95,7 @@
 
   <div id="productButtons"></div>
   
-  <h2>Bestel---lung</h2>
+  <h2>Bestellung</h2>
   <table id="orderTable">
     <thead>
       <tr>
