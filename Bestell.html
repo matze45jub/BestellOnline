@@ -17,17 +17,15 @@
       cursor: pointer;
       border: none;
       border-radius: 5px;
-      font-size: 16px;
     }
 
     .food-button {
-      background-color: #f1c40f;
-      color: #000000;
+      background-color: #f1c40f; /* Hellgelb für Essen */
     }
 
     .drink-button {
-      background-color: #3498db;
-      color: #ffffff;
+      background-color: #3498db; /* Blau für Getränke */
+      color: white;
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -45,21 +43,15 @@
       cursor: not-allowed;
     }
 
+    /* Rechnungstext unten */
     #invoice {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      border: 2px solid #ccc;
-      border-radius: 5px;
+      margin-top: 30px;
     }
 
-    #invoice table {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    #invoice h2 {
-      text-align: center;
+    #invoiceTable, #invoiceTable th, #invoiceTable td {
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+      padding: 10px;
     }
   </style>
 </head>
@@ -90,22 +82,35 @@
   <button id="reviewOrderBtn">Bestellung prüfen</button>
   <button id="proceedToPaymentBtn" class="disabled" disabled>Zur Bezahlung</button>
 
-  <div id="invoice">
+  <div id="invoice" style="display: none;">
     <h2>Rechnung</h2>
+    
+    <!-- Logo oben auf der Rechnung -->
+    <div style="text-align: center;">
+        <img src="assets/logo.png" alt="Logo" style="width: 150px; height: auto;">
+    </div>
+    
     <table id="invoiceTable">
-      <thead>
-        <tr>
-          <th>Produkt</th>
-          <th>Preis (€)</th>
-          <th>Menge</th>
-          <th>Gesamt (€)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
+        <thead>
+            <tr>
+                <th>Produkt</th>
+                <th>Preis (€)</th>
+                <th>Menge</th>
+                <th>Gesamt (€)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     </table>
     <h3>Gesamtbetrag: <span id="invoiceTotal"></span>€</h3>
     <h3>Bezahlt: <span id="paidAmount"></span>€</h3>
     <h3>Rückgeld: <span id="changeAmount"></span>€</h3>
+    
+    <!-- Text am unteren Rand der Rechnung -->
+    <div style="text-align: center; margin-top: 30px;">
+        <p style="font-style: italic;">Vielen Dank, dass Du mit uns feierst!</p>
+        <p style="font-weight: bold; text-decoration: underline;">Bitte gehe mit der Rechnung an die entsprechenden Ausgabetheken</p>
+    </div>
+
     <button onclick="window.print()">Rechnung drucken</button>
   </div>
 
@@ -122,31 +127,36 @@
       { name: "Radler", price: 4.8, category: "drink" }
     ];
 
-    let order = [];
+    let order = []; // Bestellungsliste
 
+    // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
       products.forEach((product, index) => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
         button.classList.add("product-button");
+        
+        // Schaltflächen für Essen und Getränke unterscheiden
         if (product.category === "food") {
-          button.classList.add("food-button");
+          button.classList.add("food-button"); // Gelb für Essen
         } else {
-          button.classList.add("drink-button");
+          button.classList.add("drink-button"); // Blau für Getränke
         }
+        
         button.onclick = () => addToOrder(index);
-        button.addEventListener('touchstart', () => addToOrder(index)); 
+        button.addEventListener('touchstart', () => addToOrder(index)); // Touchstart Event für mobile Geräte
         container.appendChild(button);
       });
     }
 
+    // Produkt zur Bestellung hinzufügen
     function addToOrder(productIndex) {
       const product = products[productIndex];
       const existingItem = order.find(item => item.name === product.name);
 
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += 1; // Menge erhöhen
       } else {
         order.push({ ...product, quantity: 1 });
       }
@@ -154,27 +164,35 @@
       updateOrderTable();
     }
 
+    // Gesamtpreis berechnen
     function calculateTotalPrice() {
       return order.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     }
 
+    // Bestellübersicht aktualisieren
     function updateOrderTable() {
       const tbody = document.getElementById("orderTable").querySelector("tbody");
-      tbody.innerHTML = "";
+      tbody.innerHTML = ""; // Tabelle leeren
       order.forEach((item, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
-          <td><input type="number" value="${item.quantity}" min="1" style="width: 60px;" onchange="updateQuantity(${index}, this.value)" /></td>
+          <td>
+            <input type="number" value="${item.quantity}" min="1" style="width: 60px;" 
+                   onchange="updateQuantity(${index}, this.value)" />
+          </td>
           <td>${(item.price * item.quantity).toFixed(2)}</td>
-          <td><button onclick="removeProduct(${index})">Entfernen</button></td>
+          <td>
+            <button onclick="removeProduct(${index})">Entfernen</button>
+          </td>
         `;
         tbody.appendChild(row);
       });
       document.getElementById("totalPrice").innerText = calculateTotalPrice();
     }
 
+    // Menge aktualisieren
     function updateQuantity(index, value) {
       const newQuantity = parseInt(value, 10);
       if (newQuantity > 0) {
@@ -185,12 +203,14 @@
       }
     }
 
+    // Produkt entfernen
     function removeProduct(index) {
-      order.splice(index, 1);
+      order.splice(index, 1); // Produkt aus der Bestellung entfernen
       updateOrderTable();
-      checkOrder();
+      checkOrder(); // Prüfen, ob die Bestellung leer ist
     }
 
+    // Bestellung überprüfen (Schaltfläche aktivieren)
     document.getElementById("reviewOrderBtn").addEventListener("click", () => {
       if (order.length === 0) {
         alert("❌ Es befinden sich keine Produkte in der Bestellung.");
@@ -200,6 +220,7 @@
       }
     });
 
+    // Bezahlung durchführen
     document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
       const totalPrice = parseFloat(calculateTotalPrice());
       const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
@@ -210,15 +231,14 @@
         const change = (payment - totalPrice).toFixed(2);
         alert(`✅ Zahlung erfolgreich! Rückgeld: ${change}€`);
         
-        // Rechnung anzeigen
-        document.getElementById("invoice").style.display = "block";
+        // Zeige die Rechnung
         document.getElementById("invoiceTotal").innerText = totalPrice.toFixed(2);
         document.getElementById("paidAmount").innerText = payment.toFixed(2);
         document.getElementById("changeAmount").innerText = change;
-
-        // Rechnungstabelle befüllen
-        const invoiceTable = document.getElementById("invoiceTable").querySelector("tbody");
-        invoiceTable.innerHTML = "";
+        
+        // Zeige die Bestellpositionen auf der Rechnung
+        const invoiceTableBody = document.getElementById("invoiceTable").querySelector("tbody");
+        invoiceTableBody.innerHTML = ""; // Tabelle leeren
         order.forEach(item => {
           const row = document.createElement("tr");
           row.innerHTML = `
@@ -227,16 +247,18 @@
             <td>${item.quantity}</td>
             <td>${(item.price * item.quantity).toFixed(2)}</td>
           `;
-          invoiceTable.appendChild(row);
+          invoiceTableBody.appendChild(row);
         });
 
-        // Bestellung zurücksetzen
+        // Bestellung zurücksetzen und Rechnung anzeigen
         order = [];
         updateOrderTable();
         document.getElementById("proceedToPaymentBtn").disabled = true;
+        document.getElementById("invoice").style.display = "block";
       }
     });
 
+    // Bestellung prüfen (für leere Bestellungen)
     function checkOrder() {
       const proceedBtn = document.getElementById("proceedToPaymentBtn");
       if (order.length === 0) {
@@ -244,6 +266,7 @@
       }
     }
 
+    // Seite initialisieren
     generateProductButtons();
     updateOrderTable();
   </script>
