@@ -182,10 +182,7 @@
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
-          <td>
-            <input type="number" value="${item.quantity}" min="1" style="width: 60px;" 
-                   onchange="updateQuantity(${index}, this.value)" />
-          </td>
+          <td>${item.quantity}</td>
           <td>${(item.price * item.quantity).toFixed(2)}</td>
           <td>
             <button onclick="removeProduct(${index})">Entfernen</button>
@@ -285,4 +282,4 @@
   </script>
 
 </body>
-</html>
+</html
