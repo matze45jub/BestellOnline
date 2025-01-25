@@ -46,6 +46,23 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
+
+    /* Dynamische Anzeige nach Bezahlung */
+    .order-summary {
+      margin-top: 20px;
+      border-top: 2px solid #ccc;
+      padding-top: 20px;
+    }
+
+    .receipt-footer {
+      text-align: center;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    .receipt-footer strong {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -74,6 +91,13 @@
 
   <button id="reviewOrderBtn">Bestellung prüfen</button>
   <button id="proceedToPaymentBtn" class="disabled" disabled>Zur Bezahlung</button>
+
+  <div id="orderSummary" class="order-summary" style="display:none;">
+    <h2>Bestellung abgeschlossen</h2>
+    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    <button id="printReceiptBtn">Rechnung drucken</button>
+    <button id="newCustomerBtn">Neuer Kunde</button>
+  </div>
 
   <script>
     const products = [
@@ -184,8 +208,6 @@
     // Bezahlung durchführen
     document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
       const totalPrice = parseFloat(calculateTotalPrice());
-      
-      // Ändere hier den Prompt zu einer Eingabeaufforderung mit einem Ziffernblock (input type="number")
       const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
 
       if (isNaN(payment) || payment < totalPrice) {
@@ -193,11 +215,24 @@
       } else {
         const change = (payment - totalPrice).toFixed(2);
         alert(`✅ Zahlung erfolgreich! Rückgeld: ${change}€`);
-        // Bestellung zurücksetzen
-        order = [];
-        updateOrderTable();
-        document.getElementById("proceedToPaymentBtn").disabled = true;
+        
+        // Zeige Bestellübersicht nach Bezahlung
+        document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
+        document.getElementById("orderSummary").style.display = "block";
       }
+    });
+
+    // Neuer Kunde: Bestellung zurücksetzen
+    document.getElementById("newCustomerBtn").addEventListener("click", () => {
+      order = [];
+      updateOrderTable();
+      document.getElementById("orderSummary").style.display = "none";
+      document.getElementById("proceedToPaymentBtn").disabled = true;
+    });
+
+    // Rechnung drucken
+    document.getElementById("printReceiptBtn").addEventListener("click", () => {
+      window.print();
     });
 
     // Bestellung prüfen (für leere Bestellungen)
