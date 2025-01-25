@@ -198,17 +198,6 @@
       document.getElementById("totalPrice").innerText = calculateTotalPrice();
     }
 
-    // Menge aktualisieren
-    function updateQuantity(index, value) {
-      const newQuantity = parseInt(value, 10);
-      if (newQuantity > 0) {
-        order[index].quantity = newQuantity;
-        updateOrderTable();
-      } else {
-        alert("Ungültige Menge! Bitte mindestens 1 eingeben.");
-      }
-    }
-
     // Produkt entfernen
     function removeProduct(index) {
       order.splice(index, 1); // Produkt aus der Bestellung entfernen
@@ -276,9 +265,9 @@
           <p><i>Vielen Dank dass Du mit uns feierst!</i></p>
           <p><strong>Bitte gehe mit der Rechnung an die entsprechenden Ausgabetheken</strong></p>
         </div>
-        <button onclick="window.print()">Rechnung drucken</button>
       `;
       receiptWindow.document.write(receiptContent);
+      receiptWindow.document.close();
     }
 
     // Seite initialisieren
