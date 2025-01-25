@@ -258,4 +258,22 @@
             </tr>
           `).join('')}
         </table>
-        <h3>Ges
+        <h3>Gesamtpreis: ${calculateTotalPrice()}€</h3>
+        <h3>Gezahlter Betrag: ${payment.toFixed(2)}€</h3>
+        <h3>Rückgeld: ${change}€</h3>
+        <div class="receipt-footer">
+          <p><i>Vielen Dank dass Du mit uns feierst!</i></p>
+          <p><strong>Bitte gehe mit der Rechnung an die entsprechenden Ausgabetheken</strong></p>
+        </div>
+      `;
+      receiptWindow.document.write(receiptContent);
+      receiptWindow.document.close();
+    }
+
+    // Seite initialisieren
+    generateProductButtons();
+    updateOrderTable();
+  </script>
+
+</body>
+</html>
