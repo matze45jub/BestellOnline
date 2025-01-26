@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
-    /* Füge Stile für die Druckansicht hinzu */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -75,7 +74,6 @@
       padding-top: 20px;
     }
 
-    /* Dialog-Stile */
     .dialog-overlay {
       position: fixed;
       top: 0;
@@ -121,7 +119,10 @@
       background-color: #e74c3c;
     }
 
-    /* Verstecke nicht benötigte Elemente beim Drucken */
+    .hidden {
+      display: none;
+    }
+
     @media print {
       .product-buttons-container,
       #completeOrderBtn,
@@ -130,10 +131,6 @@
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
-      }
-      body {
-        margin: 0;
-        padding: 20px;
       }
     }
   </style>
@@ -164,7 +161,6 @@
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
   <button id="completeOrderBtn">Bestellung fertigstellen</button>
-  <button id="printOrderBtn" onclick="printOrder()">Bestellung drucken</button>
 
   <!-- Zahlung Dialog -->
   <div id="paymentDialog" class="dialog-overlay hidden">
@@ -188,19 +184,7 @@
   <script>
     const products = [
       { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
-      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
-      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
-      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
-      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
-      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
-      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
-      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
-      { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Radler", price: 4.8, category: "drink", deposit: 5 }
     ];
     let order = [];
 
@@ -301,29 +285,34 @@
     function calculateChange() {
       const total = calculateTotal();
       const payment = parseFloat(document.getElementById("paymentAmount").value);
+
+      // Sicherstellen, dass der eingegebene Betrag korrekt ist
       if (isNaN(payment) || payment < total) {
-        alert("Ungültige Zahlung!");
+        alert("Ungültige Zahlung! Der Betrag muss gleich oder größer als der Gesamtbetrag sein.");
         return;
       }
+
       const change = payment - total;
+
+      // Schließen des Zahlungsdialogs
       closeDialog("paymentDialog");
-      document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
-      showDialog("changeDialog");
+
+      // Nur den Rückgeld-Dialog anzeigen, wenn das Rückgeld berechnet wurde
+      if (change >= 0) {
+        document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
+        showDialog("changeDialog");
+      }
     }
 
-    function closeDialog(dialogId) {
-      document.getElementById(dialogId).classList.add("hidden");
+    function showDialog(id) {
+      document.getElementById(id).classList.remove("hidden");
     }
 
-    function showDialog(dialogId) {
-      document.getElementById(dialogId).classList.remove("hidden");
+    function closeDialog(id) {
+      document.getElementById(id).classList.add("hidden");
     }
 
-    // Druckfunktion hinzufügen
-    function printOrder() {
-      window.print();
-    }
-
+    document.getElementById("completeOrderBtn").onclick = completeOrder;
     generateProductButtons();
   </script>
 </body>
