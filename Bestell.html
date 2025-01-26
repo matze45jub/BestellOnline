@@ -11,28 +11,6 @@
       padding: 0;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width: 66px;  /* Logo um ein Drittel kleiner */
-      height: auto;
-      margin-right: 20px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
     .product-buttons-container {
       margin-bottom: 20px;
     }
@@ -90,21 +68,28 @@
       margin-top: 20px;
     }
 
+    /* Schriftgröße für die Hauptüberschrift reduzieren */
+    h1 {
+      font-size: 24px; /* Etwa ein Drittel kleiner als der ursprüngliche Wert */
+      display: inline-block;
+      margin-right: 10px;
+    }
+
     /* Druck-Styles für DIN A6 */
     @media print {
       body {
-        width: 148mm;
-        height: 105mm;
+        width: 148mm; /* DIN A6 Breite */
+        height: 105mm; /* DIN A6 Höhe */
         margin: 0;
       }
 
       .product-buttons-container,
       .order-summary {
-        display: none;
+        display: none; /* Versteckt nicht benötigte Bereiche für den Druck */
       }
 
       .order-summary, #orderTable {
-        font-size: 12px;
+        font-size: 12px; /* Kleinerer Text für den Druck */
       }
 
       h1, h2, h3, p {
@@ -128,8 +113,8 @@
       }
 
       /* Entfernen der "Aktionen"-Spalte beim Drucken */
-      #orderTable th:nth-child(6), /* Spaltenüberschrift */
-      #orderTable td:nth-child(6) { /* Zellen in der "Aktionen"-Spalte */
+      #orderTable th:nth-child(5), /* Spaltenüberschrift */
+      #orderTable td:nth-child(5) { /* Zellen in der "Aktionen"-Spalte */
         display: none;
       }
 
@@ -137,36 +122,45 @@
       #orderTable button {
         display: none;
       }
+
+      /* Verstecken der Schaltflächen "Bestellung abschließen", "Rechnung drucken" und "Neuer Kunde" */
+      #completeOrderBtn, #printReceiptBtn, #newCustomerBtn {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <img src="logo.png" alt="Logo">
+  <div>
+    <img src="logo.png" alt="Logo" style="width: 67px; height: auto; vertical-align: middle; margin-bottom: 20px;">
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   </div>
 
+  <!-- Produktanzeige -->
   <div id="productButtons" class="product-buttons-container"></div>
 
+  <!-- Bestelltabelle -->
   <h2>Bestellung</h2>
   <table id="orderTable">
     <thead>
       <tr>
         <th>Produkt</th>
         <th>Preis (€)</th>
-        <th>Pfand (€)</th>
         <th>Menge</th>
+        <th>Pfand (€)</th>
         <th>Gesamt (€)</th>
-        <th>Aktionen</th> <!-- Spalte "Aktionen" -->
+        <th>Aktionen</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <!-- Dynamische Tabelle -->
+    </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <h3>Gesamtpfand: <span id="totalDeposit">0.00</span>€</h3>
   <button id="completeOrderBtn">Bestellung abschließen</button>
 
+  <!-- Zusammenfassung -->
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
@@ -179,18 +173,16 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 2.5, category: "food", coverCharge: 0 },
-      { name: "Salzstange", price: 1.5, category: "food", coverCharge: 0 },
-      { name: "Baguette", price: 3.2, category: "food", coverCharge: 0 },
-      { name: "Hähnchen", price: 7.33, category: "food", coverCharge: 5 },
-      { name: "Ochsenbraten", price: 9.2, category: "food", coverCharge: 5 },
-      { name: "Falafel mit Dip", price: 6.8, category: "food", coverCharge: 5 },
+      { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
+      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
+      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
+      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5, plateFee: 5 },
+      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
       { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
       { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
       { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Radler", price: 4.8, category: "drink", deposit: 1 },
       { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 }
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
 
     let order = [];
@@ -254,17 +246,13 @@
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
 
-      let totalDeposit = 0; // Pfand-Summe
-
       order.forEach((item, index) => {
-        const deposit = item.deposit ? item.deposit * item.quantity : 0;
-        const coverCharge = item.coverCharge ? item.coverCharge * item.quantity : 0;
-
         const row = document.createElement("tr");
+        const totalWithDeposit = (item.price + item.deposit) * item.quantity;
+        const depositColumn = item.deposit > 0 ? item.deposit.toFixed(2) : "0.00";
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
-          <td>${(deposit + coverCharge).toFixed(2)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => 
@@ -272,17 +260,13 @@
               ).join("")}
             </select>
           </td>
-          <td>${(item.price * item.quantity + deposit + coverCharge).toFixed(2)}</td>
+          <td>${depositColumn}</td>
+          <td>${totalWithDeposit.toFixed(2)}</td>
           <td><button onclick="removeProduct(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
-
-        totalDeposit += deposit + coverCharge;  // Gesamtpfand
       });
-
-      const totalPrice = calculateTotalPrice();
-      document.getElementById("totalPrice").innerText = totalPrice.toFixed(2);
-      document.getElementById("totalDeposit").innerText = totalDeposit.toFixed(2);
+      document.getElementById("totalPrice").innerText = calculateTotalPrice().toFixed(2);
     }
 
     // Menge aktualisieren
@@ -299,9 +283,7 @@
 
     // Gesamtpreis berechnen
     function calculateTotalPrice() {
-      return order.reduce((total, item) => total + item.price * item.quantity, 0) +
-        order.reduce((total, item) => total + (item.deposit || 0) * item.quantity, 0) +
-        order.reduce((total, item) => total + (item.coverCharge || 0) * item.quantity, 0);
+      return order.reduce((total, item) => total + (item.price + item.deposit) * item.quantity, 0);
     }
 
     // Bestellung abschließen
@@ -318,6 +300,7 @@
           paidAmount = payment.toFixed(2);
           changeAmount = (payment - totalPrice).toFixed(2);
 
+          // Zusammenfassung anzeigen
           document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
           document.getElementById("paidAmount").innerText = paidAmount;
           document.getElementById("changeAmount").innerText = changeAmount;
