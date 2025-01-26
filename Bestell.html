@@ -18,7 +18,7 @@
     }
 
     .header img {
-      width: 67px; /* Ein Drittel kleiner als das Original */
+      width: 67px; /* Ein Drittel kleiner */
       height: auto;
       margin-right: 10px;
     }
@@ -75,8 +75,8 @@
       padding-top: 20px;
     }
 
-    button {
-      cursor: pointer;
+    .hidden {
+      display: none;
     }
 
     .receipt-footer {
@@ -88,19 +88,10 @@
     @media print {
       .product-buttons-container,
       #completeOrderBtn,
-      #printReceiptBtn,
       #newCustomerBtn,
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
-      }
-
-      img {
-        width: 50px;
-      }
-
-      h1 {
-        font-size: 18px;
       }
     }
   </style>
@@ -132,11 +123,11 @@
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
   <button id="completeOrderBtn">Bestellung abschließen</button>
 
-  <div id="orderSummary" class="order-summary" style="display:none;">
+  <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <button id="printReceiptBtn">Rechnung drucken</button>
-    <button id="newCustomerBtn">Neuer Kunde</button>
+    <button id="printReceiptBtn" onclick="window.print()">Rechnung drucken</button>
+    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
   </div>
 
   <script>
@@ -248,6 +239,24 @@
     function calculateTotal() {
       return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
+
+    function completeOrder() {
+      if (order.length === 0) {
+        alert("Keine Bestellung vorhanden!");
+        return;
+      }
+
+      document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
+      document.getElementById("orderSummary").classList.remove("hidden");
+    }
+
+    function startNewOrder() {
+      order = [];
+      updateOrderTable();
+      document.getElementById("orderSummary").classList.add("hidden");
+    }
+
+    document.getElementById("completeOrderBtn").onclick = completeOrder;
 
     generateProductButtons();
   </script>
