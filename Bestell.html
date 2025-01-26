@@ -67,6 +67,30 @@
       font-style: italic;
       margin-top: 20px;
     }
+
+    #paymentInput {
+      margin-top: 10px;
+      font-size: 18px;
+      padding: 10px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .number-button {
+      font-size: 18px;
+      padding: 10px;
+      width: 23%;
+      margin: 2%;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .number-button:active {
+      background-color: #2980b9;
+    }
   </style>
 </head>
 <body>
@@ -95,6 +119,25 @@
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
   <button id="completeOrderBtn">Bestellung abschließen</button>
+
+  <!-- Eingabefeld für den Betrag -->
+  <div id="paymentSection" style="display: none;">
+    <input type="number" id="paymentInput" placeholder="Betrag eingeben">
+    <div id="numPad">
+      <button class="number-button" onclick="appendToPayment(1)">1</button>
+      <button class="number-button" onclick="appendToPayment(2)">2</button>
+      <button class="number-button" onclick="appendToPayment(3)">3</button>
+      <button class="number-button" onclick="appendToPayment(4)">4</button>
+      <button class="number-button" onclick="appendToPayment(5)">5</button>
+      <button class="number-button" onclick="appendToPayment(6)">6</button>
+      <button class="number-button" onclick="appendToPayment(7)">7</button>
+      <button class="number-button" onclick="appendToPayment(8)">8</button>
+      <button class="number-button" onclick="appendToPayment(9)">9</button>
+      <button class="number-button" onclick="appendToPayment(0)">0</button>
+      <button class="number-button" onclick="clearPayment()">Clear</button>
+      <button class="number-button" onclick="submitPayment()">OK</button>
+    </div>
+  </div>
 
   <!-- Zusammenfassung -->
   <div id="orderSummary" class="order-summary" style="display:none;">
@@ -224,25 +267,43 @@
       if (order.length === 0) {
         alert("Es befinden sich keine Produkte in der Bestellung.");
       } else {
-        const totalPrice = calculateTotalPrice();
-        const payment = parseFloat(prompt(`Gesamtpreis: ${totalPrice.toFixed(2)}€\nBitte den gezahlten Betrag eingeben:`));
-
-        if (isNaN(payment) || payment < totalPrice) {
-          alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
-        } else {
-          paidAmount = payment.toFixed(2);
-          changeAmount = (payment - totalPrice).toFixed(2);
-
-          // Zusammenfassung anzeigen
-          document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
-          document.getElementById("paidAmount").innerText = paidAmount;
-          document.getElementById("changeAmount").innerText = changeAmount;
-          document.getElementById("orderSummary").style.display = "block";
-
-          alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
-        }
+        document.getElementById("paymentSection").style.display = "block";
+        document.getElementById("paymentInput").focus();
       }
     });
+
+    // Betrag hinzufügen
+    function appendToPayment(num) {
+      const paymentInput = document.getElementById("paymentInput");
+      paymentInput.value = paymentInput.value + num;
+    }
+
+    // Zahlung löschen
+    function clearPayment() {
+      document.getElementById("paymentInput").value = "";
+    }
+
+    // Zahlung abschließen
+    function submitPayment() {
+      const payment = parseFloat(document.getElementById("paymentInput").value);
+      const totalPrice = calculateTotalPrice();
+
+      if (isNaN(payment) || payment < totalPrice) {
+        alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
+      } else {
+        paidAmount = payment.toFixed(2);
+        changeAmount = (payment - totalPrice).toFixed(2);
+
+        // Zusammenfassung anzeigen
+        document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
+        document.getElementById("paidAmount").innerText = paidAmount;
+        document.getElementById("changeAmount").innerText = changeAmount;
+        document.getElementById("orderSummary").style.display = "block";
+        document.getElementById("paymentSection").style.display = "none";
+
+        alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
+      }
+    }
 
     // Neuer Kunde
     document.getElementById("newCustomerBtn").addEventListener("click", () => {
