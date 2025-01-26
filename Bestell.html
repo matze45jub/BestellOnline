@@ -216,7 +216,7 @@
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
 
   <div class="button-container">
-    <button id="completeOrderBtn">Bestellung abschließen</button>
+    <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
@@ -402,8 +402,8 @@
             </tbody>
           </table>
           <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${document.getElementById('paidAmount').textContent}</p>
-          <p><strong>Rückgeld:</strong> ${document.getElementById('changeAmount').textContent}</p>
+          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
+          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
         </div>
         <div class="receipt-footer">
           <p>Schön, dass Du mit uns feierst!</p>
