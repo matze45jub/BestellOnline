@@ -61,6 +61,12 @@
     button {
       cursor: pointer;
     }
+
+    .receipt-footer {
+      text-align: center;
+      font-style: italic;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -94,6 +100,10 @@
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+
+    <button id="printReceiptBtn">Rechnung drucken</button>
     <button id="newCustomerBtn">Neuer Kunde</button>
   </div>
 
@@ -112,6 +122,8 @@
     ];
 
     let order = [];
+    let paidAmount = 0;
+    let changeAmount = 0;
 
     // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
@@ -212,8 +224,23 @@
       if (order.length === 0) {
         alert("Es befinden sich keine Produkte in der Bestellung.");
       } else {
-        document.getElementById("finalTotalPrice").innerText = calculateTotalPrice().toFixed(2);
-        document.getElementById("orderSummary").style.display = "block";
+        const totalPrice = calculateTotalPrice();
+        const payment = parseFloat(prompt(`Gesamtpreis: ${totalPrice.toFixed(2)}€\nBitte den gezahlten Betrag eingeben:`));
+
+        if (isNaN(payment) || payment < totalPrice) {
+          alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
+        } else {
+          paidAmount = payment.toFixed(2);
+          changeAmount = (payment - totalPrice).toFixed(2);
+
+          // Zusammenfassung anzeigen
+          document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
+          document.getElementById("paidAmount").innerText = paidAmount;
+          document.getElementById("changeAmount").innerText = changeAmount;
+          document.getElementById("orderSummary").style.display = "block";
+
+          alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
+        }
       }
     });
 
