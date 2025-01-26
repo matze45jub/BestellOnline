@@ -164,6 +164,7 @@
     <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
   <script>
@@ -300,6 +301,14 @@
       order = [];
       updateOrderTable();
       document.getElementById("orderSummary").classList.add("hidden");
+    }
+
+    function printReceipt() {
+      const printContents = document.getElementById("orderSummary").innerHTML;
+      const originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
     }
 
     document.getElementById("completeOrderBtn").onclick = completeOrder;
