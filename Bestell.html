@@ -11,111 +11,51 @@
       padding: 20px;
     }
 
-    .product-button {
-      margin: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
+    .product-buttons-container {
+      margin-bottom: 20px;
     }
 
+    .category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .product-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .product-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Stil für Essensschaltflächen (hellgelb mit schwarzer Schrift) */
     .food-button {
       background-color: #f1c40f;
       color: #000000;
     }
 
+    /* Stil für Getränkeschaltflächen (blau mit weißer Schrift) */
     .drink-button {
       background-color: #3498db;
       color: #ffffff;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .order-summary {
-      margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
-    }
-
-    .receipt-footer {
-      text-align: center;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-    .receipt-footer strong {
-      text-decoration: underline;
-    }
-
-    @media print {
-      #productButtons, #completeOrderBtn, #proceedToPaymentBtn, #newCustomerBtn, #printReceiptBtn {
-        display: none;
-      }
-
-      #orderSummary {
-        margin-top: 20px;
-      }
-
-      #finalTotalPrice {
-        font-weight: bold;
-      }
     }
   </style>
 </head>
 <body>
 
   <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-
   <img src="logo.png" alt="Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
 
-  <div id="productButtons"></div>
-  
-  <h2>Bestellung</h2>
-  <table id="orderTable">
-    <thead>
-      <tr>
-        <th>Produkt</th>
-        <th>Preis (€)</th>
-        <th>Menge</th>
-        <th>Gesamt (€)</th>
-        <th>Aktionen</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-
-  <button id="completeOrderBtn">Bestellung abschließen</button>
-  <button id="proceedToPaymentBtn" class="disabled" disabled>Zur Bezahlung</button>
-
-  <div id="orderSummary" class="order-summary" style="display:none;">
-    <h2>Bestellung abgeschlossen</h2>
-    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
-    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
-
-    <p><strong>Vielen Dank, dass Du mit uns feierst!</strong></p>
-    <p><strong>Bitte wende Dich mit der Rechnung an die entsprechenden Ausgabetheken!</strong></p>
-
-    <button id="printReceiptBtn">Rechnung drucken</button>
-    <button id="newCustomerBtn">Neuer Kunde</button>
-  </div>
+  <!-- Container für Produkte -->
+  <div id="productButtons" class="product-buttons-container"></div>
 
   <script>
     const products = [
@@ -131,137 +71,56 @@
       { name: "Schoppen Silvaner", price: 4.2, category: "drink" }
     ];
 
-    let order = [];
-    let paidAmount = 0;
-    let changeAmount = 0;
-
+    // Funktion zum Erstellen der Produktschaltflächen
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
-      products.forEach((product, index) => {
+
+      // Essen-Schaltflächen
+      const foodButtons = products.filter(product => product.category === "food");
+      const foodTitle = document.createElement("div");
+      foodTitle.classList.add("category-title");
+      foodTitle.innerText = "🍴 Essen:";
+      container.appendChild(foodTitle);
+
+      const foodRow = document.createElement("div");
+      foodRow.classList.add("product-buttons-row");
+      foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
-        
-        if (product.category === "food") {
-          button.classList.add("food-button");
-        } else {
-          button.classList.add("drink-button");
-        }
-        
-        button.onclick = () => addToOrder(index);
-        button.addEventListener('touchstart', () => addToOrder(index));
-        container.appendChild(button);
+        button.classList.add("product-button", "food-button");
+        button.onclick = () => addToOrder(product);
+        button.addEventListener('touchstart', () => addToOrder(product)); // Für mobile Geräte
+        foodRow.appendChild(button);
       });
-    }
+      container.appendChild(foodRow);
 
-    function addToOrder(productIndex) {
-      const product = products[productIndex];
-      const existingItem = order.find(item => item.name === product.name);
+      // Getränke-Schaltflächen
+      const drinkButtons = products.filter(product => product.category === "drink");
+      const drinkTitle = document.createElement("div");
+      drinkTitle.classList.add("category-title");
+      drinkTitle.innerText = "🥤 Getränke:";
+      container.appendChild(drinkTitle);
 
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        order.push({ ...product, quantity: 1 });
-      }
-
-      updateOrderTable();
-    }
-
-    function calculateTotalPrice() {
-      return order.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-    }
-
-    function updateOrderTable() {
-      const tbody = document.getElementById("orderTable").querySelector("tbody");
-      tbody.innerHTML = "";
-      order.forEach((item, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${item.price.toFixed(2)}</td>
-          <td>
-            <select onchange="updateQuantity(${index}, this.value)">
-              ${Array.from({ length: 10 }, (_, i) => 
-                `<option value="${i + 1}" ${item.quantity === i + 1 ? 'selected' : ''}>${i + 1}</option>`
-              ).join('')}
-            </select>
-          </td>
-          <td>${(item.price * item.quantity).toFixed(2)}</td>
-          <td>
-            <button onclick="removeProduct(${index})">Entfernen</button>
-          </td>
-        `;
-        tbody.appendChild(row);
+      const drinkRow = document.createElement("div");
+      drinkRow.classList.add("product-buttons-row");
+      drinkButtons.forEach(product => {
+        const button = document.createElement("button");
+        button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
+        button.classList.add("product-button", "drink-button");
+        button.onclick = () => addToOrder(product);
+        button.addEventListener('touchstart', () => addToOrder(product)); // Für mobile Geräte
+        drinkRow.appendChild(button);
       });
-      document.getElementById("totalPrice").innerText = calculateTotalPrice();
+      container.appendChild(drinkRow);
     }
 
-    function updateQuantity(index, value) {
-      const newQuantity = parseInt(value, 10);
-      if (newQuantity > 0) {
-        order[index].quantity = newQuantity;
-        updateOrderTable();
-      }
+    // Beispiel für eine Bestellfunktion (hier nur eine leere Funktion)
+    function addToOrder(product) {
+      alert(`${product.name} wurde zur Bestellung hinzugefügt!`);
     }
 
-    function removeProduct(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-      checkOrder();
-    }
-
-    document.getElementById("completeOrderBtn").addEventListener("click", () => {
-      if (order.length === 0) {
-        alert("❌ Es befinden sich keine Produkte in der Bestellung.");
-      } else {
-        document.getElementById("orderSummary").style.display = "block";
-        document.getElementById("proceedToPaymentBtn").disabled = false;
-      }
-    });
-
-    document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
-      const totalPrice = parseFloat(calculateTotalPrice());
-      const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
-
-      if (isNaN(payment) || payment < totalPrice) {
-        alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
-      } else {
-        changeAmount = (payment - totalPrice).toFixed(2);
-        paidAmount = payment.toFixed(2);
-
-        document.getElementById("paidAmount").innerText = paidAmount;
-        document.getElementById("changeAmount").innerText = changeAmount;
-        
-        alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
-        
-        document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
-        document.getElementById("orderSummary").style.display = "block";
-      }
-    });
-
-    document.getElementById("newCustomerBtn").addEventListener("click", () => {
-      order = [];
-      paidAmount = 0;
-      changeAmount = 0;
-      updateOrderTable();
-      document.getElementById("orderSummary").style.display = "none";
-      document.getElementById("proceedToPaymentBtn").disabled = true;
-    });
-
-    document.getElementById("printReceiptBtn").addEventListener("click", () => {
-      window.print();
-    });
-
-    function checkOrder() {
-      const proceedBtn = document.getElementById("proceedToPaymentBtn");
-      if (order.length === 0) {
-        proceedBtn.disabled = true;
-      }
-    }
-
+    // Buttons generieren
     generateProductButtons();
-    updateOrderTable();
   </script>
-
 </body>
 </html>
