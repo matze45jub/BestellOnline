@@ -208,6 +208,11 @@
       updateOrderTable();
     }
 
+    function updateQuantity(index, quantity) {
+      order[index].quantity = parseInt(quantity, 10);
+      updateOrderTable();
+    }
+
     function updateOrderTable() {
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
@@ -219,7 +224,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${item.price.toFixed(2)}</td>
+          <td>${(item.price).toFixed(2)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
@@ -234,16 +239,6 @@
         tbody.appendChild(row);
       });
       document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
-    }
-
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
     }
 
     function calculateTotal() {
