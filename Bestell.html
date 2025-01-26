@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
-    /* Stil für den gesamten Inhalt */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -176,7 +175,6 @@
   <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    
     <button id="printReceiptBtn" onclick="window.print()">Rechnung drucken</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
   </div>
@@ -316,17 +314,17 @@
 
       document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
       document.getElementById("orderSummary").classList.remove("hidden");
-      showPaymentModal(); // Modal anzeigen
+      showPaymentModal(); 
     }
 
     function showPaymentModal() {
       const total = calculateTotal();
       document.getElementById("modalTotalPrice").textContent = total.toFixed(2);
-      document.getElementById("paymentModal").style.display = "block"; // Modal sichtbar machen
+      document.getElementById("paymentModal").style.display = "block"; 
     }
 
     function closeModal() {
-      document.getElementById("paymentModal").style.display = "none"; // Modal schließen
+      document.getElementById("paymentModal").style.display = "none"; 
     }
 
     function calculateChange() {
