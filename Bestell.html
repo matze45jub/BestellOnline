@@ -247,6 +247,7 @@
     ];
 
     let order = [];
+    let customerDepositCount = 0; // Verfolgt, wie viele Krüge/Gläser/Flaschen der Kunde bereits hat
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
@@ -288,22 +289,27 @@
 
     function addToOrder(product) {
       const existing = order.find(item => item.name === product.name);
+      let depositToAdd = product.deposit;
+
+      // Überprüfen, ob der Kunde bereits Krüge/Gläser hat (und ob das Produkt Pfand hat)
+      if (product.category === 'drink' && customerDepositCount > 0) {
+        // Wenn der Kunde bereits Pfand hat, wird das Pfand reduziert
+        depositToAdd = Math.max(0, product.deposit - customerDepositCount); // Pfand wird verringert, aber niemals negativ
+      }
+
       if (existing) {
         existing.quantity += 1;
+        existing.deposit = depositToAdd; // Anpassen des Pfands
       } else {
-        order.push({ ...product, quantity: 1 });
+        order.push({ ...product, quantity: 1, deposit: depositToAdd });
       }
-      updateOrderTable();
-    }
 
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
+      // Wenn der Kunde jetzt ein Getränk bestellt und noch keinen Krug/Glas hat, dann setzen wir customerDepositCount auf 1
+      if (product.category === 'drink' && customerDepositCount === 0) {
+        customerDepositCount = 1; // Jetzt hat der Kunde einen Krug/Glas
+      }
 
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
+      updateOrderTable(); // Tabelle aktualisieren
     }
 
     function updateOrderTable() {
@@ -334,89 +340,31 @@
       document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
     }
 
-    function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
-    }
-
     function formatCurrency(amount) {
       return amount.toFixed(2).replace(".", ",");
     }
 
-    function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
-      document.getElementById("orderSummary").classList.remove("hidden");
-
-      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
-      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
-        alert("Der gezahlte Betrag reicht nicht aus.");
-        return;
-      }
-
-      const change = paidAmount - calculateTotal();
-      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
-      document.getElementById("changeAmount").textContent = formatCurrency(change);
+    function calculateTotal() {
+      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
 
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      customerDepositCount = 0;
+      updateOrderTable();
+      document.getElementById("totalPrice").textContent = formatCurrency(0);
     }
 
-    function printReceipt() {
-      const receiptContent = `
-        <div class="receipt-header">
-          <img src="logo.png" alt="Logo">
-          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-        </div>
-        <div class="receipt-body">
-          <h2>Bestellung</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th>Preis (€)</th>
-                <th>Menge</th>
-                <th>Pfand (€)</th>
-                <th>Gesamt (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${formatCurrency(item.price)}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatCurrency(item.deposit)}</td>
-                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
-          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
-        </div>
-        <div class="receipt-footer">
-          <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
-        </div>
-      `;
-
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = receiptContent;
-      window.print();
-      document.body.innerHTML = originalContents;
+    function completeOrder() {
+      alert("Bestellung abgeschlossen!");
     }
 
+    function removeItem(index) {
+      order.splice(index, 1);
+      updateOrderTable();
+    }
+
+    // Initialisieren der Produktknöpfe
     generateProductButtons();
   </script>
 </body>
