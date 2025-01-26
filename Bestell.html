@@ -293,7 +293,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${(item.price * item.quantity).toFixed(2)}</td>
+          <td>${formatCurrency(item.price * item.quantity)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
@@ -301,17 +301,21 @@
               `).join("")}
             </select>
           </td>
-          <td>${depositTotal.toFixed(2)}</td>
-          <td>${total.toFixed(2)}</td>
+          <td>${formatCurrency(depositTotal)}</td>
+          <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
       });
-      document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
+      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
     }
 
     function calculateTotal() {
       return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+    }
+
+    function formatCurrency(amount) {
+      return amount.toFixed(2).replace(".", ",");
     }
 
     function completeOrder() {
@@ -320,7 +324,7 @@
         return;
       }
 
-      document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
+      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
       document.getElementById("orderSummary").classList.remove("hidden");
 
       const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
@@ -330,8 +334,8 @@
       }
 
       const change = paidAmount - calculateTotal();
-      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
-      document.getElementById("changeAmount").textContent = change.toFixed(2);
+      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
+      document.getElementById("changeAmount").textContent = formatCurrency(change);
     }
 
     function startNewOrder() {
@@ -365,21 +369,21 @@
               ${order.map(item => `
                 <tr>
                   <td>${item.name}</td>
-                  <td>${(item.price).toFixed(2)}</td>
+                  <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
-                  <td>${(item.deposit).toFixed(2)}</td>
-                  <td>${((item.price + item.deposit) * item.quantity).toFixed(2)}</td>
+                  <td>${formatCurrency(item.deposit)}</td>
+                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
-          <p><strong>Gesamtbetrag:</strong> ${calculateTotal().toFixed(2)}€</p>
-          <p><strong>Gezahlter Betrag:</strong> ${document.getElementById('paidAmount').textContent}€</p>
-          <p><strong>Rückgeld:</strong> ${document.getElementById('changeAmount').textContent}€</p>
+          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
+          <p><strong>Gezahlter Betrag:</strong> ${document.getElementById('paidAmount').textContent}</p>
+          <p><strong>Rückgeld:</strong> ${document.getElementById('changeAmount').textContent}</p>
         </div>
         <div class="receipt-footer">
           <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung zu den jeweiligen Ausgabetheken mit!</p>
+          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
         </div>
       `;
 
