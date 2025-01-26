@@ -18,7 +18,7 @@
     }
 
     .header img {
-      width: 67px; /* Ein Drittel kleiner */
+      width: 67px;
       height: auto;
       margin-right: 10px;
     }
@@ -85,19 +85,38 @@
       margin-top: 20px;
     }
 
-    /* Style für die roten Schaltflächen */
-    .button-container button {
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .modal-footer {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .modal-footer button {
       padding: 10px 20px;
       font-size: 16px;
-      background-color: red; /* Rote Hintergrundfarbe */
-      color: white; /* Weiße Schriftfarbe */
+      background-color: #3498db;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
 
-    .button-container button:hover {
-      background-color: darkred; /* Dunklerer Rotton bei Hover */
+    .modal-footer button:hover {
+      background-color: #2980b9;
     }
 
     @media print {
@@ -108,6 +127,43 @@
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
+      }
+
+      .receipt-header {
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .receipt-header img {
+        width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .receipt-header h1 {
+        font-size: 22px;
+      }
+
+      .receipt-body {
+        font-size: 14px;
+        margin-top: 20px;
+      }
+
+      .receipt-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .receipt-body th, .receipt-body td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      .receipt-footer {
+        font-size: 12px;
+        margin-top: 30px;
       }
     }
   </style>
@@ -137,23 +193,15 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <div class="button-container">
-    <button id="completeOrderBtn">Bestellung abschließen</button>
-    <button id="printReceiptBtn" onclick="printReceipt()">Rechnung drucken</button>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-  </div>
+  <button id="completeOrderBtn">Bestellung abschließen</button>
 
   <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    
-    <div id="paymentSection">
-      <h3>Zahlung</h3>
-      <label for="paymentInput">Gezahlter Betrag (€):</label>
-      <input type="number" id="paymentInput" step="0.01" placeholder="Betrag eingeben">
-      <button id="calculateChangeBtn" onclick="calculateChange()">Rückgeld berechnen</button>
-      <p id="changeOutput" class="hidden"></p>
-    </div>
+    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
   <script>
@@ -224,6 +272,16 @@
       updateOrderTable();
     }
 
+    function updateQuantity(index, quantity) {
+      order[index].quantity = parseInt(quantity, 10);
+      updateOrderTable();
+    }
+
+    function removeItem(index) {
+      order.splice(index, 1);
+      updateOrderTable();
+    }
+
     function updateOrderTable() {
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
@@ -235,7 +293,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${item.price.toFixed(2)}</td>
+          <td>${(item.price * item.quantity).toFixed(2)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
@@ -252,16 +310,6 @@
       document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
     }
 
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
-
     function calculateTotal() {
       return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
@@ -274,41 +322,34 @@
 
       document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
       document.getElementById("orderSummary").classList.remove("hidden");
-    }
 
-    function calculateChange() {
-      const total = calculateTotal();
-      const payment = parseFloat(document.getElementById("paymentInput").value);
-
-      if (isNaN(payment) || payment < total) {
-        document.getElementById("changeOutput").textContent = "Der gezahlte Betrag reicht nicht aus.";
-        document.getElementById("changeOutput").classList.remove("hidden");
+      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
+      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
+        alert("Der gezahlte Betrag reicht nicht aus.");
         return;
       }
 
-      const change = payment - total;
-      document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
-      document.getElementById("changeOutput").classList.remove("hidden");
+      const change = paidAmount - calculateTotal();
+      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
+      document.getElementById("changeAmount").textContent = change.toFixed(2);
     }
 
     function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
+      order = [];  // Bestellungen zurücksetzen
+      updateOrderTable();  // Tabelle zurücksetzen
+      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
+      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
+      generateProductButtons();  // Produktbuttons neu generieren
+      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
     }
-
-    document.getElementById("completeOrderBtn").onclick = completeOrder;
-    document.getElementById("calculateChangeBtn").onclick = calculateChange;
-
-    generateProductButtons();
 
     function printReceipt() {
       const receiptContent = `
-        <div>
-          <div class="header">
-            <img src="logo.png" alt="Logo">
-            <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-          </div>
+        <div class="receipt-header">
+          <img src="logo.png" alt="Logo">
+          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
+        </div>
+        <div class="receipt-body">
           <h2>Bestellung</h2>
           <table>
             <thead>
@@ -324,29 +365,33 @@
               ${order.map(item => `
                 <tr>
                   <td>${item.name}</td>
-                  <td>${item.price.toFixed(2)}</td>
+                  <td>${(item.price).toFixed(2)}</td>
                   <td>${item.quantity}</td>
-                  <td>${(item.deposit * item.quantity).toFixed(2)}</td>
+                  <td>${(item.deposit).toFixed(2)}</td>
                   <td>${((item.price + item.deposit) * item.quantity).toFixed(2)}</td>
                 </tr>
-              `).join("")}
+              `).join('')}
             </tbody>
           </table>
-          <p><strong>Gesamtbetrag:</strong> ${calculateTotal().toFixed(2)}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${parseFloat(document.getElementById("paymentInput").value).toFixed(2)}</p>
-          <p><strong>Rückgeld:</strong> ${(parseFloat(document.getElementById("paymentInput").value) - calculateTotal()).toFixed(2)}</p>
+          <p><strong>Gesamtbetrag:</strong> ${calculateTotal().toFixed(2)}€</p>
+          <p><strong>Gezahlter Betrag:</strong> ${document.getElementById('paidAmount').textContent}€</p>
+          <p><strong>Rückgeld:</strong> ${document.getElementById('changeAmount').textContent}€</p>
         </div>
         <div class="receipt-footer">
           <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken! Danke</p>
+          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
         </div>
       `;
-      
+
       const originalContents = document.body.innerHTML;
       document.body.innerHTML = receiptContent;
       window.print();
       document.body.innerHTML = originalContents;
     }
+
+    document.getElementById("completeOrderBtn").onclick = completeOrder;
+
+    generateProductButtons();
   </script>
 </body>
 </html>
