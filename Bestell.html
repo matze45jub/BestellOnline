@@ -119,6 +119,27 @@
       background-color: #2980b9;
     }
 
+    /* Styling für die Schaltflächen nebeneinander */
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button-container button:hover {
+      background-color: #2980b9;
+    }
+
     @media print {
       .product-buttons-container,
       #completeOrderBtn,
@@ -193,15 +214,18 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <button id="completeOrderBtn">Bestellung abschließen</button>
+
+  <div class="button-container">
+    <button id="completeOrderBtn">Bestellung abschließen</button>
+    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+  </div>
 
   <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
     <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
   <script>
@@ -392,8 +416,6 @@
       window.print();
       document.body.innerHTML = originalContents;
     }
-
-    document.getElementById("completeOrderBtn").onclick = completeOrder;
 
     generateProductButtons();
   </script>
