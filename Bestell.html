@@ -272,7 +272,7 @@
 
     function updateDepositQuantity(index, depositQuantity) {
       order[index].depositQuantity = parseInt(depositQuantity, 10);
-      updateOrderTable();
+      updateOrderTable();  // Hier wird die Gesamtberechnung nach Änderung der Pfandanzahl neu berechnet
     }
 
     function removeItem(index) {
