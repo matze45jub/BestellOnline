@@ -85,6 +85,41 @@
       margin-top: 20px;
     }
 
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .modal-footer {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-footer button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
       gap: 10px;
@@ -94,7 +129,7 @@
     .button-container button {
       padding: 10px 20px;
       font-size: 16px;
-      background-color: red;
+      background-color: #3498db;
       color: white;
       border: none;
       border-radius: 5px;
@@ -102,7 +137,7 @@
     }
 
     .button-container button:hover {
-      background-color: darkred;
+      background-color: #2980b9;
     }
 
     @media print {
@@ -113,6 +148,43 @@
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
+      }
+
+      .receipt-header {
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .receipt-header img {
+        width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .receipt-header h1 {
+        font-size: 22px;
+      }
+
+      .receipt-body {
+        font-size: 14px;
+        margin-top: 20px;
+      }
+
+      .receipt-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .receipt-body th, .receipt-body td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      .receipt-footer {
+        font-size: 12px;
+        margin-top: 30px;
       }
     }
   </style>
@@ -141,7 +213,7 @@
     <tbody>
     </tbody>
   </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0,00</span>€</h3>
+  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -149,12 +221,29 @@
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
+  <div id="orderSummary" class="order-summary hidden">
+    <h2>Bestellung abgeschlossen</h2>
+    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+  </div>
+
   <script>
     const products = [
       { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
+      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
+      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
+      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
+      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
+      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
+      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
       { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 }
+      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
+      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
+      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
 
     let order = [];
@@ -198,67 +287,18 @@
     }
 
     function addToOrder(product) {
-      if (product.deposit > 0) {
-        const quantity = parseInt(prompt(`Wie viele "${product.name}" möchten Sie bestellen?`), 10);
-
-        if (isNaN(quantity) || quantity <= 0) {
-          alert("Bitte eine gültige Anzahl eingeben.");
-          return;
-        }
-
-        const emptyCups = parseInt(prompt(`Wie viele leere Krüge haben Sie bereits?`), 10);
-
-        if (isNaN(emptyCups) || emptyCups < 0 || emptyCups > quantity) {
-          alert("Bitte eine gültige Anzahl leerer Krüge eingeben.");
-          return;
-        }
-
-        const depositCups = quantity - emptyCups;
-
-        const existing = order.find(item => item.name === product.name);
-        if (existing) {
-          existing.quantity += quantity;
-          existing.depositCups += depositCups;
-        } else {
-          order.push({ ...product, quantity, depositCups });
-        }
+      const existing = order.find(item => item.name === product.name);
+      if (existing) {
+        existing.quantity += 1;
       } else {
-        const existing = order.find(item => item.name === product.name);
-        if (existing) {
-          existing.quantity += 1;
-        } else {
-          order.push({ ...product, quantity: 1 });
-        }
+        order.push({ ...product, quantity: 1 });
       }
       updateOrderTable();
     }
 
-    function updateOrderTable() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
-      order.forEach((item, index) => {
-        const totalDeposit = item.deposit * item.depositCups;
-        const totalPrice = (item.price * item.quantity) + totalDeposit;
-
-        tbody.innerHTML += `
-          <tr>
-            <td>${item.name}</td>
-            <td>${item.price.toFixed(2).replace(".", ",")}</td>
-            <td>${item.quantity}</td>
-            <td>${totalDeposit.toFixed(2).replace(".", ",")}</td>
-            <td>${totalPrice.toFixed(2).replace(".", ",")}</td>
-            <td><button onclick="removeItem(${index})">Entfernen</button></td>
-          </tr>
-        `;
-      });
-      document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2).replace(".", ",");
-    }
-
-    function calculateTotal() {
-      return order.reduce((sum, item) => {
-        const totalDeposit = item.deposit * item.depositCups;
-        return sum + (item.price * item.quantity) + totalDeposit;
-      }, 0);
+    function updateQuantity(index, quantity) {
+      order[index].quantity = parseInt(quantity, 10);
+      updateOrderTable();
     }
 
     function removeItem(index) {
@@ -266,17 +306,115 @@
       updateOrderTable();
     }
 
+    function updateOrderTable() {
+      const tbody = document.querySelector("#orderTable tbody");
+      tbody.innerHTML = "";
+
+      order.forEach((item, index) => {
+        const total = (item.price + item.deposit) * item.quantity;
+        const depositTotal = item.deposit * item.quantity;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${formatCurrency(item.price * item.quantity)}</td>
+          <td>
+            <select onchange="updateQuantity(${index}, this.value)">
+              ${Array.from({ length: 10 }, (_, i) => `
+                <option value="${i + 1}" ${item.quantity === i + 1 ? "selected" : ""}>${i + 1}</option>
+              `).join("")}
+            </select>
+          </td>
+          <td>${formatCurrency(depositTotal)}</td>
+          <td>${formatCurrency(total)}</td>
+          <td><button onclick="removeItem(${index})">Entfernen</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
+    }
+
+    function calculateTotal() {
+      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+    }
+
+    function formatCurrency(amount) {
+      return amount.toFixed(2).replace(".", ",");
+    }
+
     function completeOrder() {
-      alert("Bestellung abgeschlossen.");
+      if (order.length === 0) {
+        alert("Keine Bestellung vorhanden!");
+        return;
+      }
+
+      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
+      document.getElementById("orderSummary").classList.remove("hidden");
+
+      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
+      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
+        alert("Der gezahlte Betrag reicht nicht aus.");
+        return;
+      }
+
+      const change = paidAmount - calculateTotal();
+      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
+      document.getElementById("changeAmount").textContent = formatCurrency(change);
     }
 
     function startNewOrder() {
-      order = [];
-      updateOrderTable();
+      order = [];  // Bestellungen zurücksetzen
+      updateOrderTable();  // Tabelle zurücksetzen
+      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
+      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
+      generateProductButtons();  // Produktbuttons neu generieren
+      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
     }
 
     function printReceipt() {
-      alert("Rechnung wird gedruckt.");
+      const receiptContent = `
+        <div class="receipt-header">
+          <img src="logo.png" alt="Logo">
+          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
+        </div>
+        <div class="receipt-body">
+          <h2>Bestellung</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Preis (€)</th>
+                <th>Menge</th>
+                <th>Pfand (€)</th>
+                <th>Gesamt (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${formatCurrency(item.price)}</td>
+                  <td>${item.quantity}</td>
+                  <td>${formatCurrency(item.deposit)}</td>
+                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
+          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
+          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
+        </div>
+        <div class="receipt-footer">
+          <p>Schön, dass Du mit uns feierst!</p>
+          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
+        </div>
+      `;
+
+      const originalContents = document.body.innerHTML;
+      document.body.innerHTML = receiptContent;
+      window.print();
+      document.body.innerHTML = originalContents;
     }
 
     generateProductButtons();
