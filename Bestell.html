@@ -257,22 +257,22 @@
       const existing = order.find(item => item.name === product.name);
       if (existing) {
         existing.quantity += 1;
-        existing.depositQuantity = existing.deposit * existing.quantity;
       } else {
-        order.push({ ...product, quantity: 1, depositQuantity: product.deposit });
+        order.push({ ...product, quantity: 1 });
       }
       updateOrderTable();
     }
 
     function updateQuantity(index, quantity) {
       order[index].quantity = parseInt(quantity, 10);
-      order[index].depositQuantity = order[index].deposit * quantity;
       updateOrderTable();
     }
 
     function updateDepositQuantity(index, depositQuantity) {
-      order[index].depositQuantity = parseInt(depositQuantity, 10);
-      updateOrderTable();  // Hier wird die Gesamtberechnung nach Änderung der Pfandanzahl neu berechnet
+      const depositAmount = order[index].deposit;
+      const newDeposit = parseInt(depositQuantity, 10);
+      order[index].depositQuantity = newDeposit;
+      updateOrderTable();
     }
 
     function removeItem(index) {
@@ -285,13 +285,12 @@
       tbody.innerHTML = "";
 
       order.forEach((item, index) => {
-        const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.deposit * item.quantity;
+        const total = item.price * item.quantity + item.depositQuantity;
 
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${formatCurrency(item.price * item.quantity)}</td>
+          <td>${formatCurrency(item.price)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
@@ -316,7 +315,7 @@
     }
 
     function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+      return order.reduce((sum, item) => sum + (item.price * item.quantity + item.depositQuantity), 0);
     }
 
     function formatCurrency(amount) {
