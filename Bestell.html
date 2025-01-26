@@ -7,31 +7,43 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0; /* Entfernt Standard-Außenabstand des Body-Tags */
+      margin: 20px;
       padding: 20px;
     }
 
-    h1 {
-      margin-top: 0; /* Entfernt den oberen Außenabstand der Überschrift */
+    .product-buttons-container {
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .product-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .product-button {
-      margin: 5px;
       padding: 10px 20px;
-      cursor: pointer;
+      font-size: 16px;
       border: none;
       border-radius: 5px;
-      font-size: 16px;
+      cursor: pointer;
     }
 
     .food-button {
-      background-color: #f1c40f; /* Hellgelb */
-      color: #000000; /* Schwarz */
+      background-color: #f1c40f;
+      color: #000000;
     }
 
     .drink-button {
-      background-color: #3498db; /* Blau */
-      color: #ffffff; /* Weiß */
+      background-color: #3498db;
+      color: #ffffff;
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -40,19 +52,14 @@
       padding: 10px;
     }
 
-    button {
-      cursor: pointer;
-    }
-
-    .disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
     .order-summary {
       margin-top: 20px;
       border-top: 2px solid #ccc;
       padding-top: 20px;
+    }
+
+    button {
+      cursor: pointer;
     }
 
     .receipt-footer {
@@ -60,35 +67,17 @@
       font-style: italic;
       margin-top: 20px;
     }
-
-    .receipt-footer strong {
-      text-decoration: underline;
-    }
-
-    @media print {
-      #productButtons, #completeOrderBtn, #proceedToPaymentBtn, #newCustomerBtn, #printReceiptBtn {
-        display: none;
-      }
-
-      #orderSummary {
-        margin-top: 20px;
-      }
-
-      #finalTotalPrice {
-        font-weight: bold;
-      }
-    }
   </style>
 </head>
 <body>
 
   <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-
-  <!-- Logo unter der Überschrift -->
   <img src="logo.png" alt="Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
 
-  <div id="productButtons"></div>
-  
+  <!-- Produktanzeige -->
+  <div id="productButtons" class="product-buttons-container"></div>
+
+  <!-- Bestelltabelle -->
   <h2>Bestellung</h2>
   <table id="orderTable">
     <thead>
@@ -104,20 +93,15 @@
       <!-- Dynamische Tabelle -->
     </tbody>
   </table>
-
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-
   <button id="completeOrderBtn">Bestellung abschließen</button>
-  <button id="proceedToPaymentBtn" class="disabled" disabled>Zur Bezahlung</button>
 
+  <!-- Zusammenfassung -->
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
     <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
-
-    <p><strong>Vielen Dank, dass Du mit uns feierst!</strong></p>
-    <p><strong>Bitte wende Dich mit der Rechnung an die entsprechenden Ausgabetheken!</strong></p>
 
     <button id="printReceiptBtn">Rechnung drucken</button>
     <button id="newCustomerBtn">Neuer Kunde</button>
@@ -144,60 +128,60 @@
     // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
-      const foodContainer = document.createElement("div");
-      const drinkContainer = document.createElement("div");
 
-      products.forEach((product, index) => {
+      // Essen-Schaltflächen
+      const foodButtons = products.filter(product => product.category === "food");
+      const foodTitle = document.createElement("div");
+      foodTitle.classList.add("category-title");
+      foodTitle.innerText = "🍴 Essen:";
+      container.appendChild(foodTitle);
+
+      const foodRow = document.createElement("div");
+      foodRow.classList.add("product-buttons-row");
+      foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
-
-        if (product.category === "food") {
-          button.classList.add("food-button");
-          foodContainer.appendChild(button);
-        } else {
-          button.classList.add("drink-button");
-          drinkContainer.appendChild(button);
-        }
-
-        button.onclick = () => addToOrder(index);
+        button.classList.add("product-button", "food-button");
+        button.onclick = () => addToOrder(product);
+        foodRow.appendChild(button);
       });
+      container.appendChild(foodRow);
 
-      // Kategorien als Überschriften hinzufügen
-      const foodHeading = document.createElement("h3");
-      foodHeading.innerText = "Essen";
-      container.appendChild(foodHeading);
-      container.appendChild(foodContainer);
+      // Getränke-Schaltflächen
+      const drinkButtons = products.filter(product => product.category === "drink");
+      const drinkTitle = document.createElement("div");
+      drinkTitle.classList.add("category-title");
+      drinkTitle.innerText = "🥤 Getränke:";
+      container.appendChild(drinkTitle);
 
-      const drinkHeading = document.createElement("h3");
-      drinkHeading.innerText = "Getränke";
-      container.appendChild(drinkHeading);
-      container.appendChild(drinkContainer);
+      const drinkRow = document.createElement("div");
+      drinkRow.classList.add("product-buttons-row");
+      drinkButtons.forEach(product => {
+        const button = document.createElement("button");
+        button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
+        button.classList.add("product-button", "drink-button");
+        button.onclick = () => addToOrder(product);
+        drinkRow.appendChild(button);
+      });
+      container.appendChild(drinkRow);
     }
 
     // Produkt zur Bestellung hinzufügen
-    function addToOrder(productIndex) {
-      const product = products[productIndex];
+    function addToOrder(product) {
       const existingItem = order.find(item => item.name === product.name);
-
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
         order.push({ ...product, quantity: 1 });
       }
-
       updateOrderTable();
     }
 
-    // Gesamtpreis berechnen
-    function calculateTotalPrice() {
-      return order.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-    }
-
-    // Bestellübersicht aktualisieren
+    // Tabelle aktualisieren
     function updateOrderTable() {
-      const tbody = document.getElementById("orderTable").querySelector("tbody");
+      const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
+
       order.forEach((item, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -215,7 +199,7 @@
         `;
         tbody.appendChild(row);
       });
-      document.getElementById("totalPrice").innerText = calculateTotalPrice();
+      document.getElementById("totalPrice").innerText = calculateTotalPrice().toFixed(2);
     }
 
     // Menge aktualisieren
@@ -230,49 +214,45 @@
       updateOrderTable();
     }
 
+    // Gesamtpreis berechnen
+    function calculateTotalPrice() {
+      return order.reduce((total, item) => total + item.price * item.quantity, 0);
+    }
+
     // Bestellung abschließen
     document.getElementById("completeOrderBtn").addEventListener("click", () => {
       if (order.length === 0) {
         alert("Es befinden sich keine Produkte in der Bestellung.");
       } else {
-        document.getElementById("orderSummary").style.display = "block";
-        document.getElementById("finalTotalPrice").innerText = calculateTotalPrice();
+        const totalPrice = calculateTotalPrice();
+        const payment = parseFloat(prompt(`Gesamtpreis: ${totalPrice.toFixed(2)}€\nBitte den gezahlten Betrag eingeben:`));
+
+        if (isNaN(payment) || payment < totalPrice) {
+          alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
+        } else {
+          paidAmount = payment.toFixed(2);
+          changeAmount = (payment - totalPrice).toFixed(2);
+
+          // Zusammenfassung anzeigen
+          document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
+          document.getElementById("paidAmount").innerText = paidAmount;
+          document.getElementById("changeAmount").innerText = changeAmount;
+          document.getElementById("orderSummary").style.display = "block";
+
+          alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
+        }
       }
     });
 
-    // Bezahlung durchführen
-    document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
-      const totalPrice = parseFloat(calculateTotalPrice());
-      const payment = parseFloat(prompt(`Gesamtpreis: ${totalPrice}€\n\nBitte den gezahlten Betrag eingeben:`));
-
-      if (isNaN(payment) || payment < totalPrice) {
-        alert("Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
-      } else {
-        paidAmount = payment.toFixed(2);
-        changeAmount = (payment - totalPrice).toFixed(2);
-        document.getElementById("paidAmount").innerText = paidAmount;
-        document.getElementById("changeAmount").innerText = changeAmount;
-        alert(`Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
-      }
-    });
-
-    // Neuer Kunde: Bestellung zurücksetzen
+    // Neuer Kunde
     document.getElementById("newCustomerBtn").addEventListener("click", () => {
       order = [];
-      paidAmount = 0;
-      changeAmount = 0;
       updateOrderTable();
       document.getElementById("orderSummary").style.display = "none";
     });
 
-    // Rechnung drucken
-    document.getElementById("printReceiptBtn").addEventListener("click", () => {
-      window.print();
-    });
-
-    // Seite initialisieren
+    // Buttons generieren
     generateProductButtons();
-    updateOrderTable();
   </script>
 
 </body>
