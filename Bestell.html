@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
+    /* Stil für den gesamten Inhalt */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -270,6 +271,11 @@
       updateOrderTable();
     }
 
+    function removeItem(index) {
+      order.splice(index, 1);
+      updateOrderTable();
+    }
+
     function updateOrderTable() {
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
@@ -281,7 +287,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${(item.price * item.quantity).toFixed(2)}</td> <!-- Gesamtpreis (Preis * Menge) -->
+          <td>${(item.price * item.quantity).toFixed(2)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
