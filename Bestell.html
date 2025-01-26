@@ -89,6 +89,7 @@
       .product-buttons-container,
       #completeOrderBtn,
       #newCustomerBtn,
+      #paymentSection,
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
@@ -126,6 +127,15 @@
   <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    
+    <div id="paymentSection">
+      <h3>Zahlung</h3>
+      <label for="paymentInput">Gezahlter Betrag (€):</label>
+      <input type="number" id="paymentInput" step="0.01" placeholder="Betrag eingeben">
+      <button id="calculateChangeBtn">Rückgeld berechnen</button>
+      <p id="changeOutput" class="hidden"></p>
+    </div>
+
     <button id="printReceiptBtn" onclick="window.print()">Rechnung drucken</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
   </div>
@@ -250,6 +260,21 @@
       document.getElementById("orderSummary").classList.remove("hidden");
     }
 
+    function calculateChange() {
+      const total = calculateTotal();
+      const payment = parseFloat(document.getElementById("paymentInput").value);
+
+      if (isNaN(payment) || payment < total) {
+        document.getElementById("changeOutput").textContent = "Der gezahlte Betrag reicht nicht aus.";
+        document.getElementById("changeOutput").classList.remove("hidden");
+        return;
+      }
+
+      const change = payment - total;
+      document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
+      document.getElementById("changeOutput").classList.remove("hidden");
+    }
+
     function startNewOrder() {
       order = [];
       updateOrderTable();
@@ -257,6 +282,7 @@
     }
 
     document.getElementById("completeOrderBtn").onclick = completeOrder;
+    document.getElementById("calculateChangeBtn").onclick = calculateChange;
 
     generateProductButtons();
   </script>
