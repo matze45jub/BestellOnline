@@ -145,8 +145,8 @@
       #completeOrderBtn,
       #newCustomerBtn,
       #paymentSection,
-      #orderTable th:nth-child(6),
-      #orderTable td:nth-child(6) {
+      #orderTable th:nth-child(7),
+      #orderTable td:nth-child(7) {
         display: none;
       }
 
@@ -206,6 +206,7 @@
         <th>Preis (€)</th>
         <th>Menge</th>
         <th>Pfand (€)</th>
+        <th>Pfandanzahl</th>
         <th>Gesamt (€)</th>
         <th>Aktionen</th>
       </tr>
@@ -291,13 +292,19 @@
       if (existing) {
         existing.quantity += 1;
       } else {
-        order.push({ ...product, quantity: 1 });
+        order.push({ ...product, quantity: 1, depositQuantity: product.deposit });
       }
       updateOrderTable();
     }
 
     function updateQuantity(index, quantity) {
       order[index].quantity = parseInt(quantity, 10);
+      order[index].depositQuantity = order[index].deposit * quantity;
+      updateOrderTable();
+    }
+
+    function reduceDeposit(index) {
+      order[index].depositQuantity = Math.max(order[index].deposit, 0); 
       updateOrderTable();
     }
 
@@ -312,7 +319,7 @@
 
       order.forEach((item, index) => {
         const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.deposit * item.quantity;
+        const depositTotal = item.depositQuantity;
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -326,6 +333,7 @@
             </select>
           </td>
           <td>${formatCurrency(depositTotal)}</td>
+          <td><button onclick="reduceDeposit(${index})">Pfand reduzieren</button></td>
           <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
@@ -335,7 +343,7 @@
     }
 
     function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+      return order.reduce((sum, item) => sum + (item.price + item.depositQuantity) * item.quantity, 0);
     }
 
     function formatCurrency(amount) {
@@ -363,12 +371,12 @@
     }
 
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      updateOrderTable();
+      document.getElementById("orderSummary").classList.add("hidden");
+      document.getElementById("productButtons").innerHTML = "";
+      generateProductButtons();
+      document.getElementById("totalPrice").textContent = "0.00";
     }
 
     function printReceipt() {
@@ -386,6 +394,7 @@
                 <th>Preis (€)</th>
                 <th>Menge</th>
                 <th>Pfand (€)</th>
+                <th>Pfandanzahl</th>
                 <th>Gesamt (€)</th>
               </tr>
             </thead>
@@ -396,6 +405,7 @@
                   <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.deposit)}</td>
+                  <td>${formatCurrency(item.depositQuantity)}</td>
                   <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
@@ -406,18 +416,17 @@
           <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
         </div>
         <div class="receipt-footer">
-          <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
+          <p>Vielen Dank für Ihre Bestellung!</p>
         </div>
       `;
-
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = receiptContent;
-      window.print();
-      document.body.innerHTML = originalContents;
+      const printWindow = window.open("", "", "width=600,height=600");
+      printWindow.document.write(receiptContent);
+      printWindow.document.close();
+      printWindow.print();
     }
 
     generateProductButtons();
   </script>
+
 </body>
 </html>
