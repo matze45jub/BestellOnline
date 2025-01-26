@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
+      margin: 20px;
       padding: 20px;
     }
 
@@ -22,7 +22,9 @@
     }
 
     .product-buttons-row {
-      display: block; /* Blockweise Darstellung der Schaltflächen */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 20px;
     }
 
@@ -32,8 +34,6 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin: 5px;
-      display: inline-block; /* Inline-block, damit Schaltflächen nebeneinander angezeigt werden */
     }
 
     .food-button {
