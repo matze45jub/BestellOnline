@@ -323,9 +323,12 @@
     }
 
     function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
+      order = [];  // Bestellungen zurücksetzen
+      updateOrderTable();  // Tabelle zurücksetzen
+      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
+      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
+      generateProductButtons();  // Produktbuttons neu generieren
+      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
     }
 
     function printReceipt() {
