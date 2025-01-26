@@ -32,7 +32,6 @@
       border-collapse: collapse;
       padding: 10px;
       width: 100%;
-      text-align: left;
     }
 
     .button-container {
@@ -64,10 +63,6 @@
       #paymentSection {
         display: none;
       }
-    }
-
-    #changeOutput {
-      font-weight: bold;
     }
   </style>
 </head>
@@ -111,8 +106,6 @@
       <button onclick="calculateChange()">Rückgeld berechnen</button>
       <p id="changeOutput" class="hidden"></p>
     </div>
-    <h3>Schön dass Du mit uns feierst</h3>
-    <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken! Danke</p>
   </div>
 
   <script>
@@ -152,11 +145,6 @@
 
     function calculateTotal() {
       return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
     }
 
     function completeOrder() {
