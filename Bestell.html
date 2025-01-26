@@ -20,16 +20,14 @@
       font-size: 16px;
     }
 
-    /* Stil für Essenschaltflächen (hellgelb mit schwarzer Schrift) */
     .food-button {
-      background-color: #f1c40f; /* Hellgelb */
-      color: #000000; /* Schwarz */
+      background-color: #f1c40f;
+      color: #000000;
     }
 
-    /* Stil für Getränkeschaltflächen (blau mit weißer Schrift) */
     .drink-button {
-      background-color: #3498db; /* Blau */
-      color: #ffffff; /* Weiß */
+      background-color: #3498db;
+      color: #ffffff;
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -82,7 +80,6 @@
 
   <h1>45 Jahre Jugendblasorchester Kürnach</h1>
 
-  <!-- Logo unter der Überschrift -->
   <img src="logo.png" alt="Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
 
   <div id="productButtons"></div>
@@ -99,7 +96,6 @@
       </tr>
     </thead>
     <tbody>
-      <!-- Dynamische Tabelle -->
     </tbody>
   </table>
 
@@ -132,14 +128,13 @@
       { name: "Wasser", price: 1.0, category: "drink" },
       { name: "Bier", price: 4.8, category: "drink" },
       { name: "Radler", price: 4.8, category: "drink" },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink" }  // Neues Produkt
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink" }
     ];
 
-    let order = []; // Bestellungsliste
-    let paidAmount = 0; // Betrag, den der Kunde bezahlt hat
-    let changeAmount = 0; // Rückgeld
+    let order = [];
+    let paidAmount = 0;
+    let changeAmount = 0;
 
-    // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
       products.forEach((product, index) => {
@@ -147,26 +142,24 @@
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
         button.classList.add("product-button");
         
-        // Schaltflächen für Essen und Getränke unterscheiden
         if (product.category === "food") {
-          button.classList.add("food-button"); // Gelb für Essen
+          button.classList.add("food-button");
         } else {
-          button.classList.add("drink-button"); // Blau für Getränke
+          button.classList.add("drink-button");
         }
         
         button.onclick = () => addToOrder(index);
-        button.addEventListener('touchstart', () => addToOrder(index)); // Touchstart Event für mobile Geräte
+        button.addEventListener('touchstart', () => addToOrder(index));
         container.appendChild(button);
       });
     }
 
-    // Produkt zur Bestellung hinzufügen
     function addToOrder(productIndex) {
       const product = products[productIndex];
       const existingItem = order.find(item => item.name === product.name);
 
       if (existingItem) {
-        existingItem.quantity += 1; // Menge erhöhen
+        existingItem.quantity += 1;
       } else {
         order.push({ ...product, quantity: 1 });
       }
@@ -174,23 +167,24 @@
       updateOrderTable();
     }
 
-    // Gesamtpreis berechnen
     function calculateTotalPrice() {
       return order.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     }
 
-    // Bestellübersicht aktualisieren
     function updateOrderTable() {
       const tbody = document.getElementById("orderTable").querySelector("tbody");
-      tbody.innerHTML = ""; // Tabelle leeren
+      tbody.innerHTML = "";
       order.forEach((item, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
           <td>
-            <input type="number" value="${item.quantity}" min="1" style="width: 60px;" 
-                   onchange="updateQuantity(${index}, this.value)" />
+            <select onchange="updateQuantity(${index}, this.value)">
+              ${Array.from({ length: 10 }, (_, i) => 
+                `<option value="${i + 1}" ${item.quantity === i + 1 ? 'selected' : ''}>${i + 1}</option>`
+              ).join('')}
+            </select>
           </td>
           <td>${(item.price * item.quantity).toFixed(2)}</td>
           <td>
@@ -202,36 +196,29 @@
       document.getElementById("totalPrice").innerText = calculateTotalPrice();
     }
 
-    // Menge aktualisieren
     function updateQuantity(index, value) {
       const newQuantity = parseInt(value, 10);
       if (newQuantity > 0) {
         order[index].quantity = newQuantity;
         updateOrderTable();
-      } else {
-        alert("Ungültige Menge! Bitte mindestens 1 eingeben.");
       }
     }
 
-    // Produkt entfernen
     function removeProduct(index) {
-      order.splice(index, 1); // Produkt aus der Bestellung entfernen
+      order.splice(index, 1);
       updateOrderTable();
-      checkOrder(); // Prüfen, ob die Bestellung leer ist
+      checkOrder();
     }
 
-    // Bestellung abschließen (Schaltfläche aktivieren)
     document.getElementById("completeOrderBtn").addEventListener("click", () => {
       if (order.length === 0) {
         alert("❌ Es befinden sich keine Produkte in der Bestellung.");
       } else {
-        // Bestellübersicht anzeigen und zur Bezahlung weiterleiten
         document.getElementById("orderSummary").style.display = "block";
         document.getElementById("proceedToPaymentBtn").disabled = false;
       }
     });
 
-    // Bezahlung durchführen
     document.getElementById("proceedToPaymentBtn").addEventListener("click", () => {
       const totalPrice = parseFloat(calculateTotalPrice());
       const payment = parseFloat(prompt(`💵 Gesamtpreis: ${totalPrice.toFixed(2)}€\n\nBitte den gezahlten Betrag eingeben:`));
@@ -242,19 +229,16 @@
         changeAmount = (payment - totalPrice).toFixed(2);
         paidAmount = payment.toFixed(2);
 
-        // Update der Rechnung mit gezahltem Betrag und Rückgeld
         document.getElementById("paidAmount").innerText = paidAmount;
         document.getElementById("changeAmount").innerText = changeAmount;
         
         alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
         
-        // Zeige Bestellübersicht nach Bezahlung
         document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
         document.getElementById("orderSummary").style.display = "block";
       }
     });
 
-    // Neuer Kunde: Bestellung zurücksetzen
     document.getElementById("newCustomerBtn").addEventListener("click", () => {
       order = [];
       paidAmount = 0;
@@ -264,12 +248,10 @@
       document.getElementById("proceedToPaymentBtn").disabled = true;
     });
 
-    // Rechnung drucken
     document.getElementById("printReceiptBtn").addEventListener("click", () => {
       window.print();
     });
 
-    // Bestellung prüfen (für leere Bestellungen)
     function checkOrder() {
       const proceedBtn = document.getElementById("proceedToPaymentBtn");
       if (order.length === 0) {
@@ -277,7 +259,6 @@
       }
     }
 
-    // Seite initialisieren
     generateProductButtons();
     updateOrderTable();
   </script>
