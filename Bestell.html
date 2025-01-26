@@ -67,6 +67,16 @@
       font-style: italic;
       margin-top: 20px;
     }
+
+    /* Verstecktes Eingabefeld für den Betrag */
+    #paymentInput {
+      display: none;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -106,6 +116,9 @@
     <button id="printReceiptBtn">Rechnung drucken</button>
     <button id="newCustomerBtn">Neuer Kunde</button>
   </div>
+
+  <!-- Eingabefeld für den Betrag -->
+  <input type="number" id="paymentInput" placeholder="Geben Sie den Betrag ein" />
 
   <script>
     const products = [
@@ -225,22 +238,36 @@
         alert("Es befinden sich keine Produkte in der Bestellung.");
       } else {
         const totalPrice = calculateTotalPrice();
-        const payment = parseFloat(prompt(`Gesamtpreis: ${totalPrice.toFixed(2)}€\nBitte den gezahlten Betrag eingeben:`));
 
-        if (isNaN(payment) || payment < totalPrice) {
-          alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
-        } else {
-          paidAmount = payment.toFixed(2);
-          changeAmount = (payment - totalPrice).toFixed(2);
+        // Zeige das Eingabefeld für den Betrag an
+        const paymentInput = document.getElementById("paymentInput");
+        paymentInput.style.display = "block"; // Eingabefeld anzeigen
+        paymentInput.focus(); // Fokus auf das Eingabefeld setzen
 
-          // Zusammenfassung anzeigen
-          document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
-          document.getElementById("paidAmount").innerText = paidAmount;
-          document.getElementById("changeAmount").innerText = changeAmount;
-          document.getElementById("orderSummary").style.display = "block";
+        // Optional: Zeige eine Benachrichtigung, dass der Benutzer den Betrag eingeben soll
+        alert(`Gesamtpreis: ${totalPrice.toFixed(2)}€\nBitte den gezahlten Betrag eingeben:`);
 
-          alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
-        }
+        paymentInput.addEventListener("input", () => {
+          const payment = parseFloat(paymentInput.value);
+
+          if (isNaN(payment) || payment < totalPrice) {
+            alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
+          } else {
+            paidAmount = payment.toFixed(2);
+            changeAmount = (payment - totalPrice).toFixed(2);
+
+            // Zusammenfassung anzeigen
+            document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
+            document.getElementById("paidAmount").innerText = paidAmount;
+            document.getElementById("changeAmount").innerText = changeAmount;
+            document.getElementById("orderSummary").style.display = "block";
+
+            alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
+
+            // Verstecke das Eingabefeld nach der Eingabe
+            paymentInput.style.display = "none";
+          }
+        });
       }
     });
 
