@@ -46,7 +46,69 @@
       color: #ffffff;
     }
 
-    /* Restlicher CSS-Code bleibt unverändert */
+    #orderTable, #orderTable th, #orderTable td {
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+
+    .order-summary {
+      margin-top: 20px;
+      border-top: 2px solid #ccc;
+      padding-top: 20px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .receipt-footer {
+      text-align: center;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    /* Druck-Styles für DIN A6 */
+    @media print {
+      body {
+        width: 148mm;
+        height: 105mm;
+        margin: 0;
+      }
+
+      .product-buttons-container,
+      .order-summary {
+        display: none;
+      }
+
+      .order-summary, #orderTable {
+        font-size: 12px;
+      }
+
+      h1, h2, h3, p {
+        margin: 5px 0;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      th, td {
+        font-size: 10px;
+        padding: 5px;
+        text-align: left;
+      }
+
+      .receipt-footer {
+        font-size: 10px;
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -54,10 +116,8 @@
   <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   <img src="logo.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 20px;">
 
-  <!-- Produktanzeige -->
   <div id="productButtons" class="product-buttons-container"></div>
 
-  <!-- Bestelltabelle -->
   <h2>Bestellung</h2>
   <table id="orderTable">
     <thead>
@@ -70,18 +130,15 @@
         <th>Aktionen</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- Dynamische Tabelle -->
-    </tbody>
+    <tbody></tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+  <h3>Gesamtpfand: <span id="totalDeposit">0.00</span>€</h3>
   <button id="completeOrderBtn">Bestellung abschließen</button>
 
-  <!-- Zusammenfassung -->
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Pfand: <span id="totalDeposit">0.00</span>€</p>
     <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
 
@@ -91,22 +148,21 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 2.5, category: "food" },
-      { name: "Salzstange", price: 1.5, category: "food" },
-      { name: "Baguette", price: 3.2, category: "food" },
-      { name: "Ochsenbraten", price: 9.2, category: "food", coverCharge: 5 }, // Gedeck
-      { name: "Falafel mit Dip", price: 6.8, category: "food", coverCharge: 5 }, // Gedeck
-      { name: "Cola", price: 1.8, category: "drink", deposit: 1 }, // Pfand
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 }, // Pfand
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 }, // Krug Pfand
-      { name: "Radler", price: 4.8, category: "drink", deposit: 1 }, // Pfand
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 } // Glas Pfand
+      { name: "Bratwurst", price: 2.5, category: "food", coverCharge: 0 },
+      { name: "Salzstange", price: 1.5, category: "food", coverCharge: 0 },
+      { name: "Baguette", price: 3.2, category: "food", coverCharge: 0 },
+      { name: "Ochsenbraten", price: 9.2, category: "food", coverCharge: 5 },
+      { name: "Falafel mit Dip", price: 6.8, category: "food", coverCharge: 5 },
+      { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
+      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
+      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Radler", price: 4.8, category: "drink", deposit: 1 },
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 }
     ];
 
     let order = [];
     let paidAmount = 0;
     let changeAmount = 0;
-    let totalDeposit = 0;
 
     // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
@@ -124,7 +180,7 @@
       foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button"); // Hier wird die richtige Klasse zugewiesen
+        button.classList.add("product-button", "food-button");
         button.onclick = () => addToOrder(product);
         foodRow.appendChild(button);
       });
@@ -142,7 +198,7 @@
       drinkButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button"); // Hier wird die richtige Klasse zugewiesen
+        button.classList.add("product-button", "drink-button");
         button.onclick = () => addToOrder(product);
         drinkRow.appendChild(button);
       });
@@ -165,23 +221,17 @@
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
 
-      totalDeposit = 0; // Reset the total deposit
+      let totalDeposit = 0; // Pfand-Summe
 
       order.forEach((item, index) => {
-        let totalItemPrice = item.price * item.quantity;
-        let deposit = item.deposit ? item.deposit * item.quantity : 0;
-        let coverCharge = item.coverCharge ? item.coverCharge * item.quantity : 0;
-
-        totalItemPrice += deposit + coverCharge; // Preis + Pfand + Gedeck
-
-        // Update total deposit
-        totalDeposit += deposit;
+        const deposit = item.deposit ? item.deposit * item.quantity : 0;
+        const coverCharge = item.coverCharge ? item.coverCharge * item.quantity : 0;
 
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
-          <td>${deposit.toFixed(2)}</td>
+          <td>${(deposit + coverCharge).toFixed(2)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => 
@@ -189,24 +239,36 @@
               ).join("")}
             </select>
           </td>
-          <td>${totalItemPrice.toFixed(2)}</td>
+          <td>${(item.price * item.quantity + deposit + coverCharge).toFixed(2)}</td>
           <td><button onclick="removeProduct(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
+
+        totalDeposit += deposit + coverCharge;  // Gesamtpfand
       });
 
-      document.getElementById("totalPrice").innerText = calculateTotalPrice().toFixed(2);
+      const totalPrice = calculateTotalPrice();
+      document.getElementById("totalPrice").innerText = totalPrice.toFixed(2);
       document.getElementById("totalDeposit").innerText = totalDeposit.toFixed(2);
     }
 
-    // Gesamtpreis berechnen (inkl. Pfand und Gedeck)
+    // Menge aktualisieren
+    function updateQuantity(index, value) {
+      order[index].quantity = parseInt(value, 10);
+      updateOrderTable();
+    }
+
+    // Produkt entfernen
+    function removeProduct(index) {
+      order.splice(index, 1);
+      updateOrderTable();
+    }
+
+    // Gesamtpreis berechnen
     function calculateTotalPrice() {
-      return order.reduce((total, item) => {
-        let itemTotal = item.price * item.quantity;
-        if (item.deposit) itemTotal += item.deposit * item.quantity;
-        if (item.coverCharge) itemTotal += item.coverCharge * item.quantity;
-        return total + itemTotal;
-      }, 0);
+      return order.reduce((total, item) => total + item.price * item.quantity, 0) +
+        order.reduce((total, item) => total + (item.deposit || 0) * item.quantity, 0) +
+        order.reduce((total, item) => total + (item.coverCharge || 0) * item.quantity, 0);
     }
 
     // Bestellung abschließen
@@ -223,7 +285,6 @@
           paidAmount = payment.toFixed(2);
           changeAmount = (payment - totalPrice).toFixed(2);
 
-          // Zusammenfassung anzeigen
           document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
           document.getElementById("paidAmount").innerText = paidAmount;
           document.getElementById("changeAmount").innerText = changeAmount;
