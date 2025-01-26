@@ -5,7 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
-    /* Deine bisherigen Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+    }
+
+    .product-buttons-container {
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .product-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .product-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .food-button {
+      background-color: #f1c40f;
+      color: #000000;
+    }
+
+    .drink-button {
+      background-color: #3498db;
+      color: #ffffff;
+    }
+
+    /* Restlicher CSS-Code bleibt unverändert */
   </style>
 </head>
 <body>
@@ -83,7 +124,7 @@
       foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
+        button.classList.add("product-button", "food-button"); // Hier wird die richtige Klasse zugewiesen
         button.onclick = () => addToOrder(product);
         foodRow.appendChild(button);
       });
@@ -101,7 +142,7 @@
       drinkButtons.forEach(product => {
         const button = document.createElement("button");
         button.innerText = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
+        button.classList.add("product-button", "drink-button"); // Hier wird die richtige Klasse zugewiesen
         button.onclick = () => addToOrder(product);
         drinkRow.appendChild(button);
       });
