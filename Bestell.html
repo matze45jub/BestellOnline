@@ -269,11 +269,6 @@
       updateOrderTable();
     }
 
-    function updateDepositQuantity(index, depositQuantity) {
-      order[index].depositQuantity = parseInt(depositQuantity, 10);
-      updateOrderTable();
-    }
-
     function removeItem(index) {
       order.splice(index, 1);
       updateOrderTable();
@@ -285,7 +280,7 @@
 
       order.forEach((item, index) => {
         const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.depositQuantity;
+        const depositTotal = item.deposit * item.quantity;
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -298,14 +293,8 @@
               `).join("")}
             </select>
           </td>
-          <td>${formatCurrency(depositTotal)}</td>
-          <td>
-            <select onchange="updateDepositQuantity(${index}, this.value)">
-              ${Array.from({ length: 6 }, (_, i) => `
-                <option value="${i}" ${item.depositQuantity === i ? "selected" : ""}>${i}</option>
-              `).join("")}
-            </select>
-          </td>
+          <td>${formatCurrency(item.deposit)}</td>
+          <td>${item.quantity}</td>
           <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
@@ -315,7 +304,7 @@
     }
 
     function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.depositQuantity) * item.quantity, 0);
+      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
 
     function formatCurrency(amount) {
@@ -377,7 +366,7 @@
                   <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.deposit)}</td>
-                  <td>${item.depositQuantity}</td>
+                  <td>${item.quantity}</td>
                   <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
