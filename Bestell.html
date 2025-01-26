@@ -11,6 +11,23 @@
       padding: 0;
     }
 
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      width: 67px; /* Ein Drittel kleiner als das Original */
+      height: auto;
+      margin-right: 10px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
     .product-buttons-container {
       margin-bottom: 20px;
     }
@@ -73,17 +90,25 @@
       #completeOrderBtn,
       #printReceiptBtn,
       #newCustomerBtn,
-      #orderTable th:nth-child(5),
-      #orderTable td:nth-child(5) {
+      #orderTable th:nth-child(6),
+      #orderTable td:nth-child(6) {
         display: none;
+      }
+
+      img {
+        width: 50px;
+      }
+
+      h1 {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div>
-    <img src="logo.png" alt="Logo" style="width: 67px; height: auto; vertical-align: middle; margin-bottom: 20px;">
+  <div class="header">
+    <img src="logo.png" alt="Logo">
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   </div>
 
@@ -110,8 +135,6 @@
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
-    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
     <button id="printReceiptBtn">Rechnung drucken</button>
     <button id="newCustomerBtn">Neuer Kunde</button>
   </div>
