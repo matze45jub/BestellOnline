@@ -67,6 +67,44 @@
       font-style: italic;
       margin-top: 20px;
     }
+
+    /* Druck-Styles für DIN A6 */
+    @media print {
+      body {
+        width: 148mm; /* DIN A6 Breite */
+        height: 105mm; /* DIN A6 Höhe */
+        margin: 0;
+      }
+
+      .product-buttons-container,
+      .order-summary {
+        display: none; /* Versteckt nicht benötigte Bereiche für den Druck */
+      }
+
+      .order-summary, #orderTable {
+        font-size: 12px; /* Kleinerer Text für den Druck */
+      }
+
+      h1, h2, h3, p {
+        margin: 5px 0;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      th, td {
+        font-size: 10px;
+        padding: 5px;
+        text-align: left;
+      }
+
+      .receipt-footer {
+        font-size: 10px;
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -249,6 +287,11 @@
       order = [];
       updateOrderTable();
       document.getElementById("orderSummary").style.display = "none";
+    });
+
+    // Druckfunktion
+    document.getElementById("printReceiptBtn").addEventListener("click", () => {
+      window.print();
     });
 
     // Buttons generieren
