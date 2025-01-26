@@ -85,6 +85,40 @@
       margin-top: 20px;
     }
 
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .modal-footer {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-footer button:hover {
+      background-color: #2980b9;
+    }
+
     /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
@@ -111,8 +145,8 @@
       #completeOrderBtn,
       #newCustomerBtn,
       #paymentSection,
-      #orderTable th:nth-child(7),
-      #orderTable td:nth-child(7) {
+      #orderTable th:nth-child(6),
+      #orderTable td:nth-child(6) {
         display: none;
       }
 
@@ -172,7 +206,6 @@
         <th>Preis (€)</th>
         <th>Menge</th>
         <th>Pfand (€)</th>
-        <th>Pfandanzahl</th>
         <th>Gesamt (€)</th>
         <th>Aktionen</th>
       </tr>
@@ -268,13 +301,6 @@
       updateOrderTable();
     }
 
-    function updateDepositQuantity(index, depositQuantity) {
-      const depositAmount = order[index].deposit;
-      const newDeposit = parseInt(depositQuantity, 10);
-      order[index].depositQuantity = newDeposit;
-      updateOrderTable();
-    }
-
     function removeItem(index) {
       order.splice(index, 1);
       updateOrderTable();
@@ -285,12 +311,13 @@
       tbody.innerHTML = "";
 
       order.forEach((item, index) => {
-        const total = item.price * item.quantity + item.depositQuantity;
+        const total = (item.price + item.deposit) * item.quantity;
+        const depositTotal = item.deposit * item.quantity;
 
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${formatCurrency(item.price)}</td>
+          <td>${formatCurrency(item.price * item.quantity)}</td>
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
@@ -298,14 +325,7 @@
               `).join("")}
             </select>
           </td>
-          <td>${formatCurrency(item.deposit)}</td>
-          <td>
-            <select onchange="updateDepositQuantity(${index}, this.value)">
-              ${Array.from({ length: item.quantity }, (_, i) => `
-                <option value="${i + 1}" ${item.depositQuantity === i + 1 ? "selected" : ""}>${i + 1}</option>
-              `).join("")}
-            </select>
-          </td>
+          <td>${formatCurrency(depositTotal)}</td>
           <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
@@ -315,7 +335,7 @@
     }
 
     function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price * item.quantity + item.depositQuantity), 0);
+      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
 
     function formatCurrency(amount) {
@@ -343,12 +363,12 @@
     }
 
     function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
-      document.getElementById("productButtons").innerHTML = "";
-      generateProductButtons();
-      document.getElementById("totalPrice").textContent = "0.00";
+      order = [];  // Bestellungen zurücksetzen
+      updateOrderTable();  // Tabelle zurücksetzen
+      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
+      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
+      generateProductButtons();  // Produktbuttons neu generieren
+      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
     }
 
     function printReceipt() {
@@ -366,7 +386,6 @@
                 <th>Preis (€)</th>
                 <th>Menge</th>
                 <th>Pfand (€)</th>
-                <th>Pfandanzahl</th>
                 <th>Gesamt (€)</th>
               </tr>
             </thead>
@@ -377,7 +396,6 @@
                   <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.deposit)}</td>
-                  <td>${item.depositQuantity}</td>
                   <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
@@ -388,17 +406,18 @@
           <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
         </div>
         <div class="receipt-footer">
-          <p>Vielen Dank für Ihre Bestellung!</p>
+          <p>Schön, dass Du mit uns feierst!</p>
+          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
         </div>
       `;
-      const printWindow = window.open("", "", "width=600,height=600");
-      printWindow.document.write(receiptContent);
-      printWindow.document.close();
-      printWindow.print();
+
+      const originalContents = document.body.innerHTML;
+      document.body.innerHTML = receiptContent;
+      window.print();
+      document.body.innerHTML = originalContents;
     }
 
     generateProductButtons();
   </script>
-
 </body>
 </html>
