@@ -85,20 +85,6 @@
       margin-top: 20px;
     }
 
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.4);
-      padding-top: 60px;
-    }
-
     .modal-content {
       background-color: #fefefe;
       margin: 5% auto;
@@ -175,25 +161,9 @@
   <div id="orderSummary" class="order-summary hidden">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <button id="printReceiptBtn" onclick="window.print()">Rechnung drucken</button>
+    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-  </div>
-
-  <!-- Modal for Payment -->
-  <div id="paymentModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Zahlung</h3>
-      </div>
-      <p>Gesamtbetrag: <span id="modalTotalPrice">0.00</span>€</p>
-      <label for="paymentInput">Gezahlter Betrag (€):</label>
-      <input type="number" id="paymentInput" step="0.01" placeholder="Betrag eingeben">
-      <div class="modal-footer">
-        <button id="calculateChangeBtn">Rückgeld berechnen</button>
-        <button onclick="closeModal()">Schließen</button>
-      </div>
-      <p id="changeOutput" class="hidden"></p>
-    </div>
   </div>
 
   <script>
@@ -314,32 +284,16 @@
 
       document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
       document.getElementById("orderSummary").classList.remove("hidden");
-      showPaymentModal(); 
-    }
 
-    function showPaymentModal() {
-      const total = calculateTotal();
-      document.getElementById("modalTotalPrice").textContent = total.toFixed(2);
-      document.getElementById("paymentModal").style.display = "block"; 
-    }
-
-    function closeModal() {
-      document.getElementById("paymentModal").style.display = "none"; 
-    }
-
-    function calculateChange() {
-      const total = calculateTotal();
-      const payment = parseFloat(document.getElementById("paymentInput").value);
-
-      if (isNaN(payment) || payment < total) {
-        document.getElementById("changeOutput").textContent = "Der gezahlte Betrag reicht nicht aus.";
-        document.getElementById("changeOutput").classList.remove("hidden");
+      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
+      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
+        alert("Der gezahlte Betrag reicht nicht aus.");
         return;
       }
 
-      const change = payment - total;
-      document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
-      document.getElementById("changeOutput").classList.remove("hidden");
+      const change = paidAmount - calculateTotal();
+      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
+      document.getElementById("changeAmount").textContent = change.toFixed(2);
     }
 
     function startNewOrder() {
@@ -349,7 +303,6 @@
     }
 
     document.getElementById("completeOrderBtn").onclick = completeOrder;
-    document.getElementById("calculateChangeBtn").onclick = calculateChange;
 
     generateProductButtons();
   </script>
