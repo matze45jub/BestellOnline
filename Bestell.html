@@ -199,18 +199,6 @@
       document.getElementById("totalDeposit").innerText = totalDeposit.toFixed(2);
     }
 
-    // Menge aktualisieren
-    function updateQuantity(index, value) {
-      order[index].quantity = parseInt(value, 10);
-      updateOrderTable();
-    }
-
-    // Produkt entfernen
-    function removeProduct(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
-
     // Gesamtpreis berechnen (inkl. Pfand und Gedeck)
     function calculateTotalPrice() {
       return order.reduce((total, item) => {
