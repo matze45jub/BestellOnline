@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
+    /* Füge Stile für die Druckansicht hinzu */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      padding: 0;
     }
 
     .header {
@@ -75,16 +75,53 @@
       padding-top: 20px;
     }
 
-    .hidden {
-      display: none;
+    /* Dialog-Stile */
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
     }
 
-    .receipt-footer {
+    .dialog-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
       text-align: center;
-      font-style: italic;
-      margin-top: 20px;
     }
 
+    .dialog-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .dialog-buttons button {
+      width: 60px;
+      height: 60px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+
+    .dialog-buttons button.clear {
+      background-color: #e74c3c;
+    }
+
+    /* Verstecke nicht benötigte Elemente beim Drucken */
     @media print {
       .product-buttons-container,
       #completeOrderBtn,
@@ -93,6 +130,10 @@
       #orderTable th:nth-child(6),
       #orderTable td:nth-child(6) {
         display: none;
+      }
+      body {
+        margin: 0;
+        padding: 20px;
       }
     }
   </style>
@@ -122,22 +163,26 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <button id="completeOrderBtn">Bestellung abschließen</button>
+  <button id="completeOrderBtn">Bestellung fertigstellen</button>
+  <button id="printOrderBtn" onclick="printOrder()">Bestellung drucken</button>
 
-  <div id="orderSummary" class="order-summary hidden">
-    <h2>Bestellung abgeschlossen</h2>
-    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    
-    <div id="paymentSection">
-      <h3>Zahlung</h3>
-      <label for="paymentInput">Gezahlter Betrag (€):</label>
-      <input type="number" id="paymentInput" step="0.01" placeholder="Betrag eingeben">
-      <button id="calculateChangeBtn">Rückgeld berechnen</button>
-      <p id="changeOutput" class="hidden"></p>
+  <!-- Zahlung Dialog -->
+  <div id="paymentDialog" class="dialog-overlay hidden">
+    <div class="dialog-box">
+      <h3>Zahlung des Kunden</h3>
+      <p>Gesamtbetrag: <span id="dialogTotalPrice">0.00</span>€</p>
+      <input type="number" id="paymentAmount" placeholder="Betrag eingeben" step="0.01" style="width: 100%; padding: 10px; margin: 10px 0;">
+      <button onclick="calculateChange()">OK</button>
     </div>
+  </div>
 
-    <button id="printReceiptBtn" onclick="window.print()">Rechnung drucken</button>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+  <!-- Rückgeld Dialog -->
+  <div id="changeDialog" class="dialog-overlay hidden">
+    <div class="dialog-box">
+      <h3>Rückgeld</h3>
+      <p id="changeOutput">0.00€</p>
+      <button onclick="closeDialog('changeDialog')">OK</button>
+    </div>
   </div>
 
   <script>
@@ -157,16 +202,16 @@
       { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
       { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
-
     let order = [];
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
-
       const foodButtons = products.filter(p => p.category === "food");
+      const drinkButtons = products.filter(p => p.category === "drink");
+
       const foodTitle = document.createElement("div");
-      foodTitle.classList.add("category-title");
       foodTitle.textContent = "🍴 Essen:";
+      foodTitle.classList.add("category-title");
       container.appendChild(foodTitle);
 
       const foodRow = document.createElement("div");
@@ -180,10 +225,9 @@
       });
       container.appendChild(foodRow);
 
-      const drinkButtons = products.filter(p => p.category === "drink");
       const drinkTitle = document.createElement("div");
-      drinkTitle.classList.add("category-title");
       drinkTitle.textContent = "🥤 Getränke:";
+      drinkTitle.classList.add("category-title");
       container.appendChild(drinkTitle);
 
       const drinkRow = document.createElement("div");
@@ -200,11 +244,8 @@
 
     function addToOrder(product) {
       const existing = order.find(item => item.name === product.name);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        order.push({ ...product, quantity: 1 });
-      }
+      if (existing) existing.quantity += 1;
+      else order.push({ ...product, quantity: 1 });
       updateOrderTable();
     }
 
@@ -233,6 +274,7 @@
         `;
         tbody.appendChild(row);
       });
+
       document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
     }
 
@@ -251,38 +293,36 @@
     }
 
     function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      document.getElementById("finalTotalPrice").textContent = calculateTotal().toFixed(2);
-      document.getElementById("orderSummary").classList.remove("hidden");
+      if (order.length === 0) return alert("Keine Bestellung!");
+      document.getElementById("dialogTotalPrice").textContent = calculateTotal().toFixed(2);
+      showDialog("paymentDialog");
     }
 
     function calculateChange() {
       const total = calculateTotal();
-      const payment = parseFloat(document.getElementById("paymentInput").value);
-
+      const payment = parseFloat(document.getElementById("paymentAmount").value);
       if (isNaN(payment) || payment < total) {
-        document.getElementById("changeOutput").textContent = "Der gezahlte Betrag reicht nicht aus.";
-        document.getElementById("changeOutput").classList.remove("hidden");
+        alert("Ungültige Zahlung!");
         return;
       }
-
       const change = payment - total;
+      closeDialog("paymentDialog");
       document.getElementById("changeOutput").textContent = `Rückgeld: ${change.toFixed(2)}€`;
-      document.getElementById("changeOutput").classList.remove("hidden");
+      showDialog("changeDialog");
     }
 
-    function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
+    function closeDialog(dialogId) {
+      document.getElementById(dialogId).classList.add("hidden");
     }
 
-    document.getElementById("completeOrderBtn").onclick = completeOrder;
-    document.getElementById("calculateChangeBtn").onclick = calculateChange;
+    function showDialog(dialogId) {
+      document.getElementById(dialogId).classList.remove("hidden");
+    }
+
+    // Druckfunktion hinzufügen
+    function printOrder() {
+      window.print();
+    }
 
     generateProductButtons();
   </script>
