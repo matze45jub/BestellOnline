@@ -226,6 +226,18 @@
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
     <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+    <button onclick="editDeposit()">Pfand nachträglich bearbeiten</button>
+  </div>
+
+  <div id="depositModal" class="modal-content hidden">
+    <div class="modal-header">
+      <h2>Pfand nachträglich bearbeiten</h2>
+    </div>
+    <div id="depositForm"></div>
+    <div class="modal-footer">
+      <button onclick="updateDeposits()">Änderungen speichern</button>
+      <button onclick="closeModal()">Abbrechen</button>
+    </div>
   </div>
 
   <script>
@@ -334,18 +346,6 @@
         return;
       }
 
-      // Frage nach dem Entfernen des Pfands für jedes Produkt, das Pfand enthält
-      order.forEach(item => {
-        if (item.deposit > 0) {
-          const removeDeposit = confirm(`Möchten Sie das Pfand für ${item.name} (Pfand: ${formatCurrency(item.deposit)}) entfernen, weil Sie bereits ein Glas, Krug oder eine Flasche haben?`);
-          
-          // Wenn der Kunde das Pfand für dieses Produkt entfernen möchte
-          if (removeDeposit) {
-            item.deposit = 0;  // Entferne das Pfand
-          }
-        }
-      });
-
       document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
       document.getElementById("orderSummary").classList.remove("hidden");
 
@@ -372,6 +372,50 @@
 
     function printReceipt() {
       window.print();
+    }
+
+    function editDeposit() {
+      // Formular zur Bearbeitung des Pfandes generieren
+      const depositForm = document.getElementById("depositForm");
+      depositForm.innerHTML = "";
+      
+      order.forEach((item, index) => {
+        if (item.deposit > 0) {
+          const row = document.createElement("div");
+          row.innerHTML = `
+            <label for="deposit-${index}">${item.name} (Pfand: ${formatCurrency(item.deposit)})</label>
+            <input type="checkbox" id="deposit-${index}" ${item.deposit === 0 ? "" : "checked"} 
+              onclick="toggleDeposit(${index})"> Pfand entfernen
+          `;
+          depositForm.appendChild(row);
+        }
+      });
+
+      // Modal öffnen
+      document.getElementById("depositModal").classList.remove("hidden");
+    }
+
+    function toggleDeposit(index) {
+      const checkbox = document.getElementById(`deposit-${index}`);
+      const item = order[index];
+      if (checkbox.checked) {
+        item.deposit = 0;  // Pfand entfernen
+      } else {
+        item.deposit = products.find(p => p.name === item.name).deposit;  // Ursprüngliches Pfand zurücksetzen
+      }
+      updateOrderTable();
+    }
+
+    function updateDeposits() {
+      // Modal schließen
+      document.getElementById("depositModal").classList.add("hidden");
+
+      // Gesamtpreis aktualisieren
+      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
+    }
+
+    function closeModal() {
+      document.getElementById("depositModal").classList.add("hidden");
     }
 
     generateProductButtons(); // Produkt-Schaltflächen beim Laden generieren
