@@ -247,9 +247,9 @@
       tbody.innerHTML = "";
 
       order.forEach((item, index) => {
-        const row = document.createElement("tr");
         const totalWithDeposit = (item.price + item.deposit) * item.quantity;
-        const depositColumn = item.deposit > 0 ? item.deposit.toFixed(2) : "0.00";
+        const totalDeposit = item.deposit * item.quantity;
+        const depositColumn = item.deposit > 0 ? totalDeposit.toFixed(2) : "0.00";
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
