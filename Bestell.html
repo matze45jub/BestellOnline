@@ -224,7 +224,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${(item.price).toFixed(2)}</td>
+          <td>${(item.price * item.quantity).toFixed(2)}</td> <!-- Gesamtpreis (Preis * Menge) -->
           <td>
             <select onchange="updateQuantity(${index}, this.value)">
               ${Array.from({ length: 10 }, (_, i) => `
