@@ -109,6 +109,12 @@
         margin-top: 10px;
       }
 
+      /* Entfernen der "Aktionen"-Spalte beim Drucken */
+      #orderTable th:nth-child(6), /* Spaltenüberschrift */
+      #orderTable td:nth-child(6) { /* Zellen in der "Aktionen"-Spalte */
+        display: none;
+      }
+
       /* Entfernen der "Entfernen"-Schaltflächen beim Drucken */
       #orderTable button {
         display: none;
@@ -132,7 +138,7 @@
         <th>Pfand (€)</th>
         <th>Menge</th>
         <th>Gesamt (€)</th>
-        <th>Aktionen</th>
+        <th>Aktionen</th> <!-- Spalte "Aktionen" -->
       </tr>
     </thead>
     <tbody></tbody>
