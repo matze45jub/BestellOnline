@@ -64,7 +64,7 @@
     }
 
     @media print {
-      #productButtons, #reviewOrderBtn, #proceedToPaymentBtn, #newCustomerBtn, #printReceiptBtn {
+      #productButtons, #completeOrderBtn, #proceedToPaymentBtn, #newCustomerBtn, #printReceiptBtn {
         display: none;
       }
 
@@ -76,7 +76,6 @@
         font-weight: bold;
       }
     }
-
   </style>
 </head>
 <body>
@@ -109,6 +108,8 @@
   <div id="orderSummary" class="order-summary" style="display:none;">
     <h2>Bestellung abgeschlossen</h2>
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    <p>Gezahlter Betrag: <span id="paidAmount">0.00</span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
     <button id="printReceiptBtn">Rechnung drucken</button>
     <button id="newCustomerBtn">Neuer Kunde</button>
   </div>
@@ -127,6 +128,8 @@
     ];
 
     let order = []; // Bestellungsliste
+    let paidAmount = 0; // Betrag, den der Kunde bezahlt hat
+    let changeAmount = 0; // Rückgeld
 
     // Dynamische Produktschaltflächen erstellen
     function generateProductButtons() {
@@ -228,8 +231,14 @@
       if (isNaN(payment) || payment < totalPrice) {
         alert("❌ Ungültiger Betrag! Bitte einen ausreichenden Betrag eingeben.");
       } else {
-        const change = (payment - totalPrice).toFixed(2);
-        alert(`✅ Zahlung erfolgreich! Rückgeld: ${change}€`);
+        changeAmount = (payment - totalPrice).toFixed(2);
+        paidAmount = payment.toFixed(2);
+
+        // Update der Rechnung mit gezahltem Betrag und Rückgeld
+        document.getElementById("paidAmount").innerText = paidAmount;
+        document.getElementById("changeAmount").innerText = changeAmount;
+        
+        alert(`✅ Zahlung erfolgreich! Rückgeld: ${changeAmount}€`);
         
         // Zeige Bestellübersicht nach Bezahlung
         document.getElementById("finalTotalPrice").innerText = totalPrice.toFixed(2);
@@ -240,6 +249,8 @@
     // Neuer Kunde: Bestellung zurücksetzen
     document.getElementById("newCustomerBtn").addEventListener("click", () => {
       order = [];
+      paidAmount = 0;
+      changeAmount = 0;
       updateOrderTable();
       document.getElementById("orderSummary").style.display = "none";
       document.getElementById("proceedToPaymentBtn").disabled = true;
