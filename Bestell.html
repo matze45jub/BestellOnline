@@ -85,40 +85,6 @@
       margin-top: 20px;
     }
 
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    .modal-header {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .modal-footer {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .modal-footer button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-footer button:hover {
-      background-color: #2980b9;
-    }
-
     /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
@@ -303,8 +269,8 @@
       updateOrderTable();
     }
 
-    function reduceDeposit(index) {
-      order[index].depositQuantity = Math.max(order[index].deposit, 0); 
+    function updateDepositQuantity(index, depositQuantity) {
+      order[index].depositQuantity = parseInt(depositQuantity, 10);
       updateOrderTable();
     }
 
@@ -333,7 +299,13 @@
             </select>
           </td>
           <td>${formatCurrency(depositTotal)}</td>
-          <td><button onclick="reduceDeposit(${index})">Pfand reduzieren</button></td>
+          <td>
+            <select onchange="updateDepositQuantity(${index}, this.value)">
+              ${Array.from({ length: 6 }, (_, i) => `
+                <option value="${i}" ${item.depositQuantity === i ? "selected" : ""}>${i}</option>
+              `).join("")}
+            </select>
+          </td>
           <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
@@ -405,7 +377,7 @@
                   <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.deposit)}</td>
-                  <td>${formatCurrency(item.depositQuantity)}</td>
+                  <td>${item.depositQuantity}</td>
                   <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
