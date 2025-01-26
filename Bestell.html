@@ -257,6 +257,7 @@
       const existing = order.find(item => item.name === product.name);
       if (existing) {
         existing.quantity += 1;
+        existing.depositQuantity = existing.deposit * existing.quantity;
       } else {
         order.push({ ...product, quantity: 1, depositQuantity: product.deposit });
       }
@@ -266,6 +267,11 @@
     function updateQuantity(index, quantity) {
       order[index].quantity = parseInt(quantity, 10);
       order[index].depositQuantity = order[index].deposit * quantity;
+      updateOrderTable();
+    }
+
+    function updateDepositQuantity(index, depositQuantity) {
+      order[index].depositQuantity = parseInt(depositQuantity, 10);
       updateOrderTable();
     }
 
@@ -294,7 +300,13 @@
             </select>
           </td>
           <td>${formatCurrency(item.deposit)}</td>
-          <td>${item.quantity}</td>
+          <td>
+            <select onchange="updateDepositQuantity(${index}, this.value)">
+              ${Array.from({ length: item.quantity }, (_, i) => `
+                <option value="${i + 1}" ${item.depositQuantity === i + 1 ? "selected" : ""}>${i + 1}</option>
+              `).join("")}
+            </select>
+          </td>
           <td>${formatCurrency(total)}</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
@@ -366,7 +378,7 @@
                   <td>${formatCurrency(item.price)}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.deposit)}</td>
-                  <td>${item.quantity}</td>
+                  <td>${item.depositQuantity}</td>
                   <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
                 </tr>
               `).join('')}
