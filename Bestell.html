@@ -182,7 +182,8 @@
       { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
       { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
       { name: "Radler", price: 4.8, category: "drink", deposit: 1 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 }
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
+      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
 
     let order = [];
@@ -250,6 +251,7 @@
         const totalWithDeposit = (item.price + item.deposit) * item.quantity;
         const totalDeposit = item.deposit * item.quantity;
         const depositColumn = item.deposit > 0 ? totalDeposit.toFixed(2) : "0.00";
+        const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}</td>
