@@ -5,111 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-    }
-
-    .product-buttons-container {
-      margin-bottom: 20px;
-    }
-
-    .category-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .product-buttons-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .product-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .food-button {
-      background-color: #f1c40f;
-      color: #000000;
-    }
-
-    .drink-button {
-      background-color: #3498db;
-      color: #ffffff;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    .order-summary {
-      margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .receipt-footer {
-      text-align: center;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-    /* Schriftgröße für die Hauptüberschrift reduzieren */
-    h1 {
-      font-size: 24px; /* Etwa ein Drittel kleiner als der ursprüngliche Wert */
-    }
-
-    /* Druck-Styles für DIN A6 */
-    @media print {
-      body {
-        width: 148mm; /* DIN A6 Breite */
-        height: 105mm; /* DIN A6 Höhe */
-        margin: 0;
-      }
-
-      .product-buttons-container,
-      .order-summary {
-        display: none; /* Versteckt nicht benötigte Bereiche für den Druck */
-      }
-
-      .order-summary, #orderTable {
-        font-size: 12px; /* Kleinerer Text für den Druck */
-      }
-
-      h1, h2, h3, p {
-        margin: 5px 0;
-      }
-
-      table {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      th, td {
-        font-size: 10px;
-        padding: 5px;
-        text-align: left;
-      }
-
-      .receipt-footer {
-        font-size: 10px;
-        margin-top: 10px;
-      }
-    }
+    /* Deine bisherigen Styles */
   </style>
 </head>
 <body>
@@ -155,13 +51,13 @@
       { name: "Bratwurst", price: 2.5, category: "food" },
       { name: "Salzstange", price: 1.5, category: "food" },
       { name: "Baguette", price: 3.2, category: "food" },
-      { name: "Ochsenbraten", price: 9.2, category: "food" },
-      { name: "Falafel mit Dip", price: 6.8, category: "food" },
-      { name: "Cola", price: 1.8, category: "drink" },
-      { name: "Wasser", price: 1.0, category: "drink" },
-      { name: "Bier", price: 4.8, category: "drink" },
-      { name: "Radler", price: 4.8, category: "drink" },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink" }
+      { name: "Ochsenbraten", price: 9.2, category: "food", coverCharge: 5 }, // Gedeck
+      { name: "Falafel mit Dip", price: 6.8, category: "food", coverCharge: 5 }, // Gedeck
+      { name: "Cola", price: 1.8, category: "drink", deposit: 1 }, // Pfand
+      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 }, // Pfand
+      { name: "Bier", price: 4.8, category: "drink", deposit: 5 }, // Krug Pfand
+      { name: "Radler", price: 4.8, category: "drink", deposit: 1 }, // Pfand
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 } // Glas Pfand
     ];
 
     let order = [];
@@ -226,6 +122,14 @@
       tbody.innerHTML = "";
 
       order.forEach((item, index) => {
+        let totalItemPrice = item.price * item.quantity;
+        if (item.deposit) {
+          totalItemPrice += item.deposit * item.quantity; // Pfand zum Gesamtpreis hinzufügen
+        }
+        if (item.coverCharge) {
+          totalItemPrice += item.coverCharge * item.quantity; // Gedeck zum Gesamtpreis hinzufügen
+        }
+
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
@@ -237,7 +141,7 @@
               ).join("")}
             </select>
           </td>
-          <td>${(item.price * item.quantity).toFixed(2)}</td>
+          <td>${totalItemPrice.toFixed(2)}</td>
           <td><button onclick="removeProduct(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
@@ -257,9 +161,14 @@
       updateOrderTable();
     }
 
-    // Gesamtpreis berechnen
+    // Gesamtpreis berechnen (inkl. Pfand und Gedeck)
     function calculateTotalPrice() {
-      return order.reduce((total, item) => total + item.price * item.quantity, 0);
+      return order.reduce((total, item) => {
+        let itemTotal = item.price * item.quantity;
+        if (item.deposit) itemTotal += item.deposit * item.quantity;
+        if (item.coverCharge) itemTotal += item.coverCharge * item.quantity;
+        return total + itemTotal;
+      }, 0);
     }
 
     // Bestellung abschließen
