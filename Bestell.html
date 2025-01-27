@@ -110,36 +110,65 @@
       color: white;
     }
 
+    /* Modal für Pfandrückgabe */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 300px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .modal-body {
+      margin-bottom: 15px;
+    }
+
+    .modal-footer {
+      text-align: right;
+    }
+
+    .modal button {
+      background-color: #E74C3C;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal button:hover {
+      background-color: #C0392B;
+    }
+
+    .modal input {
+      width: 50px;
+      margin-left: 5px;
+    }
+
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
         flex-direction: column;
         gap: 5px;
       }
-    }
-
-    /* Menge-Input mit Pfeilen */
-    .quantity-input {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 80px;
-    }
-
-    .quantity-input button {
-      background-color: #f0f0f0;
-      border: 1px solid #ccc;
-      padding: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .quantity-input input {
-      width: 40px;
-      text-align: center;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-size: 14px;
     }
   </style>
 </head>
@@ -174,7 +203,38 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="pfandReturnBtn" class="pfand-button" onclick="handlePfandReturn()">Pfandrückgabe</button>
+    <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
+  </div>
+
+  <!-- Modal für Pfandrückgabe -->
+  <div id="pfandModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">Pfandrückgabe</div>
+      <div class="modal-body">
+        <label for="bottleQuantity">Flasche (1€):</label>
+        <input type="number" id="bottleQuantity" value="0" min="0">
+        <br><br>
+
+        <label for="glassQuantity">Glas (2€):</label>
+        <input type="number" id="glassQuantity" value="0" min="0">
+        <br><br>
+
+        <label for="jugQuantity">Krug (5€):</label>
+        <input type="number" id="jugQuantity" value="0" min="0">
+        <br><br>
+
+        <label for="cupQuantity">Tasse (2€):</label>
+        <input type="number" id="cupQuantity" value="0" min="0">
+        <br><br>
+
+        <label for="dishQuantity">Geschirr (5€):</label>
+        <input type="number" id="dishQuantity" value="0" min="0">
+      </div>
+      <div class="modal-footer">
+        <button onclick="calculatePfandReturn()">Berechnen</button>
+        <button onclick="closePfandModal()">Schließen</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -344,12 +404,32 @@
       window.print();
     }
 
-    function handlePfandReturn() {
-      let totalDeposit = 0;
-      order.forEach(item => {
-        totalDeposit += item.deposit * item.quantity;
-      });
-      alert(`Pfandrückgabe: Sie erhalten ${totalDeposit.toFixed(2)}€ zurück.`);
+    function openPfandModal() {
+      document.getElementById("pfandModal").style.display = "flex";
+    }
+
+    function closePfandModal() {
+      document.getElementById("pfandModal").style.display = "none";
+    }
+
+    function calculatePfandReturn() {
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value) || 0;
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value) || 0;
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value) || 0;
+      const cupQuantity = parseInt(document.getElementById("cupQuantity").value) || 0;
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value) || 0;
+
+      const totalPfand = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) +
+                         (cupQuantity * 2) + (dishQuantity * 5);
+
+      const totalPrice = parseFloat(document.getElementById("totalPrice").textContent);
+      const newTotalPrice = totalPrice - totalPfand;
+
+      alert(`Pfandrückgabe: Sie erhalten ${totalPfand.toFixed(2)}€ zurück. Neuer Gesamtpreis: ${newTotalPrice.toFixed(2)}€`);
+      
+      // Gesamtpreis aktualisieren
+      document.getElementById("totalPrice").textContent = newTotalPrice.toFixed(2);
+      closePfandModal();
     }
 
     // Initialisiere die Produktbuttons
