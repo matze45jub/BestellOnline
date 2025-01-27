@@ -61,7 +61,7 @@
 
     .drink-button {
       background-color: #377EBF;
-      color: #000000;
+      color: #FFFFFF; /* Schriftfarbe für Getränke auf Weiß gesetzt */
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -148,11 +148,14 @@
 
   <script>
     const products = [
+      // Essen
       { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
       { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
       { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
       { name: "Schnitzel", price: 8.5, category: "food", deposit: 0 },
       { name: "Salat", price: 4.0, category: "food", deposit: 0 },
+      
+      // Getränke
       { name: "Cola", price: 2.0, category: "drink", deposit: 0.5 },
       { name: "Wasser", price: 1.5, category: "drink", deposit: 0.5 },
       { name: "Bier", price: 4.0, category: "drink", deposit: 1 },
@@ -167,6 +170,7 @@
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
 
+      // Buttons für Essen
       const foodButtons = products.filter(p => p.category === "food");
       const foodTitle = document.createElement("div");
       foodTitle.classList.add("category-title");
@@ -184,6 +188,7 @@
       });
       container.appendChild(foodRow);
 
+      // Buttons für Getränke
       const drinkButtons = products.filter(p => p.category === "drink");
       const drinkTitle = document.createElement("div");
       drinkTitle.classList.add("category-title");
@@ -220,45 +225,34 @@
       order.forEach(item => {
         const row = document.createElement("tr");
 
-        // Produkt
         const productCell = document.createElement("td");
         productCell.textContent = item.name;
         row.appendChild(productCell);
 
-        // Menge
         const quantityCell = document.createElement("td");
         quantityCell.textContent = item.quantity;
         row.appendChild(quantityCell);
 
-        // Einzelpreis
         const priceCell = document.createElement("td");
         priceCell.textContent = item.price.toFixed(2);
         row.appendChild(priceCell);
 
-        // Einzelpfand
         const depositCell = document.createElement("td");
         depositCell.textContent = item.deposit.toFixed(2);
         row.appendChild(depositCell);
 
-        // Gesamtpreis
         const totalPriceCell = document.createElement("td");
-        const totalPriceValue = item.price * item.quantity;
-        totalPriceCell.textContent = totalPriceValue.toFixed(2);
+        totalPriceCell.textContent = (item.price * item.quantity).toFixed(2);
         row.appendChild(totalPriceCell);
 
-        // Gesamtpfand
         const totalDepositCell = document.createElement("td");
-        const totalDepositValue = item.deposit * item.quantity;
-        totalDepositCell.textContent = totalDepositValue.toFixed(2);
+        totalDepositCell.textContent = (item.deposit * item.quantity).toFixed(2);
         row.appendChild(totalDepositCell);
 
-        // Gesamt (Preis + Pfand)
         const totalCell = document.createElement("td");
-        const totalValue = totalPriceValue + totalDepositValue;
-        totalCell.textContent = totalValue.toFixed(2);
+        totalCell.textContent = ((item.price + item.deposit) * item.quantity).toFixed(2);
         row.appendChild(totalCell);
 
-        // Aktionen
         const actionsCell = document.createElement("td");
         const removeButton = document.createElement("button");
         removeButton.textContent = "Entfernen";
@@ -267,7 +261,7 @@
         row.appendChild(actionsCell);
 
         orderTableBody.appendChild(row);
-        totalPrice += totalValue;
+        totalPrice += (item.price + item.deposit) * item.quantity;
       });
 
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
