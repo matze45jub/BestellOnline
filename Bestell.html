@@ -61,7 +61,7 @@
 
     .drink-button {
       background-color: #377EBF;
-      color: #FFFFFF; /* Schriftfarbe für Getränke auf Weiß gesetzt */
+      color: #FFFFFF;
     }
 
     #orderTable, #orderTable th, #orderTable td {
@@ -104,6 +104,12 @@
       background-color: #C0392B;
     }
 
+    /* Pfandrückgabe-Schaltfläche */
+    .pfand-button {
+      background-color: #C0392B; /* Rot */
+      color: white;
+    }
+
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
@@ -144,18 +150,17 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+    <button id="pfandReturnBtn" class="pfand-button" onclick="handlePfandReturn()">Pfandrückgabe</button>
   </div>
 
   <script>
     const products = [
-      // Essen
       { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
       { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
       { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
       { name: "Schnitzel", price: 8.5, category: "food", deposit: 0 },
       { name: "Salat", price: 4.0, category: "food", deposit: 0 },
-      
-      // Getränke
+      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 }, // Neuer Eintrag für Ochsenbraten
       { name: "Cola", price: 2.0, category: "drink", deposit: 0.5 },
       { name: "Wasser", price: 1.5, category: "drink", deposit: 0.5 },
       { name: "Bier", price: 4.0, category: "drink", deposit: 1 },
@@ -284,6 +289,14 @@
 
     function printReceipt() {
       window.print();
+    }
+
+    function handlePfandReturn() {
+      let totalDeposit = 0;
+      order.forEach(item => {
+        totalDeposit += item.deposit * item.quantity;
+      });
+      alert(`Pfandrückgabe: Sie erhalten ${totalDeposit.toFixed(2)}€ zurück.`);
     }
 
     // Initialisiere die Produktbuttons
