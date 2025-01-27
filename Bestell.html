@@ -322,51 +322,51 @@
 
       order.forEach(item => {
         const row = document.createElement('tr');
+        const totalItemPrice = item.price * item.quantity;
+        const totalItemPfand = item.deposit * item.quantity;
+        const totalItemAmount = totalItemPrice + totalItemPfand;
+
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.quantity}</td>
-          <td>${item.price.toFixed(2)}€</td>
-          <td>${item.deposit.toFixed(2)}€</td>
-          <td>${(item.price * item.quantity).toFixed(2)}€</td>
-          <td>${(item.deposit * item.quantity).toFixed(2)}€</td>
-          <td>${((item.price + item.deposit) * item.quantity).toFixed(2)}€</td>
+          <td>${item.price.toFixed(2)}</td>
+          <td>${item.deposit.toFixed(2)}</td>
+          <td>${totalItemPrice.toFixed(2)}</td>
+          <td>${totalItemPfand.toFixed(2)}</td>
+          <td>${totalItemAmount.toFixed(2)}</td>
           <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
         `;
         orderTableBody.appendChild(row);
 
-        totalPrice += item.price * item.quantity;
-        totalPfand += item.deposit * item.quantity;
+        totalPrice += totalItemPrice;
+        totalPfand += totalItemPfand;
       });
 
+      // Gesamtberechnung
       document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
-      document.getElementById('pfandReturnAmount').innerText = totalPfand.toFixed(2);
-      document.getElementById('amountToPay').innerText = (totalPrice + totalPfand).toFixed(2);
+      document.getElementById('amountToPay').innerText = totalPrice.toFixed(2);
     }
 
-    // Produkt aus der Bestellung entfernen
+    // Bestellung entfernen
     function removeFromOrder(productName) {
-      order = order.filter(item => item.name !== productName);
-      renderOrder();
+      const productIndex = order.findIndex(item => item.name === productName);
+      if (productIndex !== -1) {
+        order.splice(productIndex, 1);
+        renderOrder();
+      }
     }
 
     // Bestellung abschließen
     function completeOrder() {
-      document.getElementById('productButtons').classList.add('hidden');
-      document.getElementById('completeOrderBtn').classList.add('hidden');
-      document.getElementById('newCustomerBtn').classList.add('hidden');
-      document.getElementById('printReceiptBtn').classList.remove('hidden');
-      document.getElementById('orderTable').classList.remove('hidden');
+      alert("Bestellung abgeschlossen!");
+      order = [];
+      renderOrder();
     }
 
-    // Neue Bestellung starten
+    // Neuer Kunde
     function startNewOrder() {
       order = [];
       renderOrder();
-      document.getElementById('productButtons').classList.remove('hidden');
-      document.getElementById('completeOrderBtn').classList.remove('hidden');
-      document.getElementById('newCustomerBtn').classList.remove('hidden');
-      document.getElementById('printReceiptBtn').classList.add('hidden');
-      document.getElementById('orderTable').classList.add('hidden');
     }
 
     // Rechnung drucken
@@ -374,23 +374,22 @@
       window.print();
     }
 
-    // Modal für Pfandrückgabe öffnen
+    // Pfandrückgabe Modal öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Modal für Pfandrückgabe schließen
+    // Pfandrückgabe Modal schließen
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
-    // Pfandmenge aktualisieren
-    function updatePfandQuantity(type, delta) {
+    // Pfandrückgabe Menge aktualisieren
+    function updatePfandQuantity(type, change) {
       const quantityInput = document.getElementById(`${type}Quantity`);
-      const newValue = parseInt(quantityInput.value) + delta;
-      if (newValue >= 0) {
-        quantityInput.value = newValue;
-      }
+      let currentQuantity = parseInt(quantityInput.value);
+      currentQuantity = Math.max(0, currentQuantity + change); // Verhindert negative Werte
+      quantityInput.value = currentQuantity;
     }
 
     // Pfandrückgabe berechnen
@@ -401,8 +400,16 @@
       const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
       const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
 
-      const pfandReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
-      document.getElementById('pfandReturnAmount').innerText = pfandReturn.toFixed(2);
+      const bottlePfand = bottleQuantity * 1.0;
+      const glassPfand = glassQuantity * 2.0;
+      const jugPfand = jugQuantity * 5.0;
+      const cupPfand = cupQuantity * 2.0;
+      const dishPfand = dishQuantity * 5.0;
+
+      const totalPfandReturn = bottlePfand + glassPfand + jugPfand + cupPfand + dishPfand;
+
+      document.getElementById('pfandReturnAmount').innerText = totalPfandReturn.toFixed(2);
+      document.getElementById('amountToPay').innerText = (parseFloat(document.getElementById('totalPrice').innerText) - totalPfandReturn).toFixed(2);
     }
 
     // Initialisierung
