@@ -195,8 +195,7 @@
     <tbody>
     </tbody>
   </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <h3 id="depositText" class="hidden">Pfand: <span id="depositTotal">0.00</span>€</h3>
+  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€ - Pfand: <span id="depositTotal">0.00</span>€</h3>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -385,6 +384,7 @@
       if (depositAmount > 0) {
         document.getElementById("depositText").classList.remove("hidden");
         document.getElementById("depositTotal").textContent = depositAmount.toFixed(2);
+        document.getElementById("depositTotal").innerHTML = `- ${depositAmount.toFixed(2)}€`;
       } else {
         document.getElementById("depositText").classList.add("hidden");
       }
@@ -464,10 +464,10 @@
 
       const totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (dishQuantity * 5);
       document.getElementById("depositTotalModal").textContent = totalDeposit.toFixed(2);
-      
-      // Den Pfandbetrag unter dem Gesamtpreis aktualisieren
+
+      // Den Pfandbetrag unter dem Gesamtpreis mit Minuszeichen aktualisieren
       totalDepositAmount = totalDeposit;
-      document.getElementById("depositTotal").textContent = totalDeposit.toFixed(2);
+      document.getElementById("depositTotal").textContent = `- ${totalDeposit.toFixed(2)}`;
     }
 
     generateProductButtons();
