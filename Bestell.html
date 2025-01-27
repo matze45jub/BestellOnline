@@ -256,23 +256,4 @@
       const quantityElement = document.getElementById(`${type}Quantity`);
       let quantity = parseInt(quantityElement.value);
       if (quantity + change >= 0) {
-        quantityElement.value = quantity + change;
-      }
-    }
-
-    function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
-      const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
-
-      const totalPfandReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
-      document.getElementById("pfandReturnAmount").textContent = totalPfandReturn.toFixed(2);
-      renderOrder();
-    }
-
-    generateProductButtons(); // Initialisiere die Produkt-Buttons
-  </script>
-</body>
-</html>
+        quantityElement.value
