@@ -211,7 +211,6 @@
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
   </div>
 
-  <!-- Modal für Pfandrückgabe -->
   <div id="depositModal" class="modal-content hidden">
     <h2>Pfandrückgabe</h2>
     <div class="deposit-return-container">
@@ -309,6 +308,7 @@
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
+      container.innerHTML = ""; // Clear any existing content
 
       const foodButtons = products.filter(p => p.category === "food");
       const foodTitle = document.createElement("div");
@@ -461,6 +461,5 @@
 
     generateProductButtons();
   </script>
-
 </body>
 </html>
