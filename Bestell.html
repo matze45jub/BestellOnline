@@ -165,44 +165,6 @@
       padding: 5px;
       font-size: 14px;
     }
-
-    /* Spezifische Druckansicht */
-    @media print {
-      /* Verstecke alles, was beim Drucken nicht erscheinen soll */
-      .product-buttons-container, /* Essen und Getränke Auswahl */
-      .button-container, /* Buttons wie Bestellung abschließen und Pfandrückgabe */
-      #pfandModal, /* Modal für Pfandrückgabe */
-      .header img /* Logo beim Drucken verstecken */
-      {
-        display: none;
-      }
-
-      /* Passe die Tabelle und die Zusammenfassung für den Druck an */
-      #orderTable {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      #orderTable th, #orderTable td {
-        padding: 8px;
-        border: 1px solid #ccc;
-      }
-
-      .order-summary {
-        margin-top: 20px;
-        font-size: 18px;
-      }
-
-      /* Weitere Anpassungen für die Druckansicht */
-      h1 {
-        text-align: center;
-      }
-
-      h3 {
-        text-align: center;
-        font-size: 16px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -295,20 +257,20 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
-      { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
-      { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
-      { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
-      { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
-      { name: "Ochsenbraten", price: 9.20, category: "essen", deposit: 5.0 },
-      { name: "Cola", price: 2.0, category: "getränke", deposit: 1.0 },
-      { name: "Fanta", price: 2.0, category: "getränke", deposit: 1.0 },
-      { name: "Wasser", price: 1.5, category: "getränke", deposit: 1.0 },
-      { name: "Bier", price: 4.0, category: "getränke", deposit: 5.0 },
-      { name: "Radler", price: 4.0, category: "getränke", deposit: 5.0 },
-      { name: "Weinschorle", price: 3.5, category: "getränke", deposit: 2.0 },
-      { name: "Apfelsaft", price: 2.5, category: "getränke", deposit: 1.0 },
-      { name: "Apfelwein", price: 4.0, category: "getränke", deposit: 5.0 }
+      { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
+      { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
+      { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
+      { name: "Schnitzel", price: 8.5, category: "food", deposit: 5.0 },
+      { name: "Salat", price: 4.0, category: "food", deposit: 5.0 },
+      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
+      { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
+      { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
+      { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
+      { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
+      { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
+      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
+      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
+      { name: "Apfelwein", price: 4.0, category: "drink", deposit: 5.0 }
     ];
 
     let order = [];
@@ -316,12 +278,12 @@
     // Produkt Buttons anzeigen
     function displayProductButtons() {
       const productButtonsDiv = document.getElementById('productButtons');
-      const categories = ['essen', 'getränke'];
+      const categories = ['food', 'drink'];
 
       categories.forEach(category => {
         const categoryTitle = document.createElement('div');
         categoryTitle.classList.add('category-title');
-        categoryTitle.innerHTML = category === 'essen' ? 'Essen' : 'Getränke';
+        categoryTitle.innerHTML = category.charAt(0).toUpperCase() + category.slice(1);
 
         const productButtonsRow = document.createElement('div');
         productButtonsRow.classList.add('product-buttons-row');
@@ -385,26 +347,43 @@
 
         totalPrice += itemTotalPrice;
         totalDeposit += itemTotalDeposit;
-        totalAmount += itemTotalAmount;
+        totalAmount += itemTotalAmount; // Hinzufügen des Wertes zur Gesamtberechnung
       });
 
-      document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
-      document.getElementById('pfandReturnAmount').innerText = totalDeposit.toFixed(2);
-      document.getElementById('amountToPay').innerText = totalAmount.toFixed(2);
+      // Gesamtpreis, Gesamtpfand und Gesamtbetrag anzeigen
+      document.getElementById('totalPrice').textContent = totalAmount.toFixed(2); // Gesamtpreis der "Gesamt" Spalte
+      document.getElementById('pfandReturnAmount').textContent = "0.00";  // Zeigt zu Beginn immer 0.00€
+      document.getElementById('amountToPay').textContent = (totalAmount - parseFloat(document.getElementById('pfandReturnAmount').textContent)).toFixed(2);
     }
 
     // Menge ändern
-    function changeQuantity(productName, delta) {
+    function changeQuantity(productName, change) {
       const product = order.find(item => item.name === productName);
       if (product) {
-        product.quantity = Math.max(0, product.quantity + delta);
-        renderOrder();
+        product.quantity += change;
+        if (product.quantity <= 0) {
+          removeFromOrder(productName);
+        } else {
+          renderOrder();
+        }
       }
     }
 
-    // Produkt entfernen
+    // Produkt aus der Bestellung entfernen
     function removeFromOrder(productName) {
       order = order.filter(item => item.name !== productName);
+      renderOrder();
+    }
+
+    // Bestellung abschließen
+    function completeOrder() {
+      alert("Bestellung abgeschlossen!");
+      startNewOrder();
+    }
+
+    // Neue Bestellung starten
+    function startNewOrder() {
+      order = [];
       renderOrder();
     }
 
@@ -413,51 +392,43 @@
       window.print();
     }
 
-    // Bestellung abschließen
-    function completeOrder() {
-      alert('Bestellung abgeschlossen!');
-    }
-
-    // Neuer Kunde
-    function startNewOrder() {
-      order = [];
-      renderOrder();
-    }
-
-    // Pfandrückgabe Modal öffnen
+    // Pfandrückgabe öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Pfandrückgabe Modal schließen
+    // Pfandrückgabe schließen
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
     // Pfandrückgabe berechnen
-    function updatePfandQuantity(type, delta) {
-      const quantityInput = document.getElementById(`${type}Quantity`);
-      quantityInput.value = Math.max(0, parseInt(quantityInput.value) + delta);
-    }
-
     function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById('bottleQuantity').value);
-      const glassQuantity = parseInt(document.getElementById('glassQuantity').value);
-      const jugQuantity = parseInt(document.getElementById('jugQuantity').value);
-      const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
-      const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
+      const bottleQty = parseInt(document.getElementById('bottleQuantity').value);
+      const glassQty = parseInt(document.getElementById('glassQuantity').value);
+      const jugQty = parseInt(document.getElementById('jugQuantity').value);
+      const cupQty = parseInt(document.getElementById('cupQuantity').value);
+      const dishQty = parseInt(document.getElementById('dishQuantity').value);
 
-      const bottleDeposit = bottleQuantity * 1;
-      const glassDeposit = glassQuantity * 2;
-      const jugDeposit = jugQuantity * 5;
-      const cupDeposit = cupQuantity * 2;
-      const dishDeposit = dishQuantity * 5;
-
-      const totalPfandReturn = bottleDeposit + glassDeposit + jugDeposit + cupDeposit + dishDeposit;
-      alert(`Pfandrückgabe: ${totalPfandReturn}€`);
+      const totalPfand = (bottleQty * 1) + (glassQty * 2) + (jugQty * 5) + (cupQty * 2) + (dishQty * 5);
+      document.getElementById('pfandReturnAmount').textContent = totalPfand.toFixed(2);
+      
+      // Gesamtbetrag nach Pfandrückgabe aktualisieren
+      const totalAmount = parseFloat(document.getElementById('totalPrice').textContent);
+      document.getElementById('amountToPay').textContent = (totalAmount - totalPfand).toFixed(2);
     }
 
-    displayProductButtons(); // Initiale Anzeige der Buttons
+    // Pfandmenge ändern
+    function updatePfandQuantity(type, change) {
+      const input = document.getElementById(`${type}Quantity`);
+      const newValue = parseInt(input.value) + change;
+      if (newValue >= 0) {
+        input.value = newValue;
+      }
+    }
+
+    // Initialisierung der Produkt-Buttons
+    displayProductButtons();
   </script>
 </body>
 </html>
