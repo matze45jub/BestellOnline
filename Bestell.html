@@ -132,60 +132,27 @@
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
-  <div id="orderSummary" class="order-summary hidden">
-    <h2>Bestellung abgeschlossen</h2>
-    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
-    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
-  </div>
-
   <script>
     const products = [
-      { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
-      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
-      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
-      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
-      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
-      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
-      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
-      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
-      { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Bratwurst", price: 2.5, deposit: 0 },
+      { name: "Salzstange", price: 1.5, deposit: 0 },
+      { name: "Baguette", price: 3.2, deposit: 0 },
+      { name: "Cola", price: 1.8, deposit: 1 },
+      { name: "Bier", price: 4.8, deposit: 5 },
+      { name: "Schoppen Silvaner", price: 4.2, deposit: 2 }
     ];
 
     let order = [];
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
-      container.innerHTML = "";
-
-      const foodButtons = products.filter(p => p.category === "food");
-      const foodRow = document.createElement("div");
-      foodRow.classList.add("product-buttons-row");
-      foodButtons.forEach(product => {
+      products.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
         button.classList.add("product-button");
         button.onclick = () => addToOrder(product);
-        foodRow.appendChild(button);
+        container.appendChild(button);
       });
-      container.appendChild(foodRow);
-
-      const drinkButtons = products.filter(p => p.category === "drink");
-      const drinkRow = document.createElement("div");
-      drinkRow.classList.add("product-buttons-row");
-      drinkButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
-        button.onclick = () => addToOrder(product);
-        drinkRow.appendChild(button);
-      });
-      container.appendChild(drinkRow);
     }
 
     function addToOrder(product) {
@@ -195,16 +162,6 @@
       } else {
         order.push({ ...product, quantity: 1 });
       }
-      updateOrderTable();
-    }
-
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
       updateOrderTable();
     }
 
@@ -218,15 +175,28 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${(item.price * item.quantity).toFixed(2)}€</td>
-          <td>${item.quantity}</td>
+          <td>${item.price.toFixed(2)}€</td>
+          <td>
+            <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
+          </td>
           <td>${(item.deposit * item.quantity).toFixed(2)}€</td>
           <td>${total.toFixed(2)}€</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
       });
+
       document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
+    }
+
+    function updateQuantity(index, quantity) {
+      order[index].quantity = parseInt(quantity, 10);
+      updateOrderTable();
+    }
+
+    function removeItem(index) {
+      order.splice(index, 1);
+      updateOrderTable();
     }
 
     function calculateTotal() {
@@ -234,21 +204,27 @@
     }
 
     function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      const bottles = parseInt(prompt("Flaschen zurück? (1€/Flasche)"), 10) || 0;
-      const glasses = parseInt(prompt("Gläser zurück? (2€/Glas)"), 10) || 0;
-      const mugs = parseInt(prompt("Krüge zurück? (5€/Krug)"), 10) || 0;
-      const dishes = parseInt(prompt("Geschirr zurück? (5€/Stück)"), 10) || 0;
+      const bottles = parseInt(prompt("Flaschen zurückgeben? (1€/Flasche)"), 10) || 0;
+      const glasses = parseInt(prompt("Gläser zurückgeben? (2€/Glas)"), 10) || 0;
+      const mugs = parseInt(prompt("Krüge zurückgeben? (5€/Krug)"), 10) || 0;
+      const dishes = parseInt(prompt("Geschirr zurückgeben? (5€/Stück)"), 10) || 0;
 
       const depositReturn = bottles * 1 + glasses * 2 + mugs * 5 + dishes * 5;
       const total = calculateTotal();
       const finalTotal = total - depositReturn;
 
-      alert(`Pfand: ${depositReturn}€. Neuer Betrag: ${finalTotal.toFixed(2)}€`);
+      alert(`Pfandrückgabe: ${depositReturn.toFixed(2)}€. Neuer Betrag: ${finalTotal.toFixed(2)}€`);
+    }
+
+    function startNewOrder() {
+      if (confirm("Möchten Sie eine neue Bestellung starten?")) {
+        order = [];
+        updateOrderTable();
+      }
+    }
+
+    function printReceipt() {
+      alert("Rechnung wird gedruckt...");
     }
 
     generateProductButtons();
