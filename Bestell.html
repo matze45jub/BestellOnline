@@ -165,6 +165,21 @@
       padding: 5px;
       font-size: 14px;
     }
+
+    .total-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .total-label {
+      font-weight: bold;
+    }
+
+    .total-amount {
+      font-size: 18px;
+      color: #E74C3C;
+    }
   </style>
 </head>
 <body>
@@ -192,7 +207,19 @@
     <tbody>
     </tbody>
   </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+
+  <div class="total-container">
+    <div class="total-label">Gesamtpreis:</div>
+    <div id="totalPrice" class="total-amount">0.00</div>
+  </div>
+  <div class="total-container">
+    <div class="total-label">abzugsfähiger Pfand:</div>
+    <div id="totalDeposit" class="total-amount">-0.00</div>
+  </div>
+  <div class="total-container">
+    <div class="total-label">zuzahlender Betrag:</div>
+    <div id="payableAmount" class="total-amount">0.00</div>
+  </div>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -312,6 +339,7 @@
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
       let totalPrice = 0;
+      let totalDeposit = 0;
 
       order.forEach(item => {
         const row = document.createElement("tr");
@@ -352,7 +380,8 @@
         row.appendChild(depositCell);
 
         const totalPriceCell = document.createElement("td");
-        totalPriceCell.textContent = (item.price * item.quantity).toFixed(2);
+        const itemTotal = (item.price + item.deposit) * item.quantity;
+        totalPriceCell.textContent = itemTotal.toFixed(2);
         row.appendChild(totalPriceCell);
 
         const totalDepositCell = document.createElement("td");
@@ -360,31 +389,32 @@
         row.appendChild(totalDepositCell);
 
         const totalCell = document.createElement("td");
-        totalCell.textContent = ((item.price + item.deposit) * item.quantity).toFixed(2);
+        totalCell.textContent = itemTotal.toFixed(2);
         row.appendChild(totalCell);
 
-        const actionsCell = document.createElement("td");
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Entfernen";
-        removeButton.onclick = () => removeFromOrder(item);
-        actionsCell.appendChild(removeButton);
-        row.appendChild(actionsCell);
+        const actionCell = document.createElement("td");
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Entfernen";
+        removeBtn.onclick = () => {
+          order = order.filter(i => i !== item);
+          renderOrder();
+        };
+        actionCell.appendChild(removeBtn);
+        row.appendChild(actionCell);
 
         orderTableBody.appendChild(row);
-        totalPrice += (item.price + item.deposit) * item.quantity;
+
+        totalPrice += itemTotal;
+        totalDeposit += item.deposit * item.quantity;
       });
 
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
-    }
-
-    function removeFromOrder(itemToRemove) {
-      order = order.filter(item => item !== itemToRemove);
-      renderOrder();
+      document.getElementById("totalDeposit").textContent = (-totalDeposit).toFixed(2);
+      document.getElementById("payableAmount").textContent = (totalPrice - totalDeposit).toFixed(2);
     }
 
     function completeOrder() {
-      const finalTotalPrice = parseFloat(document.getElementById("totalPrice").textContent);
-      alert(`Bestellung abgeschlossen! Gesamtpreis: ${finalTotalPrice.toFixed(2)}€`);
+      alert("Bestellung abgeschlossen!");
     }
 
     function startNewOrder() {
@@ -397,14 +427,6 @@
     }
 
     function openPfandModal() {
-      // Setze alle Pfandarten auf 0
-      document.getElementById("bottleQuantity").value = 0;
-      document.getElementById("glassQuantity").value = 0;
-      document.getElementById("jugQuantity").value = 0;
-      document.getElementById("cupQuantity").value = 0;
-      document.getElementById("dishQuantity").value = 0;
-
-      // Zeige das Pfandmodal an
       document.getElementById("pfandModal").style.display = "flex";
     }
 
@@ -413,19 +435,17 @@
     }
 
     function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value) || 0;
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value) || 0;
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value) || 0;
-      const cupQuantity = parseInt(document.getElementById("cupQuantity").value) || 0;
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value) || 0;
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
+      const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
 
-      const totalPfand = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
+      const totalReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
 
-      alert(`Pfandrückgabe: Sie erhalten ${totalPfand.toFixed(2)}€ zurück.`);
-      closePfandModal();
+      alert("Pfandrückgabe: " + totalReturn.toFixed(2) + "€");
     }
 
-    // Initialisiere die Produktbuttons
     generateProductButtons();
   </script>
 </body>
