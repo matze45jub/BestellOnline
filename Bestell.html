@@ -219,6 +219,7 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+    <button id="depositReturnBtn" onclick="processDepositReturn()">Pfandrückgabe</button> <!-- Neue Schaltfläche -->
   </div>
 
   <div id="orderSummary" class="order-summary hidden">
@@ -248,176 +249,108 @@
 
     let order = [];
 
-    function generateProductButtons() {
-      const container = document.getElementById("productButtons");
-
-      const foodButtons = products.filter(p => p.category === "food");
-      const foodTitle = document.createElement("div");
-      foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
-      container.appendChild(foodTitle);
-
-      const foodRow = document.createElement("div");
-      foodRow.classList.add("product-buttons-row");
-      foodButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
-        button.onclick = () => addToOrder(product);
-        foodRow.appendChild(button);
-      });
-      container.appendChild(foodRow);
-
-      const drinkButtons = products.filter(p => p.category === "drink");
-      const drinkTitle = document.createElement("div");
-      drinkTitle.classList.add("category-title");
-      drinkTitle.textContent = "🥤 Getränke:";
-      container.appendChild(drinkTitle);
-
-      const drinkRow = document.createElement("div");
-      drinkRow.classList.add("product-buttons-row");
-      drinkButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
-        button.onclick = () => addToOrder(product);
-        drinkRow.appendChild(button);
-      });
-      container.appendChild(drinkRow);
-    }
-
-    function addToOrder(product) {
-      const existing = order.find(item => item.name === product.name);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        order.push({ ...product, quantity: 1 });
+    // Funktion zum Hinzufügen von Produkten zum Warenkorb
+    function addProductToOrder(productName) {
+      const product = products.find(p => p.name === productName);
+      if (product) {
+        const existingItem = order.find(item => item.name === productName);
+        if (existingItem) {
+          existingItem.quantity++;
+        } else {
+          order.push({ ...product, quantity: 1 });
+        }
+        renderOrder();
       }
-      updateOrderTable();
     }
 
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
+    // Render das Warenkorb-Table
+    function renderOrder() {
+      const orderTable = document.querySelector('#orderTable tbody');
+      orderTable.innerHTML = '';
+      let totalPrice = 0;
 
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
+      order.forEach(item => {
+        const totalItemPrice = (item.price + item.deposit) * item.quantity;
+        totalPrice += totalItemPrice;
 
-    function updateOrderTable() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
-
-      order.forEach((item, index) => {
-        const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.deposit * item.quantity;
-
-        const row = document.createElement("tr");
+        const row = document.createElement('tr');
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${formatCurrency(item.price * item.quantity)}</td>
-          <td>
-            <select onchange="updateQuantity(${index}, this.value)">
-              ${Array.from({ length: 10 }, (_, i) => `
-                <option value="${i + 1}" ${item.quantity === i + 1 ? "selected" : ""}>${i + 1}</option>
-              `).join("")}
-            </select>
-          </td>
-          <td>${formatCurrency(depositTotal)}</td>
-          <td>${formatCurrency(total)}</td>
-          <td><button onclick="removeItem(${index})">Entfernen</button></td>
+          <td>${item.price}</td>
+          <td>${item.quantity}</td>
+          <td>${item.deposit}</td>
+          <td>${totalItemPrice.toFixed(2)}</td>
+          <td><button onclick="removeItemFromOrder('${item.name}')">Entfernen</button></td>
         `;
-        tbody.appendChild(row);
+        orderTable.appendChild(row);
       });
-      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
+
+      document.querySelector('#totalPrice').innerText = totalPrice.toFixed(2);
     }
 
-    function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+    // Entfernen eines Artikels aus der Bestellung
+    function removeItemFromOrder(productName) {
+      order = order.filter(item => item.name !== productName);
+      renderOrder();
     }
 
-    function formatCurrency(amount) {
-      return amount.toFixed(2).replace(".", ",");
-    }
-
+    // Bestellabschluss
     function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
-      document.getElementById("orderSummary").classList.remove("hidden");
-
-      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
-      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
-        alert("Der gezahlte Betrag reicht nicht aus.");
-        return;
-      }
-
-      const change = paidAmount - calculateTotal();
-      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
-      document.getElementById("changeAmount").textContent = formatCurrency(change);
+      const totalAmount = order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
+      alert(`Bestellung abgeschlossen! Gesamtbetrag: ${totalAmount.toFixed(2)}€`);
     }
 
+    // Neuer Kunde
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      renderOrder();
     }
 
+    // Drucke Rechnung
     function printReceipt() {
-      const receiptContent = `
-        <div class="receipt-header">
-          <img src="logo.png" alt="Logo">
-          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-        </div>
-        <div class="receipt-body">
-          <h2>Bestellung</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th>Preis (€)</th>
-                <th>Menge</th>
-                <th>Pfand (€)</th>
-                <th>Gesamt (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${formatCurrency(item.price)}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatCurrency(item.deposit)}</td>
-                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
-          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
-        </div>
-        <div class="receipt-footer">
-          <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
-        </div>
+      const receiptContent = document.createElement('div');
+      receiptContent.innerHTML = `
+        <h2>Rechnung</h2>
+        <table>
+          <tr>
+            <th>Produkt</th>
+            <th>Preis (€)</th>
+            <th>Menge</th>
+            <th>Pfand (€)</th>
+            <th>Gesamt (€)</th>
+          </tr>
+          ${order.map(item => `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.price}</td>
+              <td>${item.quantity}</td>
+              <td>${item.deposit}</td>
+              <td>${(item.price + item.deposit) * item.quantity}</td>
+            </tr>
+          `).join('')}
+        </table>
+        <p>Gesamtbetrag: ${order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0).toFixed(2)}€</p>
       `;
-
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = receiptContent;
+      document.body.appendChild(receiptContent);
       window.print();
-      document.body.innerHTML = originalContents;
+      document.body.removeChild(receiptContent);
     }
 
-    generateProductButtons();
+    // Funktion für die Pfandrückgabe
+    function processDepositReturn() {
+      const totalDeposit = order.reduce((sum, item) => sum + item.deposit * item.quantity, 0);
+      alert(`Der Gesamtbetrag der Pfandrückgabe beträgt: ${totalDeposit.toFixed(2)}€`);
+    }
+
+    // Produktliste generieren
+    products.forEach(product => {
+      const button = document.createElement('button');
+      button.classList.add(product.category === 'food' ? 'food-button' : 'drink-button');
+      button.innerText = `${product.name} (${product.price}€)`;
+      button.onclick = () => addProductToOrder(product.name);
+      document.getElementById('productButtons').appendChild(button);
+    });
+
   </script>
 </body>
 </html>
