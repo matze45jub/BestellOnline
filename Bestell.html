@@ -336,6 +336,13 @@
       }
     }
 
+    function resetPfandInputs() {
+      const pfandInputs = ['bottle', 'glass', 'jug', 'cup', 'dish'];
+      pfandInputs.forEach(type => {
+        document.getElementById(`${type}Quantity`).value = 0;
+      });
+    }
+
     function renderOrder() {
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
@@ -360,7 +367,7 @@
         const quantityField = document.createElement("input");
         quantityField.type = "text";
         quantityField.value = item.quantity;
-        quantityField.readOnly = true;
+        quantityField.disabled = true;
         quantityInput.appendChild(quantityField);
 
         const increaseBtn = document.createElement("button");
@@ -428,6 +435,7 @@
     }
 
     function openPfandModal() {
+      resetPfandInputs();
       document.getElementById("pfandModal").style.display = "flex";
     }
 
