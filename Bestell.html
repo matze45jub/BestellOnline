@@ -221,7 +221,6 @@
   <div class="total-inline">
     <div class="total-label">Gesamtpreis:</div>
     <div id="totalPrice" class="total-amount">0.00</div>
-    <div id="totalSpace"></div> <!-- Drei Leerzeichen -->
   </div>
   <div class="total-inline">
     <div class="total-label">abzugsfähiger Pfand:</div>
@@ -330,9 +329,9 @@
     }
 
     function addToOrder(product) {
-      let orderItem = order.find(item => item.name === product.name);
-      if (orderItem) {
-        orderItem.quantity++;
+      const existingProduct = order.find(p => p.name === product.name);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
       } else {
         order.push({ ...product, quantity: 1 });
       }
@@ -418,12 +417,9 @@
         totalDeposit += item.deposit * item.quantity;
       });
 
-      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
+      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2) + "   "; // Drei Leerzeichen hinzufügen
       document.getElementById("totalDeposit").textContent = (-totalDeposit).toFixed(2);
       document.getElementById("payableAmount").textContent = (totalPrice - totalDeposit).toFixed(2);
-
-      // Füge drei Leerzeichen hinter dem Gesamtpreis hinzu
-      document.getElementById("totalSpace").textContent = "   ";
     }
 
     function completeOrder() {
