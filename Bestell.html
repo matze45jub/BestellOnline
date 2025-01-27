@@ -140,53 +140,23 @@
       background-color: #c0392b; /* Dunkleres Rot für den Hover-Effekt */
     }
 
-    @media print {
-      .product-buttons-container,
-      #completeOrderBtn,
-      #newCustomerBtn,
-      #paymentSection,
-      #orderTable th:nth-child(6),
-      #orderTable td:nth-child(6) {
-        display: none;
-      }
-
-      .receipt-header {
-        display: block;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .receipt-header img {
-        width: 100px;
-        margin-bottom: 10px;
-      }
-
-      .receipt-header h1 {
-        font-size: 22px;
-      }
-
-      .receipt-body {
-        font-size: 14px;
-        margin-top: 20px;
-      }
-
-      .receipt-body table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
-
-      .receipt-body th, .receipt-body td {
-        padding: 8px;
-        border: 1px solid #ddd;
-        text-align: center;
-      }
-
-      .receipt-footer {
-        font-size: 12px;
-        margin-top: 30px;
-      }
+    /* Styling für das Pfandrückgabe Menü */
+    .deposit-return-container {
+      margin-top: 20px;
     }
+
+    .deposit-return-item {
+      margin-bottom: 10px;
+    }
+
+    .deposit-return-item label {
+      margin-right: 10px;
+    }
+
+    .deposit-return-item select {
+      padding: 5px;
+    }
+
   </style>
 </head>
 <body>
@@ -227,6 +197,80 @@
     <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
     <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+  </div>
+
+  <!-- Modal für Pfandrückgabe -->
+  <div id="depositModal" class="modal-content hidden">
+    <h2>Pfandrückgabe</h2>
+    <div class="deposit-return-container">
+      <div class="deposit-return-item">
+        <label for="bottleQuantity">Flasche (1€):</label>
+        <select id="bottleQuantity">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="deposit-return-item">
+        <label for="glassQuantity">Glas (2€):</label>
+        <select id="glassQuantity">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="deposit-return-item">
+        <label for="jugQuantity">Krug (5€):</label>
+        <select id="jugQuantity">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="deposit-return-item">
+        <label for="dishQuantity">Geschirr (5€):</label>
+        <select id="dishQuantity">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
+      <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
+      <button onclick="closeDepositModal()">Schließen</button>
+    </div>
   </div>
 
   <script>
@@ -353,72 +397,41 @@
       document.getElementById("orderSummary").classList.remove("hidden");
 
       const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
-      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
-        alert("Der gezahlte Betrag reicht nicht aus.");
-        return;
-      }
-
+      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
       const change = paidAmount - calculateTotal();
-      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
-      document.getElementById("changeAmount").textContent = formatCurrency(change);
+      document.getElementById("changeAmount").textContent = change.toFixed(2);
     }
 
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      updateOrderTable();
+      document.getElementById("orderSummary").classList.add("hidden");
     }
 
     function printReceipt() {
-      const receiptContent = `
-        <div class="receipt-header">
-          <img src="logo.png" alt="Logo">
-          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-        </div>
-        <div class="receipt-body">
-          <h2>Bestellung</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th>Preis (€)</th>
-                <th>Menge</th>
-                <th>Pfand (€)</th>
-                <th>Gesamt (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${formatCurrency(item.price)}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatCurrency(item.deposit)}</td>
-                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
-          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
-        </div>
-        <div class="receipt-footer">
-          <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
-        </div>
-      `;
+      alert("Rechnung wird gedruckt...");
+    }
 
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = receiptContent;
-      window.print();
-      document.body.innerHTML = originalContents;
+    function returnDeposit() {
+      document.getElementById("depositModal").classList.remove("hidden");
+    }
+
+    function closeDepositModal() {
+      document.getElementById("depositModal").classList.add("hidden");
+    }
+
+    function calculateDepositReturn() {
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value, 10);
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value, 10);
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value, 10);
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value, 10);
+
+      const total = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
+      document.getElementById("depositTotal").textContent = total.toFixed(2);
     }
 
     generateProductButtons();
   </script>
+
 </body>
 </html>
