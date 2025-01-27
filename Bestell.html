@@ -180,6 +180,16 @@
       font-size: 18px;
       color: #E74C3C;
     }
+
+    .total-inline {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .total-inline .total-label {
+      width: 50%;
+    }
   </style>
 </head>
 <body>
@@ -208,15 +218,15 @@
     </tbody>
   </table>
 
-  <div class="total-container">
+  <div class="total-inline">
     <div class="total-label">Gesamtpreis:</div>
     <div id="totalPrice" class="total-amount">0.00</div>
   </div>
-  <div class="total-container">
+  <div class="total-inline">
     <div class="total-label">abzugsfähiger Pfand:</div>
     <div id="totalDeposit" class="total-amount">-0.00</div>
   </div>
-  <div class="total-container">
+  <div class="total-inline">
     <div class="total-label">zuzahlender Betrag:</div>
     <div id="payableAmount" class="total-amount">0.00</div>
   </div>
@@ -344,9 +354,9 @@
       order.forEach(item => {
         const row = document.createElement("tr");
 
-        const productCell = document.createElement("td");
-        productCell.textContent = item.name;
-        row.appendChild(productCell);
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.name;
+        row.appendChild(nameCell);
 
         const quantityCell = document.createElement("td");
         const quantityInput = document.createElement("div");
@@ -357,11 +367,11 @@
         decreaseBtn.onclick = () => updateQuantity(item, item.quantity - 1);
         quantityInput.appendChild(decreaseBtn);
 
-        const quantityField = document.createElement("input");
-        quantityField.type = "text";
-        quantityField.value = item.quantity;
-        quantityField.readOnly = true;
-        quantityInput.appendChild(quantityField);
+        const quantityDisplay = document.createElement("input");
+        quantityDisplay.type = "number";
+        quantityDisplay.value = item.quantity;
+        quantityDisplay.onchange = () => updateQuantity(item, parseInt(quantityDisplay.value));
+        quantityInput.appendChild(quantityDisplay);
 
         const increaseBtn = document.createElement("button");
         increaseBtn.textContent = "+";
