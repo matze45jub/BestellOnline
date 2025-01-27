@@ -117,6 +117,30 @@
         gap: 5px;
       }
     }
+
+    /* Menge-Input mit Pfeilen */
+    .quantity-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 80px;
+    }
+
+    .quantity-input button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .quantity-input input {
+      width: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -158,16 +182,17 @@
       { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
       { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
       { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
-      { name: "Schnitzel", price: 8.5, category: "food", deposit: 0 },
-      { name: "Salat", price: 4.0, category: "food", deposit: 0 },
-      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 }, // Neuer Eintrag für Ochsenbraten
-      { name: "Cola", price: 2.0, category: "drink", deposit: 0.5 },
-      { name: "Wasser", price: 1.5, category: "drink", deposit: 0.5 },
-      { name: "Bier", price: 4.0, category: "drink", deposit: 1 },
-      { name: "Radler", price: 4.0, category: "drink", deposit: 1 },
-      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 0.5 },
-      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 0.5 },
-      { name: "Kaffee", price: 2.0, category: "drink", deposit: 0 }
+      { name: "Schnitzel", price: 8.5, category: "food", deposit: 5.0 },
+      { name: "Salat", price: 4.0, category: "food", deposit: 5.0 },
+      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
+      { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
+      { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
+      { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
+      { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
+      { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
+      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
+      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
+      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 }
     ];
 
     let order = [];
@@ -175,7 +200,6 @@
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
 
-      // Buttons für Essen
       const foodButtons = products.filter(p => p.category === "food");
       const foodTitle = document.createElement("div");
       foodTitle.classList.add("category-title");
@@ -193,7 +217,6 @@
       });
       container.appendChild(foodRow);
 
-      // Buttons für Getränke
       const drinkButtons = products.filter(p => p.category === "drink");
       const drinkTitle = document.createElement("div");
       drinkTitle.classList.add("category-title");
@@ -222,6 +245,13 @@
       renderOrder();
     }
 
+    function updateQuantity(item, newQuantity) {
+      if (newQuantity > 0) {
+        item.quantity = newQuantity;
+        renderOrder();
+      }
+    }
+
     function renderOrder() {
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
@@ -235,7 +265,26 @@
         row.appendChild(productCell);
 
         const quantityCell = document.createElement("td");
-        quantityCell.textContent = item.quantity;
+        const quantityInput = document.createElement("div");
+        quantityInput.classList.add("quantity-input");
+
+        const decreaseBtn = document.createElement("button");
+        decreaseBtn.textContent = "-";
+        decreaseBtn.onclick = () => updateQuantity(item, item.quantity - 1);
+        quantityInput.appendChild(decreaseBtn);
+
+        const quantityField = document.createElement("input");
+        quantityField.type = "text";
+        quantityField.value = item.quantity;
+        quantityField.readOnly = true;
+        quantityInput.appendChild(quantityField);
+
+        const increaseBtn = document.createElement("button");
+        increaseBtn.textContent = "+";
+        increaseBtn.onclick = () => updateQuantity(item, item.quantity + 1);
+        quantityInput.appendChild(increaseBtn);
+
+        quantityCell.appendChild(quantityInput);
         row.appendChild(quantityCell);
 
         const priceCell = document.createElement("td");
