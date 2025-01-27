@@ -125,10 +125,12 @@
   <table id="orderTable">
     <thead>
       <tr>
-        <th>Einzelpreis (€)</th>
         <th>Produkt</th>
-        <th>Pfand (€)</th>
         <th>Menge</th>
+        <th>Einzelpreis (€)</th>
+        <th>Einzelpfand (€)</th>
+        <th>Gesamtpreis (€)</th>
+        <th>Gesamtpfand (€)</th>
         <th>Gesamt (€)</th>
         <th>Aktionen</th>
       </tr>
@@ -146,11 +148,29 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
+      { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
+      { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
+      { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
+      { name: "Schnitzel", price: 8.5, category: "food", deposit: 5 },
+      { name: "Salat", price: 4.0, category: "food", deposit: 0 },
+      { name: "Cola", price: 2.0, category: "drink", deposit: 1 },
+      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
+      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
+      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
+      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
+      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
+      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
+      { name: "Steak", price: 3.4, category: "food", deposit: 5 },
       { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
       { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
+      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Wasser", price: 1.5, category: "drink", deposit: 1 },
+      { name: "Bier", price: 4.0, category: "drink", deposit: 5 },
+      { name: "Radler", price: 4.0, category: "drink", deposit: 5 },
+      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2 },
+      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1 },
+      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2 }
     ];
 
     let order = [];
@@ -211,30 +231,42 @@
       order.forEach(item => {
         const row = document.createElement("tr");
 
-        // Einzelpreis
-        const priceCell = document.createElement("td");
-        priceCell.textContent = item.price.toFixed(2);
-        row.appendChild(priceCell);
-
-        // Produktname
+        // Produkt
         const productCell = document.createElement("td");
         productCell.textContent = item.name;
         row.appendChild(productCell);
-
-        // Pfand
-        const depositCell = document.createElement("td");
-        depositCell.textContent = item.deposit.toFixed(2);
-        row.appendChild(depositCell);
 
         // Menge
         const quantityCell = document.createElement("td");
         quantityCell.textContent = item.quantity;
         row.appendChild(quantityCell);
 
+        // Einzelpreis
+        const priceCell = document.createElement("td");
+        priceCell.textContent = item.price.toFixed(2);
+        row.appendChild(priceCell);
+
+        // Einzelpfand
+        const depositCell = document.createElement("td");
+        depositCell.textContent = item.deposit.toFixed(2);
+        row.appendChild(depositCell);
+
         // Gesamtpreis
+        const totalPriceCell = document.createElement("td");
+        const totalPriceValue = item.price * item.quantity;
+        totalPriceCell.textContent = totalPriceValue.toFixed(2);
+        row.appendChild(totalPriceCell);
+
+        // Gesamtpfand
+        const totalDepositCell = document.createElement("td");
+        const totalDepositValue = item.deposit * item.quantity;
+        totalDepositCell.textContent = totalDepositValue.toFixed(2);
+        row.appendChild(totalDepositCell);
+
+        // Gesamt (Preis + Pfand)
         const totalCell = document.createElement("td");
-        const totalItemPrice = (item.price + item.deposit) * item.quantity;
-        totalCell.textContent = totalItemPrice.toFixed(2);
+        const totalValue = totalPriceValue + totalDepositValue;
+        totalCell.textContent = totalValue.toFixed(2);
         row.appendChild(totalCell);
 
         // Aktionen
@@ -246,7 +278,7 @@
         row.appendChild(actionsCell);
 
         orderTableBody.appendChild(row);
-        totalPrice += totalItemPrice;
+        totalPrice += totalValue;
       });
 
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
