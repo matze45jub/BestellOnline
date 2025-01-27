@@ -104,11 +104,37 @@
       background-color: #C0392B;
     }
 
+    /* Pfandrückgabe-Schaltfläche */
     .pfand-button {
-      background-color: #C0392B;
+      background-color: #C0392B; /* Rot */
       color: white;
     }
 
+    /* Modal */
+    #pfandModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pfandModalContent {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    .pfand-item {
+      margin-bottom: 10px;
+    }
+
+    /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
         flex-direction: column;
@@ -116,6 +142,7 @@
       }
     }
 
+    /* Menge-Input mit Pfeilen */
     .quantity-input {
       display: flex;
       align-items: center;
@@ -138,78 +165,6 @@
       padding: 5px;
       font-size: 14px;
     }
-
-    /* Pfand Modal */
-    #pfandModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .pfand-modal-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      width: 350px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .pfand-modal-content h3 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 22px;
-      color: #101A4B;
-    }
-
-    .pfand-modal-content label {
-      font-weight: bold;
-      margin-bottom: 5px;
-      display: block;
-      font-size: 16px;
-    }
-
-    .pfand-modal-content input {
-      width: 100%;
-      padding: 8px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .pfand-modal-content input:focus {
-      border-color: #377EBF;
-      outline: none;
-    }
-
-    .pfand-modal-content .modal-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .pfand-modal-content button {
-      width: 100%;
-      padding: 12px;
-      background-color: #E74C3C;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .pfand-modal-content button:hover {
-      background-color: #C0392B;
-    }
-
   </style>
 </head>
 <body>
@@ -246,37 +201,31 @@
     <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
   </div>
 
-  <!-- Pfand Modal -->
+  <!-- Pfandmodal -->
   <div id="pfandModal">
-    <div class="pfand-modal-content">
+    <div id="pfandModalContent">
       <h3>Pfandrückgabe</h3>
-
-      <div class="modal-row">
-        <label for="bottleQuantity">Flasche (1€):</label>
-        <input type="number" id="bottleQuantity" value="0" min="0">
+      <div class="pfand-item">
+        <label for="bottleQuantity">Flasche (1€ Pfand):</label>
+        <input type="number" id="bottleQuantity" value="0">
       </div>
-
-      <div class="modal-row">
-        <label for="glassQuantity">Glas (2€):</label>
-        <input type="number" id="glassQuantity" value="0" min="0">
+      <div class="pfand-item">
+        <label for="glassQuantity">Glas (2€ Pfand):</label>
+        <input type="number" id="glassQuantity" value="0">
       </div>
-
-      <div class="modal-row">
-        <label for="jugQuantity">Krug (5€):</label>
-        <input type="number" id="jugQuantity" value="0" min="0">
+      <div class="pfand-item">
+        <label for="jugQuantity">Krug (5€ Pfand):</label>
+        <input type="number" id="jugQuantity" value="0">
       </div>
-
-      <div class="modal-row">
-        <label for="cupQuantity">Tasse (2€):</label>
-        <input type="number" id="cupQuantity" value="0" min="0">
+      <div class="pfand-item">
+        <label for="cupQuantity">Tasse (2€ Pfand):</label>
+        <input type="number" id="cupQuantity" value="0">
       </div>
-
-      <div class="modal-row">
-        <label for="dishQuantity">Geschirr (5€):</label>
-        <input type="number" id="dishQuantity" value="0" min="0">
+      <div class="pfand-item">
+        <label for="dishQuantity">Geschirr (5€ Pfand):</label>
+        <input type="number" id="dishQuantity" value="0">
       </div>
-
-      <button onclick="calculatePfandReturn()">Pfandrückgabe berechnen</button>
+      <button onclick="calculatePfandReturn()">Berechnen</button>
       <button onclick="closePfandModal()">Schließen</button>
     </div>
   </div>
@@ -298,8 +247,8 @@
       { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
       { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
       { name: "Hefeweizen", price: 3.8, category: "drink", deposit: 2.0 },
-      { name: "alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
-      { name: "alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
+      { name: "Alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
+      { name: "Alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
     ];
 
     let order = [];
@@ -352,10 +301,9 @@
       renderOrder();
     }
 
-    function updateQuantity(productName, newQuantity) {
-      let orderItem = order.find(item => item.name === productName);
-      if (orderItem) {
-        orderItem.quantity = newQuantity;
+    function updateQuantity(item, newQuantity) {
+      if (newQuantity > 0) {
+        item.quantity = newQuantity;
         renderOrder();
       }
     }
@@ -363,45 +311,80 @@
     function renderOrder() {
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
-
       let totalPrice = 0;
-      let totalDeposit = 0;
 
       order.forEach(item => {
         const row = document.createElement("tr");
 
-        const totalProductPrice = (item.price * item.quantity).toFixed(2);
-        const totalProductDeposit = (item.deposit * item.quantity).toFixed(2);
-        const totalItemPrice = (parseFloat(totalProductPrice) + parseFloat(totalProductDeposit)).toFixed(2);
+        const productCell = document.createElement("td");
+        productCell.textContent = item.name;
+        row.appendChild(productCell);
 
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>
-            <input type="number" value="${item.quantity}" onchange="updateQuantity('${item.name}', this.value)" min="0">
-          </td>
-          <td>${item.price.toFixed(2)}€</td>
-          <td>${item.deposit.toFixed(2)}€</td>
-          <td>${totalProductPrice}€</td>
-          <td>${totalProductDeposit}€</td>
-          <td>${totalItemPrice}€</td>
-          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
-        `;
+        const quantityCell = document.createElement("td");
+        const quantityInput = document.createElement("div");
+        quantityInput.classList.add("quantity-input");
+
+        const decreaseBtn = document.createElement("button");
+        decreaseBtn.textContent = "-";
+        decreaseBtn.onclick = () => updateQuantity(item, item.quantity - 1);
+        quantityInput.appendChild(decreaseBtn);
+
+        const quantityField = document.createElement("input");
+        quantityField.type = "text";
+        quantityField.value = item.quantity;
+        quantityField.readOnly = true;
+        quantityInput.appendChild(quantityField);
+
+        const increaseBtn = document.createElement("button");
+        increaseBtn.textContent = "+";
+        increaseBtn.onclick = () => updateQuantity(item, item.quantity + 1);
+        quantityInput.appendChild(increaseBtn);
+
+        quantityCell.appendChild(quantityInput);
+        row.appendChild(quantityCell);
+
+        const priceCell = document.createElement("td");
+        priceCell.textContent = item.price.toFixed(2);
+        row.appendChild(priceCell);
+
+        const depositCell = document.createElement("td");
+        depositCell.textContent = item.deposit.toFixed(2);
+        row.appendChild(depositCell);
+
+        const totalPriceCell = document.createElement("td");
+        totalPriceCell.textContent = (item.price * item.quantity).toFixed(2);
+        row.appendChild(totalPriceCell);
+
+        const totalDepositCell = document.createElement("td");
+        totalDepositCell.textContent = (item.deposit * item.quantity).toFixed(2);
+        row.appendChild(totalDepositCell);
+
+        const totalCell = document.createElement("td");
+        totalCell.textContent = ((item.price + item.deposit) * item.quantity).toFixed(2);
+        row.appendChild(totalCell);
+
+        const actionsCell = document.createElement("td");
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Entfernen";
+        removeButton.onclick = () => removeFromOrder(item);
+        actionsCell.appendChild(removeButton);
+        row.appendChild(actionsCell);
+
         orderTableBody.appendChild(row);
-
-        totalPrice += parseFloat(totalProductPrice);
-        totalDeposit += parseFloat(totalProductDeposit);
+        totalPrice += (item.price + item.deposit) * item.quantity;
       });
 
-      document.getElementById("totalPrice").textContent = (totalPrice).toFixed(2);
+      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
     }
 
-    function removeFromOrder(productName) {
-      order = order.filter(item => item.name !== productName);
+    function removeFromOrder(itemToRemove) {
+      order = order.filter(item => item !== itemToRemove);
       renderOrder();
     }
 
     function completeOrder() {
-      alert("Bestellung abgeschlossen!");
+      const finalTotalPrice = parseFloat(document.getElementById("totalPrice").textContent);
+      alert(`Bestellung abgeschlossen! Gesamtpreis: ${finalTotalPrice.toFixed(2)}€`);
     }
 
     function startNewOrder() {
@@ -410,10 +393,18 @@
     }
 
     function printReceipt() {
-      alert("Rechnung wird gedruckt!");
+      window.print();
     }
 
     function openPfandModal() {
+      // Setze alle Pfandarten auf 0
+      document.getElementById("bottleQuantity").value = 0;
+      document.getElementById("glassQuantity").value = 0;
+      document.getElementById("jugQuantity").value = 0;
+      document.getElementById("cupQuantity").value = 0;
+      document.getElementById("dishQuantity").value = 0;
+
+      // Zeige das Pfandmodal an
       document.getElementById("pfandModal").style.display = "flex";
     }
 
@@ -422,24 +413,19 @@
     }
 
     function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
-      const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value) || 0;
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value) || 0;
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value) || 0;
+      const cupQuantity = parseInt(document.getElementById("cupQuantity").value) || 0;
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value) || 0;
 
-      const totalPfand = (
-        bottleQuantity * 1 +
-        glassQuantity * 2 +
-        jugQuantity * 5 +
-        cupQuantity * 2 +
-        dishQuantity * 5
-      ).toFixed(2);
+      const totalPfand = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
 
-      alert(`Gesamtes Pfand: ${totalPfand}€`);
+      alert(`Pfandrückgabe: Sie erhalten ${totalPfand.toFixed(2)}€ zurück.`);
       closePfandModal();
     }
 
+    // Initialisiere die Produktbuttons
     generateProductButtons();
   </script>
 </body>
