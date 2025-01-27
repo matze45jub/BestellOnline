@@ -134,14 +134,6 @@
       margin-bottom: 10px;
     }
 
-    /* Responsive Anpassungen */
-    @media (max-width: 768px) {
-      .product-buttons-row {
-        flex-direction: column;
-        gap: 5px;
-      }
-    }
-
     /* Menge-Input mit Pfeilen */
     .quantity-input {
       display: flex;
@@ -289,6 +281,7 @@
     ];
 
     let order = [];
+    let totalDeposit = 0;
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
@@ -348,7 +341,6 @@
       orderTableBody.innerHTML = "";
 
       let totalPrice = 0;
-      let totalDeposit = 0;
 
       order.forEach(item => {
         const row = document.createElement("tr");
@@ -414,10 +406,9 @@
         orderTableBody.appendChild(row);
 
         totalPrice += itemTotal;
-        totalDeposit += item.deposit * item.quantity;
       });
 
-      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2) + "   "; // Drei Leerzeichen hinzufügen
+      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2) + "   ";
       document.getElementById("totalDeposit").textContent = (-totalDeposit).toFixed(2);
       document.getElementById("payableAmount").textContent = (totalPrice - totalDeposit).toFixed(2);
     }
@@ -428,6 +419,7 @@
 
     function startNewOrder() {
       order = [];
+      totalDeposit = 0; // Reset deposit
       renderOrder();
     }
 
@@ -450,9 +442,10 @@
       const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
       const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
 
-      const totalReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
+      totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
 
-      alert("Pfandrückgabe: " + totalReturn.toFixed(2) + "€");
+      alert("Pfandrückgabe: " + totalDeposit.toFixed(2) + "€");
+      renderOrder(); // Update total prices after deposit
     }
 
     generateProductButtons();
