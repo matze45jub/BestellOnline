@@ -119,7 +119,6 @@
       background-color: #2980b9;
     }
 
-    /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
       gap: 10px;
@@ -140,7 +139,6 @@
       background-color: #c0392b;
     }
 
-    /* Styling für das Pfandrückgabe Menü */
     .deposit-return-container {
       margin-top: 20px;
     }
@@ -155,6 +153,12 @@
 
     .deposit-return-item select {
       padding: 5px;
+    }
+
+    /* Styling für den Betrag mit Istgleich und fett */
+    .final-amount {
+      font-weight: bold;
+      font-size: 18px;
     }
 
     /* Responsive Anpassungen */
@@ -196,6 +200,10 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€ - Pfand: <span id="depositTotal">0.00</span>€</h3>
+
+  <div class="final-amount">
+    <h3>= Zu zahlender Betrag: <span id="finalAmount">0.00</span>€</h3>
+  </div>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -388,6 +396,10 @@
       } else {
         document.getElementById("depositText").classList.add("hidden");
       }
+
+      // Zu zahlender Betrag mit Istgleich-Zeichen
+      const finalAmount = totalAmount - depositAmount;
+      document.getElementById("finalAmount").textContent = finalAmount.toFixed(2);
     }
 
     function updateQuantity(index, quantity) {
@@ -472,5 +484,6 @@
 
     generateProductButtons();
   </script>
+
 </body>
 </html>
