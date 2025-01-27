@@ -129,7 +129,7 @@
     .button-container button {
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #3498db;
+      background-color: #e74c3c; /* Neues Rot für die Buttons */
       color: white;
       border: none;
       border-radius: 5px;
@@ -137,7 +137,7 @@
     }
 
     .button-container button:hover {
-      background-color: #2980b9;
+      background-color: #c0392b; /* Dunkleres Rot für den Hover-Effekt */
     }
 
     @media print {
@@ -219,8 +219,7 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <!-- Neue Schaltfläche "Pfandrückgabe" hinzugefügt -->
-    <button id="depositReturnBtn" onclick="depositReturn()">Pfandrückgabe</button>
+    <button id="depositReturnBtn" onclick="returnDeposit()">Pfandrückgabe</button>
   </div>
 
   <div id="orderSummary" class="order-summary hidden">
@@ -417,10 +416,6 @@
       document.body.innerHTML = receiptContent;
       window.print();
       document.body.innerHTML = originalContents;
-    }
-
-    function depositReturn() {
-      alert("Die Funktion der Pfandrückgabe ist noch nicht implementiert.");
     }
 
     generateProductButtons();
