@@ -5,15 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BestellOnline</title>
   <style>
-    /* Hier kannst du dein CSS hinzufügen */
+    /* Grundlegendes Layout */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+
     .hidden { display: none; }
     .category-title { font-weight: bold; margin-top: 10px; }
-    .product-buttons-row { margin-bottom: 10px; }
-    .product-button { padding: 5px 10px; margin-right: 10px; cursor: pointer; }
-    .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .order-table th, .order-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-    .order-table td button { padding: 5px 10px; }
-    .deposit-modal { margin-top: 20px; }
+    .product-buttons-row { margin-bottom: 20px; }
+
+    /* Stil für die Buttons */
+    .product-button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .product-button:hover {
+      background-color: #45a049;
+    }
+
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .order-table th, .order-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .order-table th {
+      background-color: #f2f2f2;
+    }
+
+    .order-table td button {
+      padding: 5px 10px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .order-table td button:hover {
+      background-color: #d32f2f;
+    }
+
+    /* Layout der Modal */
+    .deposit-modal { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+    .deposit-modal input {
+      margin-bottom: 10px;
+      padding: 5px;
+      width: 50px;
+    }
+    .deposit-modal button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .deposit-modal button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -31,6 +98,7 @@
         <th>Produkt</th>
         <th>Preis</th>
         <th>Menge</th>
+        <th>Summe</th> <!-- Neue Spalte für die Summe -->
         <th>Pfand</th>
         <th>Gesamt</th>
         <th>Aktionen</th>
@@ -78,7 +146,6 @@
 
     let order = [];
 
-    // Funktion, um die Produkt-Buttons zu generieren
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
 
@@ -93,7 +160,7 @@
       foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
+        button.classList.add("product-button");
         button.onclick = () => addToOrder(product);
         foodRow.appendChild(button);
       });
@@ -110,14 +177,13 @@
       drinkButtons.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
+        button.classList.add("product-button");
         button.onclick = () => addToOrder(product);
         drinkRow.appendChild(button);
       });
       container.appendChild(drinkRow);
     }
 
-    // Funktion, um Produkte zur Bestellung hinzuzufügen
     function addToOrder(product) {
       let orderItem = order.find(item => item.name === product.name);
       if (orderItem) {
@@ -128,13 +194,11 @@
       renderOrder();
     }
 
-    // Funktion, um Produkte aus der Bestellung zu entfernen
     function removeFromOrder(productName) {
       order = order.filter(item => item.name !== productName);
       renderOrder();
     }
 
-    // Funktion, um die Bestellung anzuzeigen
     function renderOrder() {
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
@@ -165,6 +229,10 @@
         quantityCell.appendChild(quantityControls);
         row.appendChild(quantityCell);
 
+        const sumCell = document.createElement("td");
+        sumCell.textContent = (item.price * item.quantity).toFixed(2);
+        row.appendChild(sumCell);
+
         const depositCell = document.createElement("td");
         depositCell.textContent = (item.deposit * item.quantity).toFixed(2);
         row.appendChild(depositCell);
@@ -187,7 +255,6 @@
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
     }
 
-    // Funktion, um die Menge eines Produkts zu ändern
     function changeQuantity(item, change) {
       item.quantity += change;
       if (item.quantity <= 0) {
@@ -197,7 +264,6 @@
       }
     }
 
-    // Funktion für die Pfandrückgabe
     function returnDeposit() {
       document.getElementById("bottleQuantity").value = 0;
       document.getElementById("glassQuantity").value = 0;
@@ -218,7 +284,6 @@
       document.getElementById("depositTotal").textContent = totalReturn.toFixed(2);
     }
 
-    // Initialisierung
     window.onload = () => {
       generateProductButtons();  // Die Produkt-Buttons werden bei Seitenaufruf generiert
     };
