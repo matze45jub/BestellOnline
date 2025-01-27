@@ -3,283 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bestellung</title>
+  <title>BestellOnline</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width: 67px;
-      height: auto;
-      margin-right: 10px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
-    }
-
-    .product-buttons-container {
-      margin-bottom: 20px;
-    }
-
-    .category-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .product-buttons-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .product-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .food-button {
-      background-color: #f1c40f;
-      color: #000000;
-    }
-
-    .drink-button {
-      background-color: #3498db;
-      color: #ffffff;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    .order-summary {
-      margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .receipt-footer {
-      text-align: center;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    .modal-header {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .modal-footer {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .modal-footer button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-footer button:hover {
-      background-color: #2980b9;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .button-container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button-container button:hover {
-      background-color: #c0392b;
-    }
-
-    .deposit-return-container {
-      margin-top: 20px;
-    }
-
-    .deposit-return-item {
-      margin-bottom: 10px;
-    }
-
-    .deposit-return-item label {
-      margin-right: 10px;
-    }
-
-    .deposit-return-item select {
-      padding: 5px;
-    }
-
-    @media (max-width: 768px) {
-      .product-buttons-row {
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .modal-content {
-        width: 95%;
-        max-width: 500px;
-      }
-    }
+    /* Hier kannst du dein CSS hinzufügen */
+    .hidden { display: none; }
+    .category-title { font-weight: bold; margin-top: 10px; }
+    .product-buttons-row { margin-bottom: 10px; }
+    .product-button { padding: 5px 10px; margin-right: 10px; cursor: pointer; }
+    .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .order-table th, .order-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    .order-table td button { padding: 5px 10px; }
+    .deposit-modal { margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <img src="logo.png" alt="Logo">
-    <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-  </div>
+  <h1>BestellOnline</h1>
 
-  <div id="productButtons" class="product-buttons-container"></div>
+  <!-- Buttons zum Hinzufügen von Produkten -->
+  <div id="productButtons"></div>
 
   <h2>Bestellung</h2>
-  <table id="orderTable">
+
+  <table id="orderTable" class="order-table">
     <thead>
       <tr>
         <th>Produkt</th>
-        <th>Preis (€)</th>
+        <th>Preis</th>
         <th>Menge</th>
-        <th>Pfand (€)</th>
-        <th>Gesamt (€)</th>
+        <th>Pfand</th>
+        <th>Gesamt</th>
         <th>Aktionen</th>
       </tr>
     </thead>
-    <tbody>
-    </tbody>
+    <tbody></tbody>
   </table>
+
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <h3 id="totalAmountToPay">Zu zahlender Betrag: 0.00€</h3>
 
-  <div class="button-container">
-    <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="depositReturnBtn" onclick="returnDeposit()">Pfandrückgabe</button>
-  </div>
+  <!-- Pfandrückgabe Modal -->
+  <button onclick="returnDeposit()">Pfandrückgabe</button>
 
-  <div id="orderSummary" class="order-summary hidden">
-    <h2>Bestellung abgeschlossen</h2>
-    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
-    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
-  </div>
-
-  <div id="depositModal" class="modal-content hidden">
-    <h2>Pfandrückgabe</h2>
-    <div class="deposit-return-container">
-      <div class="deposit-return-item">
-        <label for="bottleQuantity">Flasche (1€):</label>
-        <select id="bottleQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="glassQuantity">Glas (2€):</label>
-        <select id="glassQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="jugQuantity">Krug (5€):</label>
-        <select id="jugQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="dishQuantity">Geschirr (5€):</label>
-        <select id="dishQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
-      <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
-      <button onclick="closeDepositModal()">Schließen</button>
-    </div>
+  <div id="depositModal" class="deposit-modal hidden">
+    <h3>Pfandrückgabe</h3>
+    <label for="bottleQuantity">Flaschen (1€):</label>
+    <input type="number" id="bottleQuantity" value="0"><br>
+    <label for="glassQuantity">Gläser (2€):</label>
+    <input type="number" id="glassQuantity" value="0"><br>
+    <label for="jugQuantity">Krüge (5€):</label>
+    <input type="number" id="jugQuantity" value="0"><br>
+    <label for="dishQuantity">Teller (5€):</label>
+    <input type="number" id="dishQuantity" value="0"><br>
+    <button onclick="calculateDepositReturn()">Berechnen</button>
+    <h4>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h4>
   </div>
 
   <script>
@@ -301,8 +77,8 @@
     ];
 
     let order = [];
-    let totalDepositReturn = 0;
 
+    // Funktion, um die Produkt-Buttons zu generieren
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
 
@@ -341,6 +117,7 @@
       container.appendChild(drinkRow);
     }
 
+    // Funktion, um Produkte zur Bestellung hinzuzufügen
     function addToOrder(product) {
       let orderItem = order.find(item => item.name === product.name);
       if (orderItem) {
@@ -351,77 +128,83 @@
       renderOrder();
     }
 
-    function renderOrder() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
-      let total = 0;
-      order.forEach(item => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${item.price.toFixed(2)}€</td>
-          <td>
-            <button onclick="changeQuantity('${item.name}', -1)">-</button>
-            ${item.quantity}
-            <button onclick="changeQuantity('${item.name}', 1)">+</button>
-          </td>
-          <td>${item.deposit.toFixed(2)}€</td>
-          <td>${(item.price * item.quantity).toFixed(2)}€</td>
-          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
-        `;
-        tbody.appendChild(row);
-        total += item.price * item.quantity;
-      });
-
-      document.getElementById("totalPrice").textContent = total.toFixed(2);
-      document.getElementById("totalAmountToPay").textContent = (total - totalDepositReturn).toFixed(2);
+    // Funktion, um Produkte aus der Bestellung zu entfernen
+    function removeFromOrder(productName) {
+      order = order.filter(item => item.name !== productName);
+      renderOrder();
     }
 
-    function changeQuantity(name, delta) {
-      const item = order.find(item => item.name === name);
-      if (item) {
-        item.quantity += delta;
-        if (item.quantity <= 0) {
-          removeFromOrder(name);
-        } else {
-          renderOrder();
-        }
+    // Funktion, um die Bestellung anzuzeigen
+    function renderOrder() {
+      const orderTableBody = document.querySelector("#orderTable tbody");
+      orderTableBody.innerHTML = "";
+      let totalPrice = 0;
+
+      order.forEach(item => {
+        const row = document.createElement("tr");
+
+        const productCell = document.createElement("td");
+        productCell.textContent = item.name;
+        row.appendChild(productCell);
+
+        const priceCell = document.createElement("td");
+        priceCell.textContent = item.price.toFixed(2);
+        row.appendChild(priceCell);
+
+        const quantityCell = document.createElement("td");
+        const quantityControls = document.createElement("div");
+        const decreaseButton = document.createElement("button");
+        decreaseButton.textContent = "-";
+        decreaseButton.onclick = () => changeQuantity(item, -1);
+        const increaseButton = document.createElement("button");
+        increaseButton.textContent = "+";
+        increaseButton.onclick = () => changeQuantity(item, 1);
+        quantityControls.appendChild(decreaseButton);
+        quantityControls.appendChild(document.createTextNode(`${item.quantity}`));
+        quantityControls.appendChild(increaseButton);
+        quantityCell.appendChild(quantityControls);
+        row.appendChild(quantityCell);
+
+        const depositCell = document.createElement("td");
+        depositCell.textContent = (item.deposit * item.quantity).toFixed(2);
+        row.appendChild(depositCell);
+
+        const totalCell = document.createElement("td");
+        totalCell.textContent = ((item.price + item.deposit) * item.quantity).toFixed(2);
+        row.appendChild(totalCell);
+
+        const actionsCell = document.createElement("td");
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Entfernen";
+        removeButton.onclick = () => removeFromOrder(item.name);
+        actionsCell.appendChild(removeButton);
+        row.appendChild(actionsCell);
+
+        orderTableBody.appendChild(row);
+        totalPrice += (item.price + item.deposit) * item.quantity;
+      });
+
+      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
+    }
+
+    // Funktion, um die Menge eines Produkts zu ändern
+    function changeQuantity(item, change) {
+      item.quantity += change;
+      if (item.quantity <= 0) {
+        removeFromOrder(item.name);
+      } else {
+        renderOrder();
       }
     }
 
-    function removeFromOrder(name) {
-      order = order.filter(item => item.name !== name);
-      renderOrder();
-    }
-
-    function completeOrder() {
-      const totalPrice = parseFloat(document.getElementById("totalPrice").textContent);
-      const paidAmount = prompt("Bitte den Betrag eingeben:", totalPrice.toFixed(2));
-      const changeAmount = paidAmount - totalPrice;
-      document.getElementById("paidAmount").textContent = paidAmount;
-      document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
-      document.getElementById("finalTotalPrice").textContent = totalPrice.toFixed(2);
-      document.getElementById("orderSummary").classList.remove("hidden");
-    }
-
-    function startNewOrder() {
-      order = [];
-      totalDepositReturn = 0;
-      renderOrder();
-      document.getElementById("orderSummary").classList.add("hidden");
-      document.getElementById("depositModal").classList.add("hidden");
-    }
-
-    function printReceipt() {
-      window.print();
-    }
-
+    // Funktion für die Pfandrückgabe
     function returnDeposit() {
-      document.getElementById("depositModal").classList.remove("hidden");
-    }
+      document.getElementById("bottleQuantity").value = 0;
+      document.getElementById("glassQuantity").value = 0;
+      document.getElementById("jugQuantity").value = 0;
+      document.getElementById("dishQuantity").value = 0;
 
-    function closeDepositModal() {
-      document.getElementById("depositModal").classList.add("hidden");
+      document.getElementById("depositModal").classList.remove("hidden");
     }
 
     function calculateDepositReturn() {
@@ -430,12 +213,15 @@
       const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
       const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
 
-      totalDepositReturn = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
-      document.getElementById("depositTotal").textContent = totalDepositReturn.toFixed(2);
-      document.getElementById("totalAmountToPay").textContent = (parseFloat(document.getElementById("totalPrice").textContent) - totalDepositReturn).toFixed(2);
+      const totalReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (dishQuantity * 5);
+
+      document.getElementById("depositTotal").textContent = totalReturn.toFixed(2);
     }
 
-    generateProductButtons();
+    // Initialisierung
+    window.onload = () => {
+      generateProductButtons();  // Die Produkt-Buttons werden bei Seitenaufruf generiert
+    };
   </script>
 
 </body>
