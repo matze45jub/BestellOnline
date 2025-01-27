@@ -165,6 +165,19 @@
       padding: 5px;
       font-size: 14px;
     }
+
+    /* Druckeinstellungen */
+    @media print {
+      .button-container,
+      .header {
+        display: none;
+      }
+      
+      #orderTable th:last-child, 
+      #orderTable td:last-child {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -401,13 +414,10 @@
       totalPfandReturn += parseInt(document.getElementById('dishQuantity').value) * 5;
 
       document.getElementById('pfandReturnAmount').textContent = totalPfandReturn.toFixed(2);
-      document.getElementById('amountToPay').textContent = (parseFloat(document.getElementById('totalPrice').textContent) + totalPfandReturn).toFixed(2);
     }
 
-    // Beim Laden der Seite die Buttons anzeigen
-    window.onload = function() {
-      displayProductButtons();
-    };
+    // Bei Seitenaufruf die Produkte anzeigen
+    displayProductButtons();
   </script>
 </body>
 </html>
