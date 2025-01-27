@@ -200,7 +200,7 @@
   </div>
 
   <!-- Modal für Pfandrückgabe -->
-  <div id="depositModal" class="modal-content hidden">
+  div id="depositModal" class="modal-content hidden">
     <h2>Pfandrückgabe</h2>
     <div class="deposit-return-container">
       <div class="deposit-return-item">
@@ -219,6 +219,7 @@
           <option value="10">10</option>
         </select>
       </div>
+
       <div class="deposit-return-item">
         <label for="glassQuantity">Glas (2€):</label>
         <select id="glassQuantity">
@@ -235,6 +236,7 @@
           <option value="10">10</option>
         </select>
       </div>
+
       <div class="deposit-return-item">
         <label for="jugQuantity">Krug (5€):</label>
         <select id="jugQuantity">
@@ -251,6 +253,7 @@
           <option value="10">10</option>
         </select>
       </div>
+
       <div class="deposit-return-item">
         <label for="dishQuantity">Geschirr (5€):</label>
         <select id="dishQuantity">
@@ -267,12 +270,36 @@
           <option value="10">10</option>
         </select>
       </div>
-      <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
-      <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
-      <button onclick="closeDepositModal()">Schließen</button>
+
+      <div class="deposit-return-item">
+        <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
+      </div>
+
+      <div class="deposit-return-item">
+        <div class="total-text">Gesamt Pfandrückgabe:</div>
+        <div class="total-price"><span id="depositTotal">0.00</span>€</div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeDepositModal()">Schließen</button>
+      </div>
     </div>
   </div>
 
+  <script>
+    function calculateDepositReturn() {
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value, 10);
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value, 10);
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value, 10);
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value, 10);
+
+      const total = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
+      document.getElementById("depositTotal").textContent = total.toFixed(2);
+    }
+
+    function closeDepositModal() {
+      document.getElementById("depositModal").classList.add("hidden");
+    }
   <script>
     const products = [
       { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
