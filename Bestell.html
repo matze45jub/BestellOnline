@@ -305,6 +305,7 @@
     ];
 
     let order = [];
+    let totalDeposit = 0;
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
@@ -370,8 +371,8 @@
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}€</td>
           <td><input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)" /></td>
-          <td>${depositTotal.toFixed(2)}€</td>
-          <td>${total.toFixed(2)}€</td>
+          <td>${(item.deposit * item.quantity).toFixed(2)}€</td>
+          <td>${(item.price + item.deposit) * item.quantity.toFixed(2)}€</td>
           <td><button onclick="removeItem(${index})">Entfernen</button></td>
         `;
         tbody.appendChild(row);
@@ -463,6 +464,10 @@
 
       const totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (dishQuantity * 5);
       document.getElementById("depositTotalModal").textContent = totalDeposit.toFixed(2);
+      
+      // Den Pfandbetrag unter dem Gesamtpreis aktualisieren
+      totalDepositAmount = totalDeposit;
+      document.getElementById("depositTotal").textContent = totalDeposit.toFixed(2);
     }
 
     generateProductButtons();
