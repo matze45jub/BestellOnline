@@ -54,12 +54,12 @@
       cursor: pointer;
     }
 
-    .Essen-button {
+    .essen-button {
       background-color: #E74C3C;
       color: #FFFFFF;
     }
 
-    .Getränke-button {
+    .getraenke-button {
       background-color: #377EBF;
       color: #FFFFFF;
     }
@@ -165,19 +165,6 @@
       padding: 5px;
       font-size: 14px;
     }
-
-    /* Druckeinstellungen */
-    @media print {
-      .button-container,
-      .header {
-        display: none;
-      }
-      
-      #orderTable th:last-child, 
-      #orderTable td:last-child {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
@@ -270,20 +257,20 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 3.5, category: "Essen", deposit: 0 },
-      { name: "Currywurst", price: 4.5, category: "Essen", deposit: 0 },
-      { name: "Pommes", price: 2.5, category: "Essen", deposit: 0 },
-      { name: "Schnitzel", price: 8.5, category: "Essen", deposit: 5.0 },
-      { name: "Salat", price: 4.0, category: "Essen", deposit: 5.0 },
-      { name: "Ochsenbraten", price: 9.20, category: "Essen", deposit: 5.0 },
-      { name: "Cola", price: 2.0, category: "Getränke", deposit: 1.0 },
-      { name: "Fanta", price: 2.0, category: "Getränke", deposit: 1.0 },
-      { name: "Wasser", price: 1.5, category: "Getränke", deposit: 1.0 },
-      { name: "Bier", price: 4.0, category: "Getränke", deposit: 5.0 },
-      { name: "Radler", price: 4.0, category: "Getränke", deposit: 5.0 },
-      { name: "Weinschorle", price: 3.5, category: "Getränke", deposit: 2.0 },
-      { name: "Apfelsaft", price: 2.5, category: "Getränke", deposit: 1.0 },
-      { name: "Apfelwein", price: 4.0, category: "Getränke", deposit: 5.0 }
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
+      { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
+      { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
+      { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
+      { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
+      { name: "Ochsenbraten", price: 9.20, category: "essen", deposit: 5.0 },
+      { name: "Cola", price: 2.0, category: "getraenke", deposit: 1.0 },
+      { name: "Fanta", price: 2.0, category: "getraenke", deposit: 1.0 },
+      { name: "Wasser", price: 1.5, category: "getraenke", deposit: 1.0 },
+      { name: "Bier", price: 4.0, category: "getraenke", deposit: 5.0 },
+      { name: "Radler", price: 4.0, category: "getraenke", deposit: 5.0 },
+      { name: "Weinschorle", price: 3.5, category: "getraenke", deposit: 2.0 },
+      { name: "Apfelsaft", price: 2.5, category: "getraenke", deposit: 1.0 },
+      { name: "Apfelwein", price: 4.0, category: "getraenke", deposit: 5.0 }
     ];
 
     let order = [];
@@ -291,7 +278,7 @@
     // Produkt Buttons anzeigen
     function displayProductButtons() {
       const productButtonsDiv = document.getElementById('productButtons');
-      const categories = ['Essen', 'Getränke'];
+      const categories = ['essen', 'getraenke'];
 
       categories.forEach(category => {
         const categoryTitle = document.createElement('div');
@@ -314,70 +301,72 @@
       });
     }
 
-    // Artikel zur Bestellung hinzufügen
+    // Produkt zur Bestellung hinzufügen
     function addToOrder(product) {
-      const existingProductIndex = order.findIndex(item => item.product.name === product.name);
-      if (existingProductIndex === -1) {
-        order.push({ product, quantity: 1 });
-      } else {
+      const existingProductIndex = order.findIndex(item => item.name === product.name);
+      if (existingProductIndex !== -1) {
         order[existingProductIndex].quantity++;
+      } else {
+        order.push({ ...product, quantity: 1 });
       }
-      updateOrderTable();
+      renderOrder();
     }
 
-    // Bestellungstabelle aktualisieren
-    function updateOrderTable() {
-      const tableBody = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
-      tableBody.innerHTML = ''; // Tabelle zurücksetzen
+    // Bestellung anzeigen
+    function renderOrder() {
+      const orderTableBody = document.querySelector('#orderTable tbody');
+      orderTableBody.innerHTML = '';
 
       let totalPrice = 0;
       let totalPfand = 0;
-      
+
       order.forEach(item => {
-        const totalItemPrice = item.product.price * item.quantity;
-        const totalItemPfand = item.product.deposit * item.quantity;
-        const totalItemCost = totalItemPrice + totalItemPfand;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.price.toFixed(2)}€</td>
+          <td>${item.deposit.toFixed(2)}€</td>
+          <td>${(item.price * item.quantity).toFixed(2)}€</td>
+          <td>${(item.deposit * item.quantity).toFixed(2)}€</td>
+          <td>${((item.price + item.deposit) * item.quantity).toFixed(2)}€</td>
+          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
+        `;
+        orderTableBody.appendChild(row);
 
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = item.product.name;
-        row.insertCell(1).textContent = item.quantity;
-        row.insertCell(2).textContent = item.product.price.toFixed(2);
-        row.insertCell(3).textContent = item.product.deposit.toFixed(2);
-        row.insertCell(4).textContent = totalItemPrice.toFixed(2);
-        row.insertCell(5).textContent = totalItemPfand.toFixed(2);
-        row.insertCell(6).textContent = totalItemCost.toFixed(2);
-        
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Löschen';
-        deleteButton.onclick = () => removeFromOrder(item.product);
-        row.insertCell(7).appendChild(deleteButton);
-
-        totalPrice += totalItemPrice;
-        totalPfand += totalItemPfand;
+        totalPrice += item.price * item.quantity;
+        totalPfand += item.deposit * item.quantity;
       });
 
-      document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
-      document.getElementById('pfandReturnAmount').textContent = totalPfand.toFixed(2);
-      document.getElementById('amountToPay').textContent = (totalPrice + totalPfand).toFixed(2);
+      document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+      document.getElementById('pfandReturnAmount').innerText = totalPfand.toFixed(2);
+      document.getElementById('amountToPay').innerText = (totalPrice + totalPfand).toFixed(2);
     }
 
     // Produkt aus der Bestellung entfernen
-    function removeFromOrder(product) {
-      order = order.filter(item => item.product.name !== product.name);
-      updateOrderTable();
+    function removeFromOrder(productName) {
+      order = order.filter(item => item.name !== productName);
+      renderOrder();
     }
 
     // Bestellung abschließen
     function completeOrder() {
-      alert('Bestellung abgeschlossen');
-      order = [];
-      updateOrderTable();
+      document.getElementById('productButtons').classList.add('hidden');
+      document.getElementById('completeOrderBtn').classList.add('hidden');
+      document.getElementById('newCustomerBtn').classList.add('hidden');
+      document.getElementById('printReceiptBtn').classList.remove('hidden');
+      document.getElementById('orderTable').classList.remove('hidden');
     }
 
-    // Neuer Kunde
+    // Neue Bestellung starten
     function startNewOrder() {
       order = [];
-      updateOrderTable();
+      renderOrder();
+      document.getElementById('productButtons').classList.remove('hidden');
+      document.getElementById('completeOrderBtn').classList.remove('hidden');
+      document.getElementById('newCustomerBtn').classList.remove('hidden');
+      document.getElementById('printReceiptBtn').classList.add('hidden');
+      document.getElementById('orderTable').classList.add('hidden');
     }
 
     // Rechnung drucken
@@ -385,38 +374,38 @@
       window.print();
     }
 
-    // Pfandmodal öffnen
+    // Modal für Pfandrückgabe öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Pfandmodal schließen
+    // Modal für Pfandrückgabe schließen
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
     // Pfandmenge aktualisieren
-    function updatePfandQuantity(type, change) {
+    function updatePfandQuantity(type, delta) {
       const quantityInput = document.getElementById(`${type}Quantity`);
-      let currentQuantity = parseInt(quantityInput.value);
-      currentQuantity += change;
-      if (currentQuantity < 0) currentQuantity = 0;
-      quantityInput.value = currentQuantity;
+      const newValue = parseInt(quantityInput.value) + delta;
+      if (newValue >= 0) {
+        quantityInput.value = newValue;
+      }
     }
 
     // Pfandrückgabe berechnen
     function calculatePfandReturn() {
-      let totalPfandReturn = 0;
-      totalPfandReturn += parseInt(document.getElementById('bottleQuantity').value) * 1;
-      totalPfandReturn += parseInt(document.getElementById('glassQuantity').value) * 2;
-      totalPfandReturn += parseInt(document.getElementById('jugQuantity').value) * 5;
-      totalPfandReturn += parseInt(document.getElementById('cupQuantity').value) * 2;
-      totalPfandReturn += parseInt(document.getElementById('dishQuantity').value) * 5;
+      const bottleQuantity = parseInt(document.getElementById('bottleQuantity').value);
+      const glassQuantity = parseInt(document.getElementById('glassQuantity').value);
+      const jugQuantity = parseInt(document.getElementById('jugQuantity').value);
+      const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
+      const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
 
-      document.getElementById('pfandReturnAmount').textContent = totalPfandReturn.toFixed(2);
+      const pfandReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
+      document.getElementById('pfandReturnAmount').innerText = pfandReturn.toFixed(2);
     }
 
-    // Bei Seitenaufruf die Produkte anzeigen
+    // Initialisierung
     displayProductButtons();
   </script>
 </body>
