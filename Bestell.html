@@ -343,7 +343,7 @@
       });
 
       document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
-      document.getElementById('pfandReturnAmount').textContent = totalDeposit.toFixed(2);
+      document.getElementById('pfandReturnAmount').textContent = "0.00";  // Zeigt zu Beginn immer 0.00€
       updateAmountToPay(totalDeposit);
     }
 
@@ -367,7 +367,6 @@
       document.getElementById('amountToPay').textContent = amountToPay.toFixed(2);
     }
 
-    // Pfandrückgabe Modal öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
@@ -376,26 +375,26 @@
       document.getElementById('pfandModal').style.display = 'none';
     }
 
-    function updatePfandQuantity(item, delta) {
-      const quantityInput = document.getElementById(`${item}Quantity`);
-      let newQuantity = parseInt(quantityInput.value) + delta;
-      if (newQuantity >= 0) {
-        quantityInput.value = newQuantity;
-      }
+    function updatePfandQuantity(type, delta) {
+      const inputElement = document.getElementById(`${type}Quantity`);
+      const currentValue = parseInt(inputElement.value);
+      const newValue = currentValue + delta >= 0 ? currentValue + delta : 0;
+      inputElement.value = newValue;
     }
 
     function calculatePfandReturn() {
-      let totalDeposit = 0;
-      totalDeposit += parseInt(document.getElementById("bottleQuantity").value) * 1;
-      totalDeposit += parseInt(document.getElementById("glassQuantity").value) * 2;
-      totalDeposit += parseInt(document.getElementById("jugQuantity").value) * 5;
-      totalDeposit += parseInt(document.getElementById("cupQuantity").value) * 2;
-      totalDeposit += parseInt(document.getElementById("dishQuantity").value) * 5;
+      const bottleQuantity = parseInt(document.getElementById('bottleQuantity').value);
+      const glassQuantity = parseInt(document.getElementById('glassQuantity').value);
+      const jugQuantity = parseInt(document.getElementById('jugQuantity').value);
+      const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
+      const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
 
-      // Pfandrückgabe anzeigen
-      document.getElementById("pfandReturnAmount").textContent = totalDeposit.toFixed(2);
+      const totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
 
-      // Gesamtpreis und zu zahlenden Betrag berechnen
+      // Anzeige der Pfandrückgabe
+      document.getElementById('pfandReturnAmount').textContent = totalDeposit.toFixed(2);
+      
+      // Gesamtbetrag anpassen
       updateAmountToPay(totalDeposit);
     }
 
