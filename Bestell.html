@@ -141,16 +141,6 @@
       padding: 5px;
       font-size: 14px;
     }
-
-    /* Formular zur Pfandrückgabe */
-    .pfand-form {
-      margin-top: 20px;
-    }
-
-    .pfand-form select,
-    .pfand-form input {
-      margin: 5px;
-    }
   </style>
 </head>
 <body>
@@ -184,28 +174,7 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="pfandReturnBtn" class="pfand-button" onclick="togglePfandForm()">Pfandrückgabe</button>
-  </div>
-
-  <!-- Formular für die Pfandrückgabe -->
-  <div id="pfandForm" class="pfand-form hidden">
-    <h3>Pfandrückgabe</h3>
-    <label for="pfandFlasche">Flasche (1€):</label>
-    <input type="number" id="pfandFlasche" value="0" min="0" />
-    <br />
-    <label for="pfandGlas">Glas (2€):</label>
-    <input type="number" id="pfandGlas" value="0" min="0" />
-    <br />
-    <label for="pfandKrug">Krug (5€):</label>
-    <input type="number" id="pfandKrug" value="0" min="0" />
-    <br />
-    <label for="pfandTasse">Tasse (2€):</label>
-    <input type="number" id="pfandTasse" value="0" min="0" />
-    <br />
-    <label for="pfandGeschirr">Geschirr (5€):</label>
-    <input type="number" id="pfandGeschirr" value="0" min="0" />
-    <br />
-    <button onclick="applyPfandReturn()">Pfand abziehen</button>
+    <button id="pfandReturnBtn" class="pfand-button" onclick="handlePfandReturn()">Pfandrückgabe</button>
   </div>
 
   <script>
@@ -223,7 +192,11 @@
       { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
       { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
       { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
-      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 }
+      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
+      // Neue Getränke hinzugefügt
+      { name: "Hefeweizen", price: 3.80, category: "drink", deposit: 2.0 },
+      { name: "alkoholfreies Bier", price: 3.60, category: "drink", deposit: 5.0 },
+      { name: "alkoholfreies Hefe", price: 3.60, category: "drink", deposit: 2.0 }
     ];
 
     let order = [];
@@ -371,31 +344,12 @@
       window.print();
     }
 
-    function togglePfandForm() {
-      const pfandForm = document.getElementById("pfandForm");
-      pfandForm.classList.toggle("hidden");
-    }
-
-    function applyPfandReturn() {
-      const flasche = parseInt(document.getElementById("pfandFlasche").value) || 0;
-      const glas = parseInt(document.getElementById("pfandGlas").value) || 0;
-      const krug = parseInt(document.getElementById("pfandKrug").value) || 0;
-      const tasse = parseInt(document.getElementById("pfandTasse").value) || 0;
-      const geschirr = parseInt(document.getElementById("pfandGeschirr").value) || 0;
-
-      // Berechnung des Gesamtpfands
-      const totalPfand = (flasche * 1) + (glas * 2) + (krug * 5) + (tasse * 2) + (geschirr * 5);
-
-      // Gesamtpreis aktualisieren
-      const totalPriceElement = document.getElementById("totalPrice");
-      const currentTotal = parseFloat(totalPriceElement.textContent);
-      const newTotal = currentTotal - totalPfand;
-
-      totalPriceElement.textContent = newTotal.toFixed(2);
-      
-      // Formular ausblenden
-      togglePfandForm();
-      alert(`Pfandrückgabe: ${totalPfand.toFixed(2)}€ abgezogen.`);
+    function handlePfandReturn() {
+      let totalDeposit = 0;
+      order.forEach(item => {
+        totalDeposit += item.deposit * item.quantity;
+      });
+      alert(`Pfandrückgabe: Sie erhalten ${totalDeposit.toFixed(2)}€ zurück.`);
     }
 
     // Initialisiere die Produktbuttons
