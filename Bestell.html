@@ -104,72 +104,86 @@
       background-color: #C0392B;
     }
 
-    /* Pfandrückgabe-Schaltfläche */
     .pfand-button {
-      background-color: #C0392B; /* Rot */
-      color: white;
-    }
-
-    /* Modal für Pfandrückgabe */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .modal-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      width: 300px;
-    }
-
-    .modal-header {
-      font-size: 18px;
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-
-    .modal-body {
-      margin-bottom: 15px;
-    }
-
-    .modal-footer {
-      text-align: right;
-    }
-
-    .modal button {
-      background-color: #E74C3C;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal button:hover {
       background-color: #C0392B;
+      color: white;
     }
 
-    .modal input {
-      width: 50px;
-      margin-left: 5px;
-    }
-
-    /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
         flex-direction: column;
         gap: 5px;
       }
     }
+
+    .quantity-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 80px;
+    }
+
+    .quantity-input button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .quantity-input input {
+      width: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 14px;
+    }
+
+    /* Pfand Modal */
+    #pfandModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pfand-modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 300px;
+    }
+
+    .pfand-modal-content label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .pfand-modal-content input {
+      width: 60px;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .pfand-modal-content button {
+      width: 100%;
+      padding: 10px;
+      background-color: #E74C3C;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .pfand-modal-content button:hover {
+      background-color: #C0392B;
+    }
+
   </style>
 </head>
 <body>
@@ -206,34 +220,27 @@
     <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
   </div>
 
-  <!-- Modal für Pfandrückgabe -->
-  <div id="pfandModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">Pfandrückgabe</div>
-      <div class="modal-body">
-        <label for="bottleQuantity">Flasche (1€):</label>
-        <input type="number" id="bottleQuantity" value="0" min="0">
-        <br><br>
+  <!-- Pfand Modal -->
+  <div id="pfandModal">
+    <div class="pfand-modal-content">
+      <h3>Pfandrückgabe</h3>
+      <label for="bottleQuantity">Flasche (1€):</label>
+      <input type="number" id="bottleQuantity" value="0" min="0">
+      
+      <label for="glassQuantity">Glas (2€):</label>
+      <input type="number" id="glassQuantity" value="0" min="0">
 
-        <label for="glassQuantity">Glas (2€):</label>
-        <input type="number" id="glassQuantity" value="0" min="0">
-        <br><br>
+      <label for="jugQuantity">Krug (5€):</label>
+      <input type="number" id="jugQuantity" value="0" min="0">
 
-        <label for="jugQuantity">Krug (5€):</label>
-        <input type="number" id="jugQuantity" value="0" min="0">
-        <br><br>
+      <label for="cupQuantity">Tasse (2€):</label>
+      <input type="number" id="cupQuantity" value="0" min="0">
 
-        <label for="cupQuantity">Tasse (2€):</label>
-        <input type="number" id="cupQuantity" value="0" min="0">
-        <br><br>
+      <label for="dishQuantity">Geschirr (5€):</label>
+      <input type="number" id="dishQuantity" value="0" min="0">
 
-        <label for="dishQuantity">Geschirr (5€):</label>
-        <input type="number" id="dishQuantity" value="0" min="0">
-      </div>
-      <div class="modal-footer">
-        <button onclick="calculatePfandReturn()">Berechnen</button>
-        <button onclick="closePfandModal()">Schließen</button>
-      </div>
+      <button onclick="calculatePfandReturn()">Pfandrückgabe berechnen</button>
+      <button onclick="closePfandModal()">Schließen</button>
     </div>
   </div>
 
@@ -253,10 +260,9 @@
       { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
       { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
       { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
-      // Neue Getränke hinzugefügt
-      { name: "Hefeweizen", price: 3.80, category: "drink", deposit: 2.0 },
-      { name: "alkoholfreies Bier", price: 3.60, category: "drink", deposit: 5.0 },
-      { name: "alkoholfreies Hefe", price: 3.60, category: "drink", deposit: 2.0 }
+      { name: "Hefeweizen", price: 3.8, category: "drink", deposit: 2.0 },
+      { name: "alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
+      { name: "alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
     ];
 
     let order = [];
@@ -404,7 +410,16 @@
       window.print();
     }
 
+    // Pfand-Rückgabefunktionen
     function openPfandModal() {
+      // Setze alle Eingabefelder auf 0
+      document.getElementById("bottleQuantity").value = 0;
+      document.getElementById("glassQuantity").value = 0;
+      document.getElementById("jugQuantity").value = 0;
+      document.getElementById("cupQuantity").value = 0;
+      document.getElementById("dishQuantity").value = 0;
+
+      // Öffne das Modal
       document.getElementById("pfandModal").style.display = "flex";
     }
 
@@ -426,13 +441,13 @@
       const newTotalPrice = totalPrice - totalPfand;
 
       alert(`Pfandrückgabe: Sie erhalten ${totalPfand.toFixed(2)}€ zurück. Neuer Gesamtpreis: ${newTotalPrice.toFixed(2)}€`);
-      
+
       // Gesamtpreis aktualisieren
       document.getElementById("totalPrice").textContent = newTotalPrice.toFixed(2);
       closePfandModal();
     }
 
-    // Initialisiere die Produktbuttons
+    // Initialisierung der Produkt-Buttons
     generateProductButtons();
   </script>
 </body>
