@@ -161,6 +161,17 @@
       font-size: 18px;
     }
 
+    .final-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 18px;
+    }
+
+    .final-price-row span {
+      padding-left: 10px;
+    }
+
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
@@ -199,9 +210,10 @@
     <tbody>
     </tbody>
   </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€ - Pfand: <span id="depositTotal">0.00</span>€</h3>
 
-  <div class="final-amount">
+  <div class="final-price-row">
+    <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+    <h3>Pfand: <span id="depositTotal">0.00</span>€</h3>
     <h3>= Zu zahlender Betrag: <span id="finalAmount">0.00</span>€</h3>
   </div>
 
@@ -305,14 +317,11 @@
       { name: "Steak", price: 3.4, category: "food", deposit: 0 },
       { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
       { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Bier", price: 4.8, category: "drink", deposit: 2 },
+      { name: "Weißwein", price: 3.4, category: "drink", deposit: 2 },
     ];
 
     let order = [];
-    let totalDeposit = 0;
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
@@ -320,7 +329,7 @@
       const foodButtons = products.filter(p => p.category === "food");
       const foodTitle = document.createElement("div");
       foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
+      foodTitle.textContent = "🍽️ Essen:";
       container.appendChild(foodTitle);
 
       const foodRow = document.createElement("div");
