@@ -5,169 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-    }
+    /* ... (deine bestehenden Styles) ... */
 
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width: 67px;
-      height: auto;
-      margin-right: 10px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
-    }
-
-    .product-buttons-container {
-      margin-bottom: 20px;
-    }
-
-    .category-title {
-      font-size: 18px;
+    /* Neues Styling für den zu zahlenden Betrag */
+    .payment-summary {
       font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .product-buttons-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .product-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .food-button {
-      background-color: #f1c40f;
-      color: #000000;
-    }
-
-    .drink-button {
-      background-color: #3498db;
-      color: #ffffff;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    .order-summary {
       margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .receipt-footer {
-      text-align: center;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    .modal-header {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .modal-footer {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .modal-footer button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-footer button:hover {
-      background-color: #2980b9;
-    }
-
-    /* Styling für die Schaltflächen nebeneinander */
-    .button-container {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .button-container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button-container button:hover {
-      background-color: #c0392b;
-    }
-
-    /* Styling für das Pfandrückgabe Menü */
-    .deposit-return-container {
-      margin-top: 20px;
-    }
-
-    .deposit-return-item {
-      margin-bottom: 10px;
-    }
-
-    .deposit-return-item label {
-      margin-right: 10px;
-    }
-
-    .deposit-return-item select {
-      padding: 5px;
-    }
-
-    /* Responsive Anpassungen */
-    @media (max-width: 768px) {
-      .product-buttons-row {
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .modal-content {
-        width: 95%;
-        max-width: 500px;
-      }
     }
   </style>
 </head>
@@ -196,6 +39,11 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+
+  <div class="payment-summary">
+    <h4>Pfandrückgabe: <span id="depositReturnAmount">0.00</span>€</h4>
+    <h4>Zu zahlender Betrag: <span id="payableAmount">0.00</span>€</h4>
+  </div>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -304,6 +152,7 @@
     ];
 
     let order = [];
+    let depositReturn = 0;
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
@@ -394,6 +243,7 @@
       });
 
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
+      updatePayableAmount(totalPrice);
     }
 
     function removeFromOrder(itemToRemove) {
@@ -402,7 +252,7 @@
     }
 
     function completeOrder() {
-      // Hier kann die Bestellung abgeschlossen werden
+      // Bestellung abschließen
       const finalTotalPrice = parseFloat(document.getElementById("totalPrice").textContent);
       alert(`Bestellung abgeschlossen! Gesamtpreis: ${finalTotalPrice.toFixed(2)}€`);
     }
@@ -417,7 +267,11 @@
       window.print();
     }
 
-    // Modal für die Pfandrückgabe
+    function updatePayableAmount(totalPrice) {
+      const payableAmount = totalPrice - depositReturn;
+      document.getElementById("payableAmount").textContent = payableAmount.toFixed(2);
+    }
+
     function returnDeposit() {
       // Setze alle Mengen auf 0
       document.getElementById("bottleQuantity").value = 0;
@@ -439,9 +293,11 @@
       const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
       const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
 
-      const totalReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (dishQuantity * 5);
+      depositReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (dishQuantity * 5);
 
-      document.getElementById("depositTotal").textContent = totalReturn.toFixed(2);
+      document.getElementById("depositTotal").textContent = depositReturn.toFixed(2);
+      document.getElementById("depositReturnAmount").textContent = depositReturn.toFixed(2);
+      updatePayableAmount(parseFloat(document.getElementById("totalPrice").textContent));
     }
 
     // Initialisiere die Produktbuttons
