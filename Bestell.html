@@ -119,7 +119,6 @@
       background-color: #2980b9;
     }
 
-    /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
       gap: 10px;
@@ -129,7 +128,7 @@
     .button-container button {
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #e74c3c; /* Neues Rot für die Buttons */
+      background-color: #e74c3c;
       color: white;
       border: none;
       border-radius: 5px;
@@ -137,55 +136,16 @@
     }
 
     .button-container button:hover {
-      background-color: #c0392b; /* Dunkleres Rot für den Hover-Effekt */
+      background-color: #c0392b;
     }
 
-    @media print {
-      .product-buttons-container,
-      #completeOrderBtn,
-      #newCustomerBtn,
-      #paymentSection,
-      #orderTable th:nth-child(6),
-      #orderTable td:nth-child(6) {
-        display: none;
-      }
+    .deposit-options {
+      display: none;
+      margin-top: 20px;
+    }
 
-      .receipt-header {
-        display: block;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .receipt-header img {
-        width: 100px;
-        margin-bottom: 10px;
-      }
-
-      .receipt-header h1 {
-        font-size: 22px;
-      }
-
-      .receipt-body {
-        font-size: 14px;
-        margin-top: 20px;
-      }
-
-      .receipt-body table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
-
-      .receipt-body th, .receipt-body td {
-        padding: 8px;
-        border: 1px solid #ddd;
-        text-align: center;
-      }
-
-      .receipt-footer {
-        font-size: 12px;
-        margin-top: 30px;
-      }
+    .deposit-option {
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -196,6 +156,7 @@
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   </div>
 
+  <h2>Produktauswahl</h2>
   <div id="productButtons" class="product-buttons-container"></div>
 
   <h2>Bestellung</h2>
@@ -222,71 +183,63 @@
     <button id="depositReturnBtn" onclick="returnDeposit()">Pfandrückgabe</button>
   </div>
 
-  <div id="orderSummary" class="order-summary hidden">
-    <h2>Bestellung abgeschlossen</h2>
-    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
-    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
-    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+  <!-- Pfandrückgabe Optionen -->
+  <div id="depositOptions" class="deposit-options">
+    <div class="deposit-option">
+      <label for="bottleAmount">Flasche (1€):</label>
+      <select id="bottleAmount">
+        ${[...Array(10).keys()].map(i => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+      </select>
+    </div>
+    <div class="deposit-option">
+      <label for="glassAmount">Glas (2€):</label>
+      <select id="glassAmount">
+        ${[...Array(10).keys()].map(i => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+      </select>
+    </div>
+    <div class="deposit-option">
+      <label for="jugAmount">Krug (5€):</label>
+      <select id="jugAmount">
+        ${[...Array(10).keys()].map(i => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+      </select>
+    </div>
+    <div class="deposit-option">
+      <label for="dishAmount">Geschirr (5€):</label>
+      <select id="dishAmount">
+        ${[...Array(10).keys()].map(i => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+      </select>
+    </div>
+    <button onclick="applyDeposit()">Pfand anwenden</button>
   </div>
 
   <script>
+    let order = [];
+    let depositTotal = 0;
+
+    // Produktliste definieren
     const products = [
-      { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
-      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
-      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
-      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
-      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
-      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
-      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
-      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
-      { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
-      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Bratwurst", price: 3.5, deposit: 0 },
+      { name: "Pommes", price: 2.0, deposit: 0 },
+      { name: "Cola", price: 2.5, deposit: 0.25 },
+      { name: "Bier", price: 3.0, deposit: 0.5 },
+      { name: "Wasser", price: 1.5, deposit: 0.25 }
     ];
 
-    let order = [];
+    // Funktion zur Anzeige der Produkte
+    function displayProducts() {
+      const productButtonsContainer = document.getElementById('productButtons');
+      productButtonsContainer.innerHTML = '';
 
-    function generateProductButtons() {
-      const container = document.getElementById("productButtons");
-
-      const foodButtons = products.filter(p => p.category === "food");
-      const foodTitle = document.createElement("div");
-      foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
-      container.appendChild(foodTitle);
-
-      const foodRow = document.createElement("div");
-      foodRow.classList.add("product-buttons-row");
-      foodButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
+      products.forEach(product => {
+        const button = document.createElement('button');
+        button.textContent = `${product.name} - ${product.price}€`;
+        button.className = product.deposit > 0 ? 'product-button drink-button' : 'product-button food-button';
         button.onclick = () => addToOrder(product);
-        foodRow.appendChild(button);
+        productButtonsContainer.appendChild(button);
       });
-      container.appendChild(foodRow);
-
-      const drinkButtons = products.filter(p => p.category === "drink");
-      const drinkTitle = document.createElement("div");
-      drinkTitle.classList.add("category-title");
-      drinkTitle.textContent = "🥤 Getränke:";
-      container.appendChild(drinkTitle);
-
-      const drinkRow = document.createElement("div");
-      drinkRow.classList.add("product-buttons-row");
-      drinkButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
-        button.onclick = () => addToOrder(product);
-        drinkRow.appendChild(button);
-      });
-      container.appendChild(drinkRow);
     }
 
+    // Funktion zur Bestellung hinzufügen
     function addToOrder(product) {
       const existing = order.find(item => item.name === product.name);
       if (existing) {
@@ -297,16 +250,7 @@
       updateOrderTable();
     }
 
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
-
+    // Funktion zur Aktualisierung der Bestelltabelle
     function updateOrderTable() {
       const tbody = document.querySelector("#orderTable tbody");
       tbody.innerHTML = "";
@@ -332,7 +276,8 @@
         `;
         tbody.appendChild(row);
       });
-      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
+      // Abzug des Pfandes vom Gesamtbetrag
+      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal() - depositTotal);
     }
 
     function calculateTotal() {
@@ -343,82 +288,53 @@
       return amount.toFixed(2).replace(".", ",");
     }
 
+    function removeItem(index) {
+      order.splice(index, 1);
+      updateOrderTable();
+    }
+
+    function updateQuantity(index, quantity) {
+      order[index].quantity = parseInt(quantity);
+      updateOrderTable();
+    }
+
     function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
-      document.getElementById("orderSummary").classList.remove("hidden");
-
-      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
-      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
-        alert("Der gezahlte Betrag reicht nicht aus.");
-        return;
-      }
-
-      const change = paidAmount - calculateTotal();
-      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
-      document.getElementById("changeAmount").textContent = formatCurrency(change);
+      alert("Bestellung abgeschlossen!");
     }
 
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      updateOrderTable();
+      depositTotal = 0;
     }
 
     function printReceipt() {
-      const receiptContent = `
-        <div class="receipt-header">
-          <img src="logo.png" alt="Logo">
-          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-        </div>
-        <div class="receipt-body">
-          <h2>Bestellung</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th>Preis (€)</th>
-                <th>Menge</th>
-                <th>Pfand (€)</th>
-                <th>Gesamt (€)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${formatCurrency(item.price)}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatCurrency(item.deposit)}</td>
-                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
-          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
-          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
-        </div>
-        <div class="receipt-footer">
-          <p>Schön, dass Du mit uns feierst!</p>
-          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
-        </div>
-      `;
-
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = receiptContent;
       window.print();
-      document.body.innerHTML = originalContents;
     }
 
-    generateProductButtons();
+    // Funktion zur Anzeige der Pfandrückgabe
+    function returnDeposit() {
+      const depositOptions = document.getElementById('depositOptions');
+      depositOptions.style.display = depositOptions.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Funktion zum Anwenden des Pfandes
+    function applyDeposit() {
+      const bottleAmount = parseInt(document.getElementById('bottleAmount').value) || 0;
+      const glassAmount = parseInt(document.getElementById('glassAmount').value) || 0;
+      const jugAmount = parseInt(document.getElementById('jugAmount').value) || 0;
+      const dishAmount = parseInt(document.getElementById('dishAmount').value) || 0;
+
+      // Berechnung des Rückgabepfandes
+      depositTotal = (bottleAmount * 1) + (glassAmount * 2) + (jugAmount * 5) + (dishAmount * 5);
+
+      // Aktualisiere die Bestellung und den Gesamtpreis
+      updateOrderTable();
+    }
+
+    // Initiale Anzeige der Produkte
+    displayProducts();
   </script>
+
 </body>
 </html>
