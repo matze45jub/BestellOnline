@@ -141,20 +141,32 @@
     }
 
     /* Styling für das Pfandrückgabe Menü */
-    #depositReturnTable {
+    .deposit-return-container {
+      margin-top: 20px;
+    }
+
+    .deposit-return-item {
+      margin-bottom: 10px;
+    }
+
+    .deposit-return-item label {
+      margin-right: 10px;
+    }
+
+    .deposit-return-item select {
+      padding: 5px;
+    }
+
+    table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
-      margin-top: 10px;
     }
 
-    #depositReturnTable th, #depositReturnTable td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-
-    #depositReturnTable tfoot {
-      background-color: #f9f9f9;
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
     }
 
   </style>
@@ -216,7 +228,7 @@
           <td>1.00</td>
           <td>
             <select id="bottleQuantity">
-              ${generateOptions(10)}
+              <!-- Optionen für Flasche -->
             </select>
           </td>
         </tr>
@@ -225,7 +237,7 @@
           <td>2.00</td>
           <td>
             <select id="glassQuantity">
-              ${generateOptions(10)}
+              <!-- Optionen für Glas -->
             </select>
           </td>
         </tr>
@@ -234,7 +246,7 @@
           <td>5.00</td>
           <td>
             <select id="jugQuantity">
-              ${generateOptions(10)}
+              <!-- Optionen für Krug -->
             </select>
           </td>
         </tr>
@@ -243,7 +255,7 @@
           <td>5.00</td>
           <td>
             <select id="dishQuantity">
-              ${generateOptions(10)}
+              <!-- Optionen für Geschirr -->
             </select>
           </td>
         </tr>
@@ -319,137 +331,41 @@
       container.appendChild(drinkRow);
     }
 
-    function addToOrder(product) {
-      const existingProduct = order.find(item => item.name === product.name);
-      if (existingProduct) {
-        existingProduct.quantity++;
-      } else {
-        order.push({ ...product, quantity: 1 });
-      }
-      updateOrderTable();
+    // Generiert die Optionen für die Dropdown-Menüs (1 bis max)
+    function generateOptions(max) {
+      return Array.from({ length: max }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("");
     }
 
-    function updateOrderTable() {
-      const tableBody = document.getElementById("orderTable").getElementsByTagName("tbody")[0];
-      tableBody.innerHTML = ""; 
-
-      order.forEach(item => {
-        const row = document.createElement("tr");
-
-        const nameCell = document.createElement("td");
-        nameCell.textContent = item.name;
-        row.appendChild(nameCell);
-
-        const priceCell = document.createElement("td");
-        priceCell.textContent = item.price.toFixed(2);
-        row.appendChild(priceCell);
-
-        const quantityCell = document.createElement("td");
-        quantityCell.textContent = item.quantity;
-        row.appendChild(quantityCell);
-
-        const depositCell = document.createElement("td");
-        depositCell.textContent = (item.deposit * item.quantity).toFixed(2);
-        row.appendChild(depositCell);
-
-        const totalCell = document.createElement("td");
-        totalCell.textContent = (item.price * item.quantity + item.deposit * item.quantity).toFixed(2);
-        row.appendChild(totalCell);
-
-        const actionsCell = document.createElement("td");
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Entfernen";
-        removeButton.onclick = () => removeFromOrder(item);
-        actionsCell.appendChild(removeButton);
-        row.appendChild(actionsCell);
-
-        tableBody.appendChild(row);
-      });
-
-      const totalPrice = order.reduce((sum, item) => sum + item.price * item.quantity + item.deposit * item.quantity, 0);
-      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
-    }
-
-    function removeFromOrder(item) {
-      order = order.filter(product => product !== item);
-      updateOrderTable();
-    }
-
-    function completeOrder() {
-      const paidAmount = parseFloat(prompt("Bitte geben Sie den Betrag ein:"));
-      if (isNaN(paidAmount)) {
-        alert("Ungültiger Betrag.");
-        return;
-      }
-      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
-      const totalAmount = parseFloat(document.getElementById("totalPrice").textContent);
-      const change = paidAmount - totalAmount;
-      document.getElementById("changeAmount").textContent = change.toFixed(2);
-
-      document.getElementById("orderSummary").classList.remove("hidden");
-    }
-
-    function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
-    }
-
-    function printReceipt() {
-      const receipt = `
-        <h2>Rechnung</h2>
-        <table>
-          <thead>
-            <tr><th>Produkt</th><th>Preis (€)</th><th>Anzahl</th><th>Gesamt (€)</th></tr>
-          </thead>
-          <tbody>
-            ${order.map(item => `
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.price.toFixed(2)}</td>
-                <td>${item.quantity}</td>
-                <td>${(item.price * item.quantity + item.deposit * item.quantity).toFixed(2)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="3"><strong>Gesamt</strong></td>
-              <td>${document.getElementById("totalPrice").textContent}</td>
-            </tr>
-          </tfoot>
-        </table>
-      `;
-      const newWindow = window.open("", "_blank");
-      newWindow.document.write(receipt);
-      newWindow.print();
-    }
-
-    // Pfandrückgabe-Modul
     function returnDeposit() {
       document.getElementById("depositModal").classList.remove("hidden");
+      // Optionen in die Dropdowns einfügen
+      document.getElementById("bottleQuantity").innerHTML = generateOptions(10);
+      document.getElementById("glassQuantity").innerHTML = generateOptions(10);
+      document.getElementById("jugQuantity").innerHTML = generateOptions(10);
+      document.getElementById("dishQuantity").innerHTML = generateOptions(10);
+    }
+
+    function calculateDepositReturn() {
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value) || 0;
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value) || 0;
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value) || 0;
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value) || 0;
+
+      const bottleReturn = bottleQuantity * 1.0;
+      const glassReturn = glassQuantity * 2.0;
+      const jugReturn = jugQuantity * 5.0;
+      const dishReturn = dishQuantity * 5.0;
+
+      const totalReturn = bottleReturn + glassReturn + jugReturn + dishReturn;
+      document.getElementById("depositTotal").textContent = totalReturn.toFixed(2);
     }
 
     function closeDepositModal() {
       document.getElementById("depositModal").classList.add("hidden");
     }
 
-    function calculateDepositReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value, 10);
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value, 10);
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value, 10);
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value, 10);
-
-      const total = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
-      document.getElementById("depositTotal").textContent = total.toFixed(2);
-    }
-
-    function generateOptions(max) {
-      return Array.from({ length: max + 1 }, (_, i) => `<option value="${i}">${i}</option>`).join("");
-    }
-
-    // Initialisierung
     generateProductButtons();
   </script>
+
 </body>
 </html>
