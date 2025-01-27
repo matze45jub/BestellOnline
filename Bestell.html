@@ -221,6 +221,7 @@
   <div class="total-inline">
     <div class="total-label">Gesamtpreis:</div>
     <div id="totalPrice" class="total-amount">0.00</div>
+    <div id="totalSpace"></div> <!-- Drei Leerzeichen -->
   </div>
   <div class="total-inline">
     <div class="total-label">abzugsfähiger Pfand:</div>
@@ -339,15 +340,14 @@
     }
 
     function updateQuantity(item, newQuantity) {
-      if (newQuantity > 0) {
-        item.quantity = newQuantity;
-        renderOrder();
-      }
+      item.quantity = Math.max(newQuantity, 0);
+      renderOrder();
     }
 
     function renderOrder() {
       const orderTableBody = document.querySelector("#orderTable tbody");
       orderTableBody.innerHTML = "";
+
       let totalPrice = 0;
       let totalDeposit = 0;
 
@@ -421,6 +421,9 @@
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
       document.getElementById("totalDeposit").textContent = (-totalDeposit).toFixed(2);
       document.getElementById("payableAmount").textContent = (totalPrice - totalDeposit).toFixed(2);
+
+      // Füge drei Leerzeichen hinter dem Gesamtpreis hinzu
+      document.getElementById("totalSpace").textContent = "   ";
     }
 
     function completeOrder() {
