@@ -85,40 +85,6 @@
       margin-top: 20px;
     }
 
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    .modal-header {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .modal-footer {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .modal-footer button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-footer button:hover {
-      background-color: #2980b9;
-    }
-
     /* Styling für die Schaltflächen nebeneinander */
     .button-container {
       display: flex;
@@ -140,9 +106,13 @@
       background-color: #c0392b; /* Dunkleres Rot für den Hover-Effekt */
     }
 
-    /* Styling für das Pfandrückgabe Menü */
-    .deposit-return-container {
+    /* Styling für die Pfandrückgabe als Inline-Bereich */
+    .deposit-container {
       margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
     }
 
     .deposit-return-item {
@@ -157,6 +127,20 @@
       padding: 5px;
     }
 
+    .deposit-container button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .deposit-container button:hover {
+      background-color: #2980b9;
+    }
   </style>
 </head>
 <body>
@@ -189,7 +173,7 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="depositReturnBtn" onclick="returnDeposit()">Pfandrückgabe</button>
+    <button id="depositReturnBtn" onclick="toggleDepositModal()">Pfandrückgabe</button>
   </div>
 
   <div id="orderSummary" class="order-summary hidden">
@@ -199,8 +183,8 @@
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
   </div>
 
-  <!-- Modal für Pfandrückgabe -->
-  <div id="depositModal" class="modal-content hidden">
+  <!-- Inline-Bereich für Pfandrückgabe -->
+  <div id="depositModal" class="hidden deposit-container">
     <h2>Pfandrückgabe</h2>
     <div class="deposit-return-container">
       <div class="deposit-return-item">
@@ -269,169 +253,24 @@
       </div>
       <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
       <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
-      <button onclick="closeDepositModal()">Schließen</button>
+      <button onclick="toggleDepositModal()">Schließen</button>
     </div>
   </div>
 
   <script>
     const products = [
       { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
-      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
-      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
-      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
-      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
-      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
-      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
-      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
       { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
-      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
       { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
+      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 }
     ];
 
     let order = [];
 
-    function generateProductButtons() {
-      const container = document.getElementById("productButtons");
-
-      const foodButtons = products.filter(p => p.category === "food");
-      const foodTitle = document.createElement("div");
-      foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
-      container.appendChild(foodTitle);
-
-      const foodRow = document.createElement("div");
-      foodRow.classList.add("product-buttons-row");
-      foodButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
-        button.onclick = () => addToOrder(product);
-        foodRow.appendChild(button);
-      });
-      container.appendChild(foodRow);
-
-      const drinkButtons = products.filter(p => p.category === "drink");
-      const drinkTitle = document.createElement("div");
-      drinkTitle.classList.add("category-title");
-      drinkTitle.textContent = "🥤 Getränke:";
-      container.appendChild(drinkTitle);
-
-      const drinkRow = document.createElement("div");
-      drinkRow.classList.add("product-buttons-row");
-      drinkButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
-        button.onclick = () => addToOrder(product);
-        drinkRow.appendChild(button);
-      });
-      container.appendChild(drinkRow);
-    }
-
-    function addToOrder(product) {
-      const existing = order.find(item => item.name === product.name);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        order.push({ ...product, quantity: 1 });
-      }
-      updateOrderTable();
-    }
-
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
-
-    function updateOrderTable() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
-
-      order.forEach((item, index) => {
-        const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.deposit * item.quantity;
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${formatCurrency(item.price * item.quantity)}</td>
-          <td>
-            <select onchange="updateQuantity(${index}, this.value)">
-              ${Array.from({ length: 10 }, (_, i) => `
-                <option value="${i + 1}" ${item.quantity === i + 1 ? "selected" : ""}>${i + 1}</option>
-              `).join("")}
-            </select>
-          </td>
-          <td>${formatCurrency(depositTotal)}</td>
-          <td>${formatCurrency(total)}</td>
-          <td><button onclick="removeItem(${index})">Entfernen</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
-    }
-
-    function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
-    }
-
-    function formatCurrency(amount) {
-      return amount.toFixed(2).replace(".", ",");
-    }
-
-    function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
-        return;
-      }
-
-      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
-      document.getElementById("orderSummary").classList.remove("hidden");
-
-      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
-      document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
-      const change = paidAmount - calculateTotal();
-      document.getElementById("changeAmount").textContent = change.toFixed(2);
-    }
-
-    function startNewOrder() {
-      order = [];
-      updateOrderTable();
-      document.getElementById("orderSummary").classList.add("hidden");
-    }
-
-    function printReceipt() {
-      alert("Rechnung wird gedruckt...");
-    }
-
-    function returnDeposit() {
-      document.getElementById("depositModal").classList.remove("hidden");
-    }
-
-    function closeDepositModal() {
-      document.getElementById("depositModal").classList.add("hidden");
+    function toggleDepositModal() {
+      const depositModal = document.getElementById("depositModal");
+      depositModal.classList.toggle("hidden");
     }
 
     function calculateDepositReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value, 10);
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value, 10);
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value, 10);
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value, 10);
-
-      const total = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
-      document.getElementById("depositTotal").textContent = total.toFixed(2);
-    }
-
-    generateProductButtons();
-  </script>
-
-</body>
-</html>
+      const bottle = parseInt(document.get
