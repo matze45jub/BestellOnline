@@ -236,23 +236,43 @@
       <h3>Pfandrückgabe</h3>
       <div class="pfand-item">
         <label for="bottleQuantity">Flasche (1€ Pfand):</label>
-        <input type="number" id="bottleQuantity" value="0">
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('bottle', -1)">-</button>
+          <input type="number" id="bottleQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('bottle', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
         <label for="glassQuantity">Glas (2€ Pfand):</label>
-        <input type="number" id="glassQuantity" value="0">
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('glass', -1)">-</button>
+          <input type="number" id="glassQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('glass', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
         <label for="jugQuantity">Krug (5€ Pfand):</label>
-        <input type="number" id="jugQuantity" value="0">
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('jug', -1)">-</button>
+          <input type="number" id="jugQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('jug', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
         <label for="cupQuantity">Tasse (2€ Pfand):</label>
-        <input type="number" id="cupQuantity" value="0">
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('cup', -1)">-</button>
+          <input type="number" id="cupQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('cup', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
         <label for="dishQuantity">Geschirr (5€ Pfand):</label>
-        <input type="number" id="dishQuantity" value="0">
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('dish', -1)">-</button>
+          <input type="number" id="dishQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('dish', 1)">+</button>
+        </div>
       </div>
       <button onclick="calculatePfandReturn()">Berechnen</button>
       <button onclick="closePfandModal()">Schließen</button>
@@ -269,15 +289,9 @@
       { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
       { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
       { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
-      { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
-      { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
-      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
-      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
-      { name: "Hefeweizen", price: 3.8, category: "drink", deposit: 2.0 },
-      { name: "Alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
-      { name: "Alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
+      { name: "Hefeweizen", price: 3.80, category: "drink", deposit: 2.0 },
+      { name: "Alkoholfreies Bier", price: 3.60, category: "drink", deposit: 5.0 },
+      { name: "Alkoholfreies Hefe", price: 3.60, category: "drink", deposit: 2.0 }
     ];
 
     let order = [];
@@ -289,7 +303,7 @@
       const foodButtons = products.filter(p => p.category === "food");
       const foodTitle = document.createElement("div");
       foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
+      foodTitle.textContent = "🍔 Essen:";
       container.appendChild(foodTitle);
 
       const foodRow = document.createElement("div");
@@ -334,6 +348,25 @@
     function updateQuantity(item, newQuantity) {
       item.quantity = Math.max(newQuantity, 0);
       renderOrder();
+    }
+
+    function updatePfandQuantity(item, change) {
+      const pfandQuantityElement = document.getElementById(`${item}Quantity`);
+      const currentValue = parseInt(pfandQuantityElement.value);
+      pfandQuantityElement.value = Math.max(0, currentValue + change);
+    }
+
+    function calculatePfandReturn() {
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
+      const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
+
+      totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
+      
+      alert("Pfandrückgabe: " + totalDeposit.toFixed(2) + "€");
+      renderOrder(); // Update total prices after deposit
     }
 
     function renderOrder() {
@@ -433,19 +466,6 @@
 
     function closePfandModal() {
       document.getElementById("pfandModal").style.display = "none";
-    }
-
-    function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
-      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
-      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
-      const cupQuantity = parseInt(document.getElementById("cupQuantity").value);
-      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
-
-      totalDeposit = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
-
-      alert("Pfandrückgabe: " + totalDeposit.toFixed(2) + "€");
-      renderOrder(); // Update total prices after deposit
     }
 
     generateProductButtons();
