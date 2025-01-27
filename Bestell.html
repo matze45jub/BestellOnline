@@ -192,7 +192,12 @@
     <tbody>
     </tbody>
   </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+
+  <h3>
+    Gesamtpreis: <span id="totalPrice">0.00</span>€ 
+    | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
+    | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
+  </h3>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -265,182 +270,118 @@
       { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
       { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
       { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
-      { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
-      { name: "Hefeweizen", price: 3.8, category: "drink", deposit: 2.0 },
-      { name: "Alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
-      { name: "Alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
+      { name: "Apfelwein", price: 4.0, category: "drink", deposit: 5.0 }
     ];
 
     let order = [];
 
-    function generateProductButtons() {
-      const container = document.getElementById("productButtons");
+    // Produkt Buttons anzeigen
+    function displayProductButtons() {
+      const productButtonsDiv = document.getElementById('productButtons');
+      const categories = ['food', 'drink'];
 
-      const foodButtons = products.filter(p => p.category === "food");
-      const foodTitle = document.createElement("div");
-      foodTitle.classList.add("category-title");
-      foodTitle.textContent = "🍴 Essen:";
-      container.appendChild(foodTitle);
+      categories.forEach(category => {
+        const categoryTitle = document.createElement('div');
+        categoryTitle.classList.add('category-title');
+        categoryTitle.innerHTML = category.charAt(0).toUpperCase() + category.slice(1);
 
-      const foodRow = document.createElement("div");
-      foodRow.classList.add("product-buttons-row");
-      foodButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "food-button");
-        button.onclick = () => addToOrder(product);
-        foodRow.appendChild(button);
+        const productButtonsRow = document.createElement('div');
+        productButtonsRow.classList.add('product-buttons-row');
+
+        products.filter(product => product.category === category).forEach(product => {
+          const productButton = document.createElement('button');
+          productButton.classList.add('product-button', category + '-button');
+          productButton.innerHTML = `${product.name} - ${product.price}€`;
+          productButton.onclick = () => addToOrder(product);
+          productButtonsRow.appendChild(productButton);
+        });
+
+        productButtonsDiv.appendChild(categoryTitle);
+        productButtonsDiv.appendChild(productButtonsRow);
       });
-      container.appendChild(foodRow);
-
-      const drinkButtons = products.filter(p => p.category === "drink");
-      const drinkTitle = document.createElement("div");
-      drinkTitle.classList.add("category-title");
-      drinkTitle.textContent = "🥤 Getränke:";
-      container.appendChild(drinkTitle);
-
-      const drinkRow = document.createElement("div");
-      drinkRow.classList.add("product-buttons-row");
-      drinkButtons.forEach(product => {
-        const button = document.createElement("button");
-        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button", "drink-button");
-        button.onclick = () => addToOrder(product);
-        drinkRow.appendChild(button);
-      });
-      container.appendChild(drinkRow);
     }
 
     function addToOrder(product) {
-      let orderItem = order.find(item => item.name === product.name);
-      if (orderItem) {
-        orderItem.quantity++;
+      const existingProduct = order.find(item => item.name === product.name);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
       } else {
         order.push({ ...product, quantity: 1 });
       }
       renderOrder();
     }
 
-    function updateQuantity(item, newQuantity) {
-      if (newQuantity > 0) {
-        item.quantity = newQuantity;
+    function renderOrder() {
+      const orderTableBody = document.querySelector('#orderTable tbody');
+      orderTableBody.innerHTML = '';
+      
+      let totalPrice = 0;
+      let totalDeposit = 0;
+
+      order.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>
+            <div class="quantity-input">
+              <button onclick="changeQuantity('${item.name}', -1)">-</button>
+              <input type="number" value="${item.quantity}" readonly>
+              <button onclick="changeQuantity('${item.name}', 1)">+</button>
+            </div>
+          </td>
+          <td>${item.price}</td>
+          <td>${item.deposit}</td>
+          <td>${(item.price * item.quantity).toFixed(2)}</td>
+          <td>${(item.deposit * item.quantity).toFixed(2)}</td>
+          <td>${((item.price * item.quantity) + (item.deposit * item.quantity)).toFixed(2)}</td>
+          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
+        `;
+        orderTableBody.appendChild(row);
+
+        totalPrice += item.price * item.quantity;
+        totalDeposit += item.deposit * item.quantity;
+      });
+
+      document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+      document.getElementById('pfandReturnAmount').textContent = totalDeposit.toFixed(2);
+      updateAmountToPay(totalDeposit);
+    }
+
+    function removeFromOrder(productName) {
+      order = order.filter(item => item.name !== productName);
+      renderOrder();
+    }
+
+    function changeQuantity(productName, delta) {
+      const item = order.find(item => item.name === productName);
+      if (item) {
+        item.quantity += delta;
+        if (item.quantity < 0) item.quantity = 0;
         renderOrder();
       }
     }
 
-    function updatePfandQuantity(type, change) {
-      const quantityElement = document.getElementById(`${type}Quantity`);
-      let quantity = parseInt(quantityElement.value);
-      if (quantity + change >= 0) {
-        quantityElement.value = quantity + change;
-      }
+    function updateAmountToPay(pfandReturn) {
+      const totalPrice = parseFloat(document.getElementById('totalPrice').textContent);
+      const amountToPay = totalPrice - pfandReturn;
+      document.getElementById('amountToPay').textContent = amountToPay.toFixed(2);
     }
 
-    function resetPfandInputs() {
-      const pfandInputs = ['bottle', 'glass', 'jug', 'cup', 'dish'];
-      pfandInputs.forEach(type => {
-        document.getElementById(`${type}Quantity`).value = 0;
-      });
-    }
-
-    function renderOrder() {
-      const orderTableBody = document.querySelector("#orderTable tbody");
-      orderTableBody.innerHTML = "";
-      let totalPrice = 0;
-
-      order.forEach(item => {
-        const row = document.createElement("tr");
-
-        const productCell = document.createElement("td");
-        productCell.textContent = item.name;
-        row.appendChild(productCell);
-
-        const quantityCell = document.createElement("td");
-        const quantityInput = document.createElement("div");
-        quantityInput.classList.add("quantity-input");
-
-        const decreaseBtn = document.createElement("button");
-        decreaseBtn.textContent = "-";
-        decreaseBtn.onclick = () => updateQuantity(item, item.quantity - 1);
-        quantityInput.appendChild(decreaseBtn);
-
-        const quantityField = document.createElement("input");
-        quantityField.type = "text";
-        quantityField.value = item.quantity;
-        quantityField.disabled = true;
-        quantityInput.appendChild(quantityField);
-
-        const increaseBtn = document.createElement("button");
-        increaseBtn.textContent = "+";
-        increaseBtn.onclick = () => updateQuantity(item, item.quantity + 1);
-        quantityInput.appendChild(increaseBtn);
-
-        quantityCell.appendChild(quantityInput);
-        row.appendChild(quantityCell);
-
-        const priceCell = document.createElement("td");
-        priceCell.textContent = item.price.toFixed(2);
-        row.appendChild(priceCell);
-
-        const depositCell = document.createElement("td");
-        depositCell.textContent = item.deposit.toFixed(2);
-        row.appendChild(depositCell);
-
-        const totalCell = document.createElement("td");
-        const totalItemPrice = (item.price * item.quantity).toFixed(2);
-        totalCell.textContent = totalItemPrice;
-        row.appendChild(totalCell);
-
-        const pfandCell = document.createElement("td");
-        const totalItemPfand = (item.deposit * item.quantity).toFixed(2);
-        pfandCell.textContent = totalItemPfand;
-        row.appendChild(pfandCell);
-
-        const sumCell = document.createElement("td");
-        const totalSum = (parseFloat(totalItemPrice) + parseFloat(totalItemPfand)).toFixed(2);
-        sumCell.textContent = totalSum;
-        row.appendChild(sumCell);
-
-        const actionsCell = document.createElement("td");
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "Entfernen";
-        removeBtn.onclick = () => removeFromOrder(item);
-        actionsCell.appendChild(removeBtn);
-        row.appendChild(actionsCell);
-
-        orderTableBody.appendChild(row);
-
-        totalPrice += parseFloat(totalSum);
-      });
-
-      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
-    }
-
-    function removeFromOrder(item) {
-      order = order.filter(orderItem => orderItem !== item);
-      renderOrder();
-    }
-
-    function completeOrder() {
-      alert("Bestellung abgeschlossen!");
-    }
-
-    function startNewOrder() {
-      order = [];
-      renderOrder();
-    }
-
-    function printReceipt() {
-      alert("Rechnung wird gedruckt...");
-    }
-
+    // Pfandrückgabe Modal öffnen
     function openPfandModal() {
-      resetPfandInputs();
-      document.getElementById("pfandModal").style.display = "flex";
+      document.getElementById('pfandModal').style.display = 'flex';
     }
 
     function closePfandModal() {
-      document.getElementById("pfandModal").style.display = "none";
+      document.getElementById('pfandModal').style.display = 'none';
+    }
+
+    function updatePfandQuantity(item, delta) {
+      const quantityInput = document.getElementById(`${item}Quantity`);
+      let newQuantity = parseInt(quantityInput.value) + delta;
+      if (newQuantity >= 0) {
+        quantityInput.value = newQuantity;
+      }
     }
 
     function calculatePfandReturn() {
@@ -451,10 +392,28 @@
       totalDeposit += parseInt(document.getElementById("cupQuantity").value) * 2;
       totalDeposit += parseInt(document.getElementById("dishQuantity").value) * 5;
 
-      alert(`Pfandrückgabe beträgt: ${totalDeposit}€`);
+      // Pfandrückgabe anzeigen
+      document.getElementById("pfandReturnAmount").textContent = totalDeposit.toFixed(2);
+
+      // Gesamtpreis und zu zahlenden Betrag berechnen
+      updateAmountToPay(totalDeposit);
     }
 
-    generateProductButtons();
+    function startNewOrder() {
+      order = [];
+      renderOrder();
+    }
+
+    function completeOrder() {
+      alert("Bestellung abgeschlossen");
+    }
+
+    function printReceipt() {
+      alert("Rechnung wird gedruckt...");
+    }
+
+    // Initialisierung
+    displayProductButtons();
   </script>
 </body>
 </html>
