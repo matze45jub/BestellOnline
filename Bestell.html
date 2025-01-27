@@ -24,15 +24,29 @@
       padding: 10px 20px;
       margin-right: 10px;
       cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
       border: none;
       border-radius: 5px;
       font-size: 14px;
     }
 
-    .product-button:hover {
-      background-color: #45a049;
+    /* Buttons für Essen */
+    .food-button {
+      background-color: #ffcccb; /* Hellrot für Essen */
+      color: black;
+    }
+
+    .food-button:hover {
+      background-color: #e57373; /* Dunkleres Rot bei Hover */
+    }
+
+    /* Buttons für Getränke */
+    .drink-button {
+      background-color: transparent;
+      color: #1E90FF; /* Blaue Schrift für Getränke */
+    }
+
+    .drink-button:hover {
+      color: #1565C0; /* Dunkleres Blau bei Hover */
     }
 
     .order-table {
@@ -185,7 +199,7 @@
       foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
+        button.classList.add("product-button", "food-button");
         button.onclick = () => addToOrder(product);
         foodRow.appendChild(button);
       });
@@ -202,7 +216,7 @@
       drinkButtons.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
+        button.classList.add("product-button", "drink-button");
         button.onclick = () => addToOrder(product);
         drinkRow.appendChild(button);
       });
