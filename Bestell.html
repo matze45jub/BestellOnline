@@ -141,20 +141,20 @@
     }
 
     /* Styling für das Pfandrückgabe Menü */
-    .deposit-return-container {
-      margin-top: 20px;
+    #depositReturnTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
 
-    .deposit-return-item {
-      margin-bottom: 10px;
+    #depositReturnTable th, #depositReturnTable td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
     }
 
-    .deposit-return-item label {
-      margin-right: 10px;
-    }
-
-    .deposit-return-item select {
-      padding: 5px;
+    #depositReturnTable tfoot {
+      background-color: #f9f9f9;
     }
 
   </style>
@@ -202,73 +202,61 @@
   <!-- Modal für Pfandrückgabe -->
   <div id="depositModal" class="modal-content hidden">
     <h2>Pfandrückgabe</h2>
-    <div class="deposit-return-container">
-      <div class="deposit-return-item">
-        <label for="bottleQuantity">Flasche (1€):</label>
-        <select id="bottleQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="glassQuantity">Glas (2€):</label>
-        <select id="glassQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="jugQuantity">Krug (5€):</label>
-        <select id="jugQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="deposit-return-item">
-        <label for="dishQuantity">Geschirr (5€):</label>
-        <select id="dishQuantity">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
-      <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
+    <table id="depositReturnTable">
+      <thead>
+        <tr>
+          <th>Artikel</th>
+          <th>Pfand (€)</th>
+          <th>Anzahl</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Flasche</td>
+          <td>1.00</td>
+          <td>
+            <select id="bottleQuantity">
+              ${generateOptions(10)}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Glas</td>
+          <td>2.00</td>
+          <td>
+            <select id="glassQuantity">
+              ${generateOptions(10)}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Krug</td>
+          <td>5.00</td>
+          <td>
+            <select id="jugQuantity">
+              ${generateOptions(10)}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Geschirr</td>
+          <td>5.00</td>
+          <td>
+            <select id="dishQuantity">
+              ${generateOptions(10)}
+            </select>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><strong>Gesamt Pfandrückgabe:</strong></td>
+          <td><span id="depositTotal">0.00</span> €</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="modal-footer">
+      <button onclick="calculateDepositReturn()">Berechnen</button>
       <button onclick="closeDepositModal()">Schließen</button>
     </div>
   </div>
@@ -332,74 +320,73 @@
     }
 
     function addToOrder(product) {
-      const existing = order.find(item => item.name === product.name);
-      if (existing) {
-        existing.quantity += 1;
+      const existingProduct = order.find(item => item.name === product.name);
+      if (existingProduct) {
+        existingProduct.quantity++;
       } else {
         order.push({ ...product, quantity: 1 });
       }
       updateOrderTable();
     }
 
-    function updateQuantity(index, quantity) {
-      order[index].quantity = parseInt(quantity, 10);
-      updateOrderTable();
-    }
-
-    function removeItem(index) {
-      order.splice(index, 1);
-      updateOrderTable();
-    }
-
     function updateOrderTable() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
+      const tableBody = document.getElementById("orderTable").getElementsByTagName("tbody")[0];
+      tableBody.innerHTML = ""; 
 
-      order.forEach((item, index) => {
-        const total = (item.price + item.deposit) * item.quantity;
-        const depositTotal = item.deposit * item.quantity;
-
+      order.forEach(item => {
         const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${formatCurrency(item.price * item.quantity)}</td>
-          <td>
-            <select onchange="updateQuantity(${index}, this.value)">
-              ${Array.from({ length: 10 }, (_, i) => `
-                <option value="${i + 1}" ${item.quantity === i + 1 ? "selected" : ""}>${i + 1}</option>
-              `).join("")}
-            </select>
-          </td>
-          <td>${formatCurrency(depositTotal)}</td>
-          <td>${formatCurrency(total)}</td>
-          <td><button onclick="removeItem(${index})">Entfernen</button></td>
-        `;
-        tbody.appendChild(row);
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.name;
+        row.appendChild(nameCell);
+
+        const priceCell = document.createElement("td");
+        priceCell.textContent = item.price.toFixed(2);
+        row.appendChild(priceCell);
+
+        const quantityCell = document.createElement("td");
+        quantityCell.textContent = item.quantity;
+        row.appendChild(quantityCell);
+
+        const depositCell = document.createElement("td");
+        depositCell.textContent = (item.deposit * item.quantity).toFixed(2);
+        row.appendChild(depositCell);
+
+        const totalCell = document.createElement("td");
+        totalCell.textContent = (item.price * item.quantity + item.deposit * item.quantity).toFixed(2);
+        row.appendChild(totalCell);
+
+        const actionsCell = document.createElement("td");
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Entfernen";
+        removeButton.onclick = () => removeFromOrder(item);
+        actionsCell.appendChild(removeButton);
+        row.appendChild(actionsCell);
+
+        tableBody.appendChild(row);
       });
-      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
+
+      const totalPrice = order.reduce((sum, item) => sum + item.price * item.quantity + item.deposit * item.quantity, 0);
+      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
     }
 
-    function calculateTotal() {
-      return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
-    }
-
-    function formatCurrency(amount) {
-      return amount.toFixed(2).replace(".", ",");
+    function removeFromOrder(item) {
+      order = order.filter(product => product !== item);
+      updateOrderTable();
     }
 
     function completeOrder() {
-      if (order.length === 0) {
-        alert("Keine Bestellung vorhanden!");
+      const paidAmount = parseFloat(prompt("Bitte geben Sie den Betrag ein:"));
+      if (isNaN(paidAmount)) {
+        alert("Ungültiger Betrag.");
         return;
       }
-
-      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
-      document.getElementById("orderSummary").classList.remove("hidden");
-
-      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
       document.getElementById("paidAmount").textContent = paidAmount.toFixed(2);
-      const change = paidAmount - calculateTotal();
+      const totalAmount = parseFloat(document.getElementById("totalPrice").textContent);
+      const change = paidAmount - totalAmount;
       document.getElementById("changeAmount").textContent = change.toFixed(2);
+
+      document.getElementById("orderSummary").classList.remove("hidden");
     }
 
     function startNewOrder() {
@@ -409,9 +396,36 @@
     }
 
     function printReceipt() {
-      alert("Rechnung wird gedruckt...");
+      const receipt = `
+        <h2>Rechnung</h2>
+        <table>
+          <thead>
+            <tr><th>Produkt</th><th>Preis (€)</th><th>Anzahl</th><th>Gesamt (€)</th></tr>
+          </thead>
+          <tbody>
+            ${order.map(item => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td>${(item.price * item.quantity + item.deposit * item.quantity).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3"><strong>Gesamt</strong></td>
+              <td>${document.getElementById("totalPrice").textContent}</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+      const newWindow = window.open("", "_blank");
+      newWindow.document.write(receipt);
+      newWindow.print();
     }
 
+    // Pfandrückgabe-Modul
     function returnDeposit() {
       document.getElementById("depositModal").classList.remove("hidden");
     }
@@ -430,8 +444,12 @@
       document.getElementById("depositTotal").textContent = total.toFixed(2);
     }
 
+    function generateOptions(max) {
+      return Array.from({ length: max + 1 }, (_, i) => `<option value="${i}">${i}</option>`).join("");
+    }
+
+    // Initialisierung
     generateProductButtons();
   </script>
-
 </body>
 </html>
