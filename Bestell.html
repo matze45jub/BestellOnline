@@ -155,7 +155,6 @@
       padding: 5px;
     }
 
-    /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
         flex-direction: column;
@@ -194,6 +193,7 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+  <h3 id="totalAmountToPay">Zu zahlender Betrag: 0.00€</h3>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -209,13 +209,11 @@
     <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
   </div>
 
-  <!-- Modal für Pfandrückgabe -->
   <div id="depositModal" class="modal-content hidden">
     <h2>Pfandrückgabe</h2>
     <div class="deposit-return-container">
       <div class="deposit-return-item">
         <label for="bottleQuantity">Flasche (1€):</label>
-        <button onclick="adjustQuantity('bottleQuantity', -1)">-</button>
         <select id="bottleQuantity">
           <option value="0">0</option>
           <option value="1">1</option>
@@ -229,11 +227,9 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-        <button onclick="adjustQuantity('bottleQuantity', 1)">+</button>
       </div>
       <div class="deposit-return-item">
         <label for="glassQuantity">Glas (2€):</label>
-        <button onclick="adjustQuantity('glassQuantity', -1)">-</button>
         <select id="glassQuantity">
           <option value="0">0</option>
           <option value="1">1</option>
@@ -247,11 +243,9 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-        <button onclick="adjustQuantity('glassQuantity', 1)">+</button>
       </div>
       <div class="deposit-return-item">
         <label for="jugQuantity">Krug (5€):</label>
-        <button onclick="adjustQuantity('jugQuantity', -1)">-</button>
         <select id="jugQuantity">
           <option value="0">0</option>
           <option value="1">1</option>
@@ -265,11 +259,9 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-        <button onclick="adjustQuantity('jugQuantity', 1)">+</button>
       </div>
       <div class="deposit-return-item">
         <label for="dishQuantity">Geschirr (5€):</label>
-        <button onclick="adjustQuantity('dishQuantity', -1)">-</button>
         <select id="dishQuantity">
           <option value="0">0</option>
           <option value="1">1</option>
@@ -283,7 +275,6 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-        <button onclick="adjustQuantity('dishQuantity', 1)">+</button>
       </div>
       <button onclick="calculateDepositReturn()">Berechne Pfandrückgabe</button>
       <h3>Gesamt Pfandrückgabe: <span id="depositTotal">0.00</span>€</h3>
@@ -306,66 +297,123 @@
       { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
       { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
       { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
-      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 },
-      { name: "Schoppen Riesling", price: 4.0, category: "drink", deposit: 2 },
-      { name: "Schoppen Weißwein", price: 3.6, category: "drink", deposit: 2 }
+      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
 
-    const cart = [];
+    let order = [];
+    let totalDepositReturn = 0;
 
-    function updateCart() {
-      const tableBody = document.querySelector("#orderTable tbody");
-      tableBody.innerHTML = "";
-      let totalPrice = 0;
-      cart.forEach(item => {
-        totalPrice += item.price * item.quantity + item.deposit * item.quantity;
+    function generateProductButtons() {
+      const container = document.getElementById("productButtons");
+
+      const foodButtons = products.filter(p => p.category === "food");
+      const foodTitle = document.createElement("div");
+      foodTitle.classList.add("category-title");
+      foodTitle.textContent = "🍴 Essen:";
+      container.appendChild(foodTitle);
+
+      const foodRow = document.createElement("div");
+      foodRow.classList.add("product-buttons-row");
+      foodButtons.forEach(product => {
+        const button = document.createElement("button");
+        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+        button.classList.add("product-button", "food-button");
+        button.onclick = () => addToOrder(product);
+        foodRow.appendChild(button);
+      });
+      container.appendChild(foodRow);
+
+      const drinkButtons = products.filter(p => p.category === "drink");
+      const drinkTitle = document.createElement("div");
+      drinkTitle.classList.add("category-title");
+      drinkTitle.textContent = "🥤 Getränke:";
+      container.appendChild(drinkTitle);
+
+      const drinkRow = document.createElement("div");
+      drinkRow.classList.add("product-buttons-row");
+      drinkButtons.forEach(product => {
+        const button = document.createElement("button");
+        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+        button.classList.add("product-button", "drink-button");
+        button.onclick = () => addToOrder(product);
+        drinkRow.appendChild(button);
+      });
+      container.appendChild(drinkRow);
+    }
+
+    function addToOrder(product) {
+      let orderItem = order.find(item => item.name === product.name);
+      if (orderItem) {
+        orderItem.quantity++;
+      } else {
+        order.push({ ...product, quantity: 1 });
+      }
+      renderOrder();
+    }
+
+    function renderOrder() {
+      const tbody = document.querySelector("#orderTable tbody");
+      tbody.innerHTML = "";
+      let total = 0;
+      order.forEach(item => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${item.name}</td>
           <td>${item.price.toFixed(2)}€</td>
           <td>
-            <button onclick="adjustQuantity('${item.name}', -1)">-</button>
+            <button onclick="changeQuantity('${item.name}', -1)">-</button>
             ${item.quantity}
-            <button onclick="adjustQuantity('${item.name}', 1)">+</button>
+            <button onclick="changeQuantity('${item.name}', 1)">+</button>
           </td>
           <td>${item.deposit.toFixed(2)}€</td>
-          <td>${(item.price * item.quantity + item.deposit * item.quantity).toFixed(2)}€</td>
-          <td><button onclick="removeFromCart('${item.name}')">Entfernen</button></td>
+          <td>${(item.price * item.quantity).toFixed(2)}€</td>
+          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
         `;
-        tableBody.appendChild(row);
+        tbody.appendChild(row);
+        total += item.price * item.quantity;
       });
-      document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
+
+      document.getElementById("totalPrice").textContent = total.toFixed(2);
+      document.getElementById("totalAmountToPay").textContent = (total - totalDepositReturn).toFixed(2);
     }
 
-    function adjustQuantity(productName, delta) {
-      const product = cart.find(item => item.name === productName);
-      if (product) {
-        product.quantity = Math.max(1, product.quantity + delta);
+    function changeQuantity(name, delta) {
+      const item = order.find(item => item.name === name);
+      if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+          removeFromOrder(name);
+        } else {
+          renderOrder();
+        }
       }
-      updateCart();
     }
 
-    function removeFromCart(productName) {
-      const index = cart.findIndex(item => item.name === productName);
-      if (index !== -1) {
-        cart.splice(index, 1);
-      }
-      updateCart();
+    function removeFromOrder(name) {
+      order = order.filter(item => item.name !== name);
+      renderOrder();
     }
 
     function completeOrder() {
-      // Logik zum Abschließen der Bestellung
+      const totalPrice = parseFloat(document.getElementById("totalPrice").textContent);
+      const paidAmount = prompt("Bitte den Betrag eingeben:", totalPrice.toFixed(2));
+      const changeAmount = paidAmount - totalPrice;
+      document.getElementById("paidAmount").textContent = paidAmount;
+      document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
+      document.getElementById("finalTotalPrice").textContent = totalPrice.toFixed(2);
+      document.getElementById("orderSummary").classList.remove("hidden");
     }
 
     function startNewOrder() {
-      cart.length = 0;
-      updateCart();
+      order = [];
+      totalDepositReturn = 0;
+      renderOrder();
       document.getElementById("orderSummary").classList.add("hidden");
-      document.getElementById("orderTable").classList.remove("hidden");
+      document.getElementById("depositModal").classList.add("hidden");
     }
 
     function printReceipt() {
-      // Logik zum Drucken der Rechnung
+      window.print();
     }
 
     function returnDeposit() {
@@ -374,35 +422,20 @@
 
     function closeDepositModal() {
       document.getElementById("depositModal").classList.add("hidden");
-      document.getElementById("depositTotal").textContent = "0.00";
-      document.getElementById("bottleQuantity").value = 0;
-      document.getElementById("glassQuantity").value = 0;
-      document.getElementById("jugQuantity").value = 0;
-      document.getElementById("dishQuantity").value = 0;
-    }
-
-    function adjustQuantity(type, delta) {
-      const select = document.getElementById(type);
-      let value = parseInt(select.value);
-      value += delta;
-      value = Math.max(0, value);
-      select.value = value;
     }
 
     function calculateDepositReturn() {
-      const bottleQty = parseInt(document.getElementById("bottleQuantity").value);
-      const glassQty = parseInt(document.getElementById("glassQuantity").value);
-      const jugQty = parseInt(document.getElementById("jugQuantity").value);
-      const dishQty = parseInt(document.getElementById("dishQuantity").value);
-      
-      const bottleReturn = bottleQty * 1;
-      const glassReturn = glassQty * 2;
-      const jugReturn = jugQty * 5;
-      const dishReturn = dishQty * 5;
+      const bottleQuantity = parseInt(document.getElementById("bottleQuantity").value);
+      const glassQuantity = parseInt(document.getElementById("glassQuantity").value);
+      const jugQuantity = parseInt(document.getElementById("jugQuantity").value);
+      const dishQuantity = parseInt(document.getElementById("dishQuantity").value);
 
-      const totalReturn = bottleReturn + glassReturn + jugReturn + dishReturn;
-      document.getElementById("depositTotal").textContent = totalReturn.toFixed(2);
+      totalDepositReturn = bottleQuantity * 1 + glassQuantity * 2 + jugQuantity * 5 + dishQuantity * 5;
+      document.getElementById("depositTotal").textContent = totalDepositReturn.toFixed(2);
+      document.getElementById("totalAmountToPay").textContent = (parseFloat(document.getElementById("totalPrice").textContent) - totalDepositReturn).toFixed(2);
     }
+
+    generateProductButtons();
   </script>
 
 </body>
