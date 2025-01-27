@@ -1,320 +1,159 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bestellung</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width: 67px;
-      height: auto;
-      margin-right: 10px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
-      color: #101A4B;
-    }
-
-    .product-buttons-container {
-      margin-bottom: 20px;
-    }
-
-    .category-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .product-buttons-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .product-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .food-button {
-      background-color: #E74C3C;
-      color: #FFFFFF;
-    }
-
-    .drink-button {
-      background-color: #377EBF;
-      color: #FFFFFF;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    #orderTable th {
-      background-color: #f8f8f8;
-    }
-
-    .order-summary {
-      margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .button-container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #E74C3C;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button-container button:hover {
-      background-color: #C0392B;
-    }
-
-    /* Pfandrückgabe-Schaltfläche */
-    .pfand-button {
-      background-color: #C0392B; /* Rot */
-      color: white;
-    }
-
-    /* Modal */
-    #pfandModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    #pfandModalContent {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 300px;
-    }
-
-    .pfand-item {
-      margin-bottom: 10px;
-    }
-
-    /* Responsive Anpassungen */
-    @media (max-width: 768px) {
-      .product-buttons-row {
-        flex-direction: column;
-        gap: 5px;
-      }
-    }
-
-    /* Menge-Input mit Pfeilen */
-    .quantity-input {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 80px;
-    }
-
-    .quantity-input button {
-      background-color: #f0f0f0;
-      border: 1px solid #ccc;
-      padding: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .quantity-input input {
-      width: 40px;
-      text-align: center;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BestellOnline</title>
+    <style>
+        .product-button { margin: 5px; padding: 10px; font-size: 14px; }
+        .category-title { font-size: 18px; font-weight: bold; margin-top: 20px; }
+        .order-item { margin: 5px; padding: 5px; font-size: 14px; }
+        .remove-button { margin-left: 10px; background-color: red; color: white; padding: 5px; cursor: pointer; }
+        .order-summary { margin-top: 20px; font-size: 16px; font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <img src="logo.png" alt="Logo">
-    <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-  </div>
+    <h1>BestellOnline</h1>
 
-  <div id="productButtons" class="product-buttons-container"></div>
+    <div id="productButtons"></div>
+    <p id="totalPrice">Gesamtpreis: 0.00€</p>
+    <p id="deposit">Pfand: 0.00€</p>
+    <p id="toPay">Zuzahlender Betrag: 0.00€</p>
 
-  <h2 style="color: #101A4B;">Bestellung</h2>
-  <table id="orderTable">
-    <thead>
-      <tr>
-        <th>Produkt</th>
-        <th>Menge</th>
-        <th>Einzelpreis (€)</th>
-        <th>Einzelpfand (€)</th>
-        <th>Gesamtpreis (€)</th>
-        <th>Gesamtpfand (€)</th>
-        <th>Gesamt (€)</th>
-        <th>Aktionen</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
-  <h3>Zuzahlender Betrag: <span id="depositAmount">0.00</span>€</h3>
-
-  <div class="button-container">
-    <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
-  </div>
-
-  <!-- Pfandmodal -->
-  <div id="pfandModal">
-    <div id="pfandModalContent">
-      <h3>Pfandrückgabe</h3>
-      <div class="pfand-item">
-        <label for="bottleQuantity">Flasche (1€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('bottle', -1)">-</button>
-          <input type="number" id="bottleQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('bottle', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="glassQuantity">Glas (2€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('glass', -1)">-</button>
-          <input type="number" id="glassQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('glass', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="jugQuantity">Krug (5€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('jug', -1)">-</button>
-          <input type="number" id="jugQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('jug', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="cupQuantity">Tasse (2€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('cup', -1)">-</button>
-          <input type="number" id="cupQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('cup', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="dishQuantity">Geschirr (5€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('dish', -1)">-</button>
-          <input type="number" id="dishQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('dish', 1)">+</button>
-        </div>
-      </div>
-      <button onclick="calculatePfandReturn()">Berechnen</button>
-      <button onclick="closePfandModal()">Schließen</button>
+    <div id="orderSummary" class="order-summary">
+        <h3>Bestellübersicht</h3>
+        <div id="orderItems"></div>
     </div>
-  </div>
 
-  <script>
-    const products = [
-      { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
-      { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
-      { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
-      { name: "Schnitzel", price: 8.5, category: "food", deposit: 5.0 },
-      { name: "Salat", price: 4.0, category: "food", deposit: 5.0 },
-      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
-      { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
-      { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
-      { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
-      { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 5.0 }
-    ];
+    <button id="confirmOrderButton" onclick="confirmOrder()" style="display: none; margin-top: 20px;">Bestellung abschließen</button>
 
-    let order = [];
-    let totalDeposit = 0;
+    <script>
+        const products = [
+            { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
+            { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
+            { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
+            { name: "Schnitzel", price: 8.5, category: "food", deposit: 5.0 },
+            { name: "Salat", price: 4.0, category: "food", deposit: 5.0 },
+            { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
+            { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
+            { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
+            { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
+            { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
+            { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
+            { name: "Weinschorle", price: 3.5, category: "drink", deposit: 5.0 },
+            { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
+            { name: "Kaffee", price: 2.0, category: "drink", deposit: 2.0 },
+            { name: "Hefeweizen", price: 3.8, category: "drink", deposit: 2.0 },
+            { name: "Alkoholfreies Bier", price: 3.6, category: "drink", deposit: 5.0 },
+            { name: "Alkoholfreies Hefe", price: 3.6, category: "drink", deposit: 2.0 }
+        ];
 
-    function openPfandModal() {
-      document.getElementById("pfandModal").style.display = "flex";
-    }
+        let order = [];
+        let totalPrice = 0;
+        let totalDeposit = 0;
 
-    function closePfandModal() {
-      document.getElementById("pfandModal").style.display = "none";
-    }
+        // Sortiere die Produkte nach Kategorie und dann alphabetisch nach Name
+        const foodProducts = products.filter(p => p.category === "food").sort((a, b) => a.name.localeCompare(b.name));
+        const drinkProducts = products.filter(p => p.category === "drink").sort((a, b) => a.name.localeCompare(b.name));
 
-    function updatePfandQuantity(item, change) {
-      const quantityInput = document.getElementById(item + "Quantity");
-      let currentValue = parseInt(quantityInput.value);
-      currentValue += change;
-      if (currentValue < 0) currentValue = 0;
-      quantityInput.value = currentValue;
-    }
+        // Funktion zur Anzeige der Produkte
+        function displayProducts() {
+            const productButtonsContainer = document.getElementById('productButtons');
+            productButtonsContainer.innerHTML = ''; // Leere das Container, um die Produkte neu anzuzeigen
 
-    function calculatePfandReturn() {
-      totalDeposit = 0;
-      totalDeposit += parseInt(document.getElementById("bottleQuantity").value) * 1;
-      totalDeposit += parseInt(document.getElementById("glassQuantity").value) * 2;
-      totalDeposit += parseInt(document.getElementById("jugQuantity").value) * 5;
-      totalDeposit += parseInt(document.getElementById("cupQuantity").value) * 2;
-      totalDeposit += parseInt(document.getElementById("dishQuantity").value) * 5;
+            // Essen Produkte
+            const foodTitle = document.createElement('div');
+            foodTitle.classList.add('category-title');
+            foodTitle.textContent = "🍴 Essen:";
+            productButtonsContainer.appendChild(foodTitle);
 
-      alert(`Pfandrückgabe beträgt: ${totalDeposit}€`);
+            foodProducts.forEach(product => {
+                const button = document.createElement('button');
+                button.classList.add('product-button', 'food-button');
+                button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+                button.onclick = () => addToOrder(product);
+                productButtonsContainer.appendChild(button);
+            });
 
-      document.getElementById("depositAmount").textContent = totalDeposit.toFixed(2);
-      updateTotalPrice();
-    }
+            // Getränke Produkte
+            const drinkTitle = document.createElement('div');
+            drinkTitle.classList.add('category-title');
+            drinkTitle.textContent = "🥤 Getränke:";
+            productButtonsContainer.appendChild(drinkTitle);
 
-    function updateTotalPrice() {
-      let totalPrice = 0;
+            drinkProducts.forEach(product => {
+                const button = document.createElement('button');
+                button.classList.add('product-button', 'drink-button');
+                button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+                button.onclick = () => addToOrder(product);
+                productButtonsContainer.appendChild(button);
+            });
+        }
 
-      order.forEach(item => {
-        const totalItemPrice = item.price * item.quantity;
-        const totalItemPfand = item.deposit * item.quantity;
-        totalPrice += totalItemPrice + totalItemPfand;
-      });
+        // Funktion zum Hinzufügen eines Produkts zur Bestellung
+        function addToOrder(product) {
+            order.push(product);
+            totalPrice += product.price;
+            totalDeposit += product.deposit;
 
-      const finalTotal = totalPrice - totalDeposit;
+            updateOrderDisplay();
+        }
 
-      document.getElementById("totalPrice").textContent = finalTotal.toFixed(2);
-    }
+        // Funktion zum Entfernen eines Produkts aus der Bestellung
+        function removeFromOrder(product) {
+            const index = order.indexOf(product);
+            if (index > -1) {
+                order.splice(index, 1);
+                totalPrice -= product.price;
+                totalDeposit -= product.deposit;
+                updateOrderDisplay();
+            }
+        }
 
-    // Weitere Funktionen für Bestellung, Aktionen und Drucken kannst du hier hinzufügen
-  </script>
+        // Funktion zum Aktualisieren der Anzeige der Bestellung
+        function updateOrderDisplay() {
+            const totalPriceElement = document.getElementById('totalPrice');
+            const depositElement = document.getElementById('deposit');
+            const toPayElement = document.getElementById('toPay');
+            const orderItemsElement = document.getElementById('orderItems');
+
+            totalPriceElement.textContent = `Gesamtpreis: ${totalPrice.toFixed(2)}€`;
+            depositElement.textContent = `Pfand: ${totalDeposit.toFixed(2)}€`;
+            toPayElement.textContent = `Zuzahlender Betrag: ${(totalPrice - totalDeposit).toFixed(2)}€`;
+
+            // Bestellübersicht aktualisieren
+            orderItemsElement.innerHTML = '';
+            order.forEach(product => {
+                const orderItem = document.createElement('div');
+                orderItem.classList.add('order-item');
+                orderItem.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+                const removeButton = document.createElement('button');
+                removeButton.classList.add('remove-button');
+                removeButton.textContent = "Entfernen";
+                removeButton.onclick = () => removeFromOrder(product);
+                orderItem.appendChild(removeButton);
+                orderItemsElement.appendChild(orderItem);
+            });
+
+            // Bestellbutton anzeigen, wenn Artikel in der Bestellung sind
+            if (order.length > 0) {
+                document.getElementById('confirmOrderButton').style.display = 'block';
+            } else {
+                document.getElementById('confirmOrderButton').style.display = 'none';
+            }
+        }
+
+        // Bestellbestätigung
+        function confirmOrder() {
+            alert(`Bestellung abgeschlossen! Gesamtpreis: ${(totalPrice - totalDeposit).toFixed(2)}€`);
+            order = [];
+            totalPrice = 0;
+            totalDeposit = 0;
+            updateOrderDisplay();
+        }
+
+        // Aufruf der Funktion zur Anzeige der Produkte
+        displayProducts();
+    </script>
 </body>
 </html>
