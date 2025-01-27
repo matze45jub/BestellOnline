@@ -257,20 +257,20 @@
 
   <script>
     const products = [
-      { name: "Bratwurst", price: 3.5, category: "food", deposit: 0 },
-      { name: "Currywurst", price: 4.5, category: "food", deposit: 0 },
-      { name: "Pommes", price: 2.5, category: "food", deposit: 0 },
-      { name: "Schnitzel", price: 8.5, category: "food", deposit: 5.0 },
-      { name: "Salat", price: 4.0, category: "food", deposit: 5.0 },
-      { name: "Ochsenbraten", price: 9.20, category: "food", deposit: 5.0 },
-      { name: "Cola", price: 2.0, category: "drink", deposit: 1.0 },
-      { name: "Fanta", price: 2.0, category: "drink", deposit: 1.0 },
-      { name: "Wasser", price: 1.5, category: "drink", deposit: 1.0 },
-      { name: "Bier", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Radler", price: 4.0, category: "drink", deposit: 5.0 },
-      { name: "Weinschorle", price: 3.5, category: "drink", deposit: 2.0 },
-      { name: "Apfelsaft", price: 2.5, category: "drink", deposit: 1.0 },
-      { name: "Apfelwein", price: 4.0, category: "drink", deposit: 5.0 }
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
+      { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
+      { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
+      { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
+      { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
+      { name: "Ochsenbraten", price: 9.20, category: "essen", deposit: 5.0 },
+      { name: "Cola", price: 2.0, category: "getränke", deposit: 1.0 },
+      { name: "Fanta", price: 2.0, category: "getränke", deposit: 1.0 },
+      { name: "Wasser", price: 1.5, category: "getränke", deposit: 1.0 },
+      { name: "Bier", price: 4.0, category: "getränke", deposit: 5.0 },
+      { name: "Radler", price: 4.0, category: "getränke", deposit: 5.0 },
+      { name: "Weinschorle", price: 3.5, category: "getränke", deposit: 2.0 },
+      { name: "Apfelsaft", price: 2.5, category: "getränke", deposit: 1.0 },
+      { name: "Apfelwein", price: 4.0, category: "getränke", deposit: 5.0 }
     ];
 
     let order = [];
@@ -278,12 +278,12 @@
     // Produkt Buttons anzeigen
     function displayProductButtons() {
       const productButtonsDiv = document.getElementById('productButtons');
-      const categories = ['food', 'drink'];
+      const categories = ['essen', 'getränke'];
 
       categories.forEach(category => {
         const categoryTitle = document.createElement('div');
         categoryTitle.classList.add('category-title');
-        categoryTitle.innerHTML = category.charAt(0).toUpperCase() + category.slice(1);
+        categoryTitle.innerHTML = category === 'essen' ? 'Essen' : 'Getränke';
 
         const productButtonsRow = document.createElement('div');
         productButtonsRow.classList.add('product-buttons-row');
@@ -385,49 +385,46 @@
     function startNewOrder() {
       order = [];
       renderOrder();
+      document.getElementById('totalPrice').textContent = '0.00';
+      document.getElementById('pfandReturnAmount').textContent = '0.00';
+      document.getElementById('amountToPay').textContent = '0.00';
     }
 
-    // Rechnung drucken
-    function printReceipt() {
-      window.print();
-    }
-
-    // Pfandrückgabe öffnen
+    // Pfandmodal öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Pfandrückgabe schließen
+    // Pfandmodal schließen
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
+    // Pfandmenge aktualisieren
+    function updatePfandQuantity(item, change) {
+      const input = document.getElementById(`${item}Quantity`);
+      input.value = Math.max(0, parseInt(input.value) + change);
+    }
+
     // Pfandrückgabe berechnen
     function calculatePfandReturn() {
-      const bottleQty = parseInt(document.getElementById('bottleQuantity').value);
-      const glassQty = parseInt(document.getElementById('glassQuantity').value);
-      const jugQty = parseInt(document.getElementById('jugQuantity').value);
-      const cupQty = parseInt(document.getElementById('cupQuantity').value);
-      const dishQty = parseInt(document.getElementById('dishQuantity').value);
+      let totalPfand = 0;
+      totalPfand += parseInt(document.getElementById('bottleQuantity').value) * 1;
+      totalPfand += parseInt(document.getElementById('glassQuantity').value) * 2;
+      totalPfand += parseInt(document.getElementById('jugQuantity').value) * 5;
+      totalPfand += parseInt(document.getElementById('cupQuantity').value) * 2;
+      totalPfand += parseInt(document.getElementById('dishQuantity').value) * 5;
 
-      const totalPfand = (bottleQty * 1) + (glassQty * 2) + (jugQty * 5) + (cupQty * 2) + (dishQty * 5);
       document.getElementById('pfandReturnAmount').textContent = totalPfand.toFixed(2);
-      
-      // Gesamtbetrag nach Pfandrückgabe aktualisieren
-      const totalAmount = parseFloat(document.getElementById('totalPrice').textContent);
-      document.getElementById('amountToPay').textContent = (totalAmount - totalPfand).toFixed(2);
+      const totalAmount = parseFloat(document.getElementById('totalPrice').textContent) - totalPfand;
+      document.getElementById('amountToPay').textContent = totalAmount.toFixed(2);
     }
 
-    // Pfandmenge ändern
-    function updatePfandQuantity(type, change) {
-      const input = document.getElementById(`${type}Quantity`);
-      const newValue = parseInt(input.value) + change;
-      if (newValue >= 0) {
-        input.value = newValue;
-      }
+    // Rechnung drucken
+    function printReceipt() {
+      alert('Rechnung wird gedruckt...');
     }
 
-    // Initialisierung der Produkt-Buttons
     displayProductButtons();
   </script>
 </body>
