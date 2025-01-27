@@ -5,197 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
   <style>
+    /* Deine bestehenden Styles */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      padding: 0;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width: 67px;
-      height: auto;
-      margin-right: 10px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
+    h2 {
+      margin-top: 0;
     }
 
     .product-buttons-container {
-      margin-bottom: 20px;
-    }
-
-    .category-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .product-buttons-row {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 20px;
     }
 
     .product-button {
       padding: 10px 20px;
-      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
     }
 
-    .food-button {
-      background-color: #f1c40f;
-      color: #000000;
+    .product-button:hover {
+      background-color: #45a049;
     }
 
-    .drink-button {
-      background-color: #3498db;
-      color: #ffffff;
-    }
-
-    #orderTable, #orderTable th, #orderTable td {
-      border: 1px solid #ccc;
-      border-collapse: collapse;
-      padding: 10px;
-    }
-
-    .order-summary {
+    table {
+      width: 100%;
       margin-top: 20px;
-      border-top: 2px solid #ccc;
-      padding-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .button-container {
+      margin-top: 20px;
     }
 
     .hidden {
       display: none;
     }
 
+    .receipt-header {
+      text-align: center;
+    }
+
     .receipt-footer {
       text-align: center;
-      font-style: italic;
       margin-top: 20px;
     }
 
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-
-    .modal-header {
-      font-size: 18px;
+    .category-title {
       font-weight: bold;
+      margin-top: 20px;
     }
 
-    .modal-footer {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .modal-footer button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-footer button:hover {
-      background-color: #2980b9;
-    }
-
-    /* Styling für die Schaltflächen nebeneinander */
-    .button-container {
+    .product-buttons-row {
       display: flex;
       gap: 10px;
-      margin-top: 20px;
-    }
-
-    .button-container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button-container button:hover {
-      background-color: #2980b9;
-    }
-
-    @media print {
-      .product-buttons-container,
-      #completeOrderBtn,
-      #newCustomerBtn,
-      #paymentSection,
-      #orderTable th:nth-child(6),
-      #orderTable td:nth-child(6) {
-        display: none;
-      }
-
-      .receipt-header {
-        display: block;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .receipt-header img {
-        width: 100px;
-        margin-bottom: 10px;
-      }
-
-      .receipt-header h1 {
-        font-size: 22px;
-      }
-
-      .receipt-body {
-        font-size: 14px;
-        margin-top: 20px;
-      }
-
-      .receipt-body table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
-
-      .receipt-body th, .receipt-body td {
-        padding: 8px;
-        border: 1px solid #ddd;
-        text-align: center;
-      }
-
-      .receipt-footer {
-        font-size: 12px;
-        margin-top: 30px;
-      }
+      flex-wrap: wrap;
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <img src="logo.png" alt="Logo">
-    <h1>45 Jahre Jugendblasorchester Kürnach</h1>
-  </div>
-
+  <!-- Produktauswahl -->
   <div id="productButtons" class="product-buttons-container"></div>
 
   <h2>Bestellung</h2>
@@ -213,12 +94,15 @@
     <tbody>
     </tbody>
   </table>
+
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
 
+  <!-- Buttons für Aktionen -->
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+    <button id="returnDepositBtn" onclick="returnDeposit()">Pfand zurückgeben</button>
   </div>
 
   <div id="orderSummary" class="order-summary hidden">
@@ -248,6 +132,7 @@
 
     let order = [];
 
+    // Produzenten der Produkt-Buttons
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
 
@@ -342,6 +227,19 @@
       return amount.toFixed(2).replace(".", ",");
     }
 
+    // Pfandrückgabe-Funktion
+    function returnDeposit() {
+      let totalDeposit = order.reduce((sum, item) => sum + item.deposit * item.quantity, 0);
+      if (totalDeposit > 0) {
+        alert(`Pfandbetrag zur Rückgabe: ${formatCurrency(totalDeposit)}€`);
+        // Beispielhafte Rückgabe des Pfandes
+        const newTotal = calculateTotal() - totalDeposit;
+        document.getElementById("totalPrice").textContent = formatCurrency(newTotal);
+      } else {
+        alert("Es gibt keine Pfandartikel in der Bestellung.");
+      }
+    }
+
     function completeOrder() {
       if (order.length === 0) {
         alert("Keine Bestellung vorhanden!");
@@ -363,12 +261,12 @@
     }
 
     function startNewOrder() {
-      order = [];  // Bestellungen zurücksetzen
-      updateOrderTable();  // Tabelle zurücksetzen
-      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
-      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
-      generateProductButtons();  // Produktbuttons neu generieren
-      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
+      order = [];
+      updateOrderTable();
+      document.getElementById("orderSummary").classList.add("hidden");
+      document.getElementById("productButtons").innerHTML = "";
+      generateProductButtons();
+      document.getElementById("totalPrice").textContent = "0.00";
     }
 
     function printReceipt() {
