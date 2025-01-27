@@ -7,102 +7,190 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
+      margin: 20px;
       padding: 0;
     }
 
     .header {
-      text-align: center;
-      padding: 20px;
-      background-color: #f4f4f4;
-      border-bottom: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
     .header img {
-      max-width: 100px;
+      width: 67px;
+      height: auto;
+      margin-right: 10px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin: 0;
     }
 
     .product-buttons-container {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
     }
 
     .product-buttons-row {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .product-button {
-      padding: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-
-    .product-button:hover {
-      background-color: #0056b3;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f4f4f4;
-    }
-
-    .button-container {
-      display: flex;
-      justify-content: space-around;
-      margin: 20px 0;
-    }
-
-    button {
       padding: 10px 20px;
       font-size: 16px;
-      cursor: pointer;
       border: none;
       border-radius: 5px;
+      cursor: pointer;
     }
 
-    #completeOrderBtn {
-      background-color: #28a745;
-      color: white;
+    .food-button {
+      background-color: #f1c40f;
+      color: #000000;
     }
 
-    #newCustomerBtn {
-      background-color: #17a2b8;
-      color: white;
+    .drink-button {
+      background-color: #3498db;
+      color: #ffffff;
     }
 
-    #printReceiptBtn {
-      background-color: #ffc107;
-      color: black;
+    #orderTable, #orderTable th, #orderTable td {
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+      padding: 10px;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .order-summary {
+      margin-top: 20px;
+      border-top: 2px solid #ccc;
+      padding-top: 20px;
     }
 
     .hidden {
       display: none;
     }
+
+    .receipt-footer {
+      text-align: center;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .modal-footer {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-footer button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Styling für die Schaltflächen nebeneinander */
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button-container button:hover {
+      background-color: #2980b9;
+    }
+
+    @media print {
+      .product-buttons-container,
+      #completeOrderBtn,
+      #newCustomerBtn,
+      #paymentSection,
+      #orderTable th:nth-child(6),
+      #orderTable td:nth-child(6) {
+        display: none;
+      }
+
+      .receipt-header {
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .receipt-header img {
+        width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .receipt-header h1 {
+        font-size: 22px;
+      }
+
+      .receipt-body {
+        font-size: 14px;
+        margin-top: 20px;
+      }
+
+      .receipt-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .receipt-body th, .receipt-body td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      .receipt-footer {
+        font-size: 12px;
+        margin-top: 30px;
+      }
+    }
   </style>
 </head>
 <body>
+
   <div class="header">
     <img src="logo.png" alt="Logo">
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
@@ -122,7 +210,8 @@
         <th>Aktionen</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
 
@@ -132,27 +221,69 @@
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
   </div>
 
+  <div id="orderSummary" class="order-summary hidden">
+    <h2>Bestellung abgeschlossen</h2>
+    <p>Gesamtbetrag: <span id="finalTotalPrice">0.00</span>€</p>
+    <p>Gezahlter Betrag: <span id="paidAmount"></span>€</p>
+    <p>Rückgeld: <span id="changeAmount">0.00</span>€</p>
+  </div>
+
   <script>
     const products = [
-      { name: "Bratwurst", price: 2.5, deposit: 0 },
-      { name: "Salzstange", price: 1.5, deposit: 0 },
-      { name: "Baguette", price: 3.2, deposit: 0 },
-      { name: "Cola", price: 1.8, deposit: 1 },
-      { name: "Bier", price: 4.8, deposit: 5 },
-      { name: "Schoppen Silvaner", price: 4.2, deposit: 2 }
+      { name: "Bratwurst", price: 2.5, category: "food", deposit: 0 },
+      { name: "Salzstange", price: 1.5, category: "food", deposit: 0 },
+      { name: "Baguette", price: 3.2, category: "food", deposit: 0 },
+      { name: "Ochsenbraten", price: 9.2, category: "food", deposit: 5 },
+      { name: "Falafel mit Dip", price: 6.8, category: "food", deposit: 5 },
+      { name: "Käsebrot", price: 3.2, category: "food", deposit: 0 },
+      { name: "Mettbrot", price: 2.9, category: "food", deposit: 0 },
+      { name: "Steak", price: 3.4, category: "food", deposit: 0 },
+      { name: "Cola", price: 1.8, category: "drink", deposit: 1 },
+      { name: "Wasser", price: 1.0, category: "drink", deposit: 1 },
+      { name: "Bier", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Radler", price: 4.8, category: "drink", deposit: 5 },
+      { name: "Schoppen Silvaner", price: 4.2, category: "drink", deposit: 2 },
+      { name: "Schoppen Müller-Thurgau", price: 3.8, category: "drink", deposit: 2 }
     ];
 
     let order = [];
 
     function generateProductButtons() {
       const container = document.getElementById("productButtons");
-      products.forEach(product => {
+
+      const foodButtons = products.filter(p => p.category === "food");
+      const foodTitle = document.createElement("div");
+      foodTitle.classList.add("category-title");
+      foodTitle.textContent = "🍴 Essen:";
+      container.appendChild(foodTitle);
+
+      const foodRow = document.createElement("div");
+      foodRow.classList.add("product-buttons-row");
+      foodButtons.forEach(product => {
         const button = document.createElement("button");
         button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
-        button.classList.add("product-button");
+        button.classList.add("product-button", "food-button");
         button.onclick = () => addToOrder(product);
-        container.appendChild(button);
+        foodRow.appendChild(button);
       });
+      container.appendChild(foodRow);
+
+      const drinkButtons = products.filter(p => p.category === "drink");
+      const drinkTitle = document.createElement("div");
+      drinkTitle.classList.add("category-title");
+      drinkTitle.textContent = "🥤 Getränke:";
+      container.appendChild(drinkTitle);
+
+      const drinkRow = document.createElement("div");
+      drinkRow.classList.add("product-buttons-row");
+      drinkButtons.forEach(product => {
+        const button = document.createElement("button");
+        button.textContent = `${product.name} - ${product.price.toFixed(2)}€`;
+        button.classList.add("product-button", "drink-button");
+        button.onclick = () => addToOrder(product);
+        drinkRow.appendChild(button);
+      });
+      container.appendChild(drinkRow);
     }
 
     function addToOrder(product) {
@@ -165,30 +296,6 @@
       updateOrderTable();
     }
 
-    function updateOrderTable() {
-      const tbody = document.querySelector("#orderTable tbody");
-      tbody.innerHTML = "";
-
-      order.forEach((item, index) => {
-        const total = (item.price + item.deposit) * item.quantity;
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${item.price.toFixed(2)}€</td>
-          <td>
-            <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
-          </td>
-          <td>${(item.deposit * item.quantity).toFixed(2)}€</td>
-          <td>${total.toFixed(2)}€</td>
-          <td><button onclick="removeItem(${index})">Entfernen</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-
-      document.getElementById("totalPrice").textContent = calculateTotal().toFixed(2);
-    }
-
     function updateQuantity(index, quantity) {
       order[index].quantity = parseInt(quantity, 10);
       updateOrderTable();
@@ -199,32 +306,115 @@
       updateOrderTable();
     }
 
+    function updateOrderTable() {
+      const tbody = document.querySelector("#orderTable tbody");
+      tbody.innerHTML = "";
+
+      order.forEach((item, index) => {
+        const total = (item.price + item.deposit) * item.quantity;
+        const depositTotal = item.deposit * item.quantity;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${formatCurrency(item.price * item.quantity)}</td>
+          <td>
+            <select onchange="updateQuantity(${index}, this.value)">
+              ${Array.from({ length: 10 }, (_, i) => `
+                <option value="${i + 1}" ${item.quantity === i + 1 ? "selected" : ""}>${i + 1}</option>
+              `).join("")}
+            </select>
+          </td>
+          <td>${formatCurrency(depositTotal)}</td>
+          <td>${formatCurrency(total)}</td>
+          <td><button onclick="removeItem(${index})">Entfernen</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+      document.getElementById("totalPrice").textContent = formatCurrency(calculateTotal());
+    }
+
     function calculateTotal() {
       return order.reduce((sum, item) => sum + (item.price + item.deposit) * item.quantity, 0);
     }
 
+    function formatCurrency(amount) {
+      return amount.toFixed(2).replace(".", ",");
+    }
+
     function completeOrder() {
-      const bottles = parseInt(prompt("Flaschen zurückgeben? (1€/Flasche)"), 10) || 0;
-      const glasses = parseInt(prompt("Gläser zurückgeben? (2€/Glas)"), 10) || 0;
-      const mugs = parseInt(prompt("Krüge zurückgeben? (5€/Krug)"), 10) || 0;
-      const dishes = parseInt(prompt("Geschirr zurückgeben? (5€/Stück)"), 10) || 0;
+      if (order.length === 0) {
+        alert("Keine Bestellung vorhanden!");
+        return;
+      }
 
-      const depositReturn = bottles * 1 + glasses * 2 + mugs * 5 + dishes * 5;
-      const total = calculateTotal();
-      const finalTotal = total - depositReturn;
+      document.getElementById("finalTotalPrice").textContent = formatCurrency(calculateTotal());
+      document.getElementById("orderSummary").classList.remove("hidden");
 
-      alert(`Pfandrückgabe: ${depositReturn.toFixed(2)}€. Neuer Betrag: ${finalTotal.toFixed(2)}€`);
+      const paidAmount = parseFloat(prompt("Bitte den gezahlten Betrag eingeben:"));
+      if (isNaN(paidAmount) || paidAmount < calculateTotal()) {
+        alert("Der gezahlte Betrag reicht nicht aus.");
+        return;
+      }
+
+      const change = paidAmount - calculateTotal();
+      document.getElementById("paidAmount").textContent = formatCurrency(paidAmount);
+      document.getElementById("changeAmount").textContent = formatCurrency(change);
     }
 
     function startNewOrder() {
-      if (confirm("Möchten Sie eine neue Bestellung starten?")) {
-        order = [];
-        updateOrderTable();
-      }
+      order = [];  // Bestellungen zurücksetzen
+      updateOrderTable();  // Tabelle zurücksetzen
+      document.getElementById("orderSummary").classList.add("hidden");  // Bestellzusammenfassung ausblenden
+      document.getElementById("productButtons").innerHTML = "";  // Produktbuttons zurücksetzen
+      generateProductButtons();  // Produktbuttons neu generieren
+      document.getElementById("totalPrice").textContent = "0.00";  // Gesamtpreis zurücksetzen
     }
 
     function printReceipt() {
-      alert("Rechnung wird gedruckt...");
+      const receiptContent = `
+        <div class="receipt-header">
+          <img src="logo.png" alt="Logo">
+          <h1>45 Jahre Jugendblasorchester Kürnach</h1>
+        </div>
+        <div class="receipt-body">
+          <h2>Bestellung</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Preis (€)</th>
+                <th>Menge</th>
+                <th>Pfand (€)</th>
+                <th>Gesamt (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${formatCurrency(item.price)}</td>
+                  <td>${item.quantity}</td>
+                  <td>${formatCurrency(item.deposit)}</td>
+                  <td>${formatCurrency((item.price + item.deposit) * item.quantity)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <p><strong>Gesamtbetrag:</strong> ${formatCurrency(calculateTotal())}</p>
+          <p><strong>Gezahlter Betrag:</strong> ${formatCurrency(parseFloat(document.getElementById("paidAmount").textContent))}</p>
+          <p><strong>Rückgeld:</strong> ${formatCurrency(parseFloat(document.getElementById("changeAmount").textContent))}</p>
+        </div>
+        <div class="receipt-footer">
+          <p>Schön, dass Du mit uns feierst!</p>
+          <p>Bitte nimm die Rechnung mit zu den jeweiligen Ausgabetheken mit!</p>
+        </div>
+      `;
+
+      const originalContents = document.body.innerHTML;
+      document.body.innerHTML = receiptContent;
+      window.print();
+      document.body.innerHTML = originalContents;
     }
 
     generateProductButtons();
