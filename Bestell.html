@@ -165,6 +165,18 @@
       padding: 5px;
       font-size: 14px;
     }
+
+    /* Anzeige der weiteren Summen */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .summary-row span {
+      font-size: 16px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -193,6 +205,11 @@
     </tbody>
   </table>
   <h3>Gesamtpreis: <span id="totalPrice">0.00</span>€</h3>
+
+  <div class="summary-row">
+    <span>- möglicher Pfand: <span id="totalDeposit">0.00</span>€</span>
+    <span>= zuzahlender Betrag: <span id="totalPayableAmount">0.00</span>€</span>
+  </div>
 
   <div class="button-container">
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
@@ -324,36 +341,23 @@
     function updateQuantity(item, newQuantity) {
       if (newQuantity > 0) {
         item.quantity = newQuantity;
-        renderOrder();
       }
-    }
-
-    function updatePfandQuantity(type, change) {
-      const quantityElement = document.getElementById(`${type}Quantity`);
-      let quantity = parseInt(quantityElement.value);
-      if (quantity + change >= 0) {
-        quantityElement.value = quantity + change;
-      }
-    }
-
-    function resetPfandInputs() {
-      const pfandInputs = ['bottle', 'glass', 'jug', 'cup', 'dish'];
-      pfandInputs.forEach(type => {
-        document.getElementById(`${type}Quantity`).value = 0;
-      });
+      renderOrder();
     }
 
     function renderOrder() {
-      const orderTableBody = document.querySelector("#orderTable tbody");
-      orderTableBody.innerHTML = "";
+      const orderTableBody = document.getElementById("orderTable").getElementsByTagName("tbody")[0];
+      orderTableBody.innerHTML = ""; // Clear the table
+
       let totalPrice = 0;
+      let totalDeposit = 0;
 
       order.forEach(item => {
         const row = document.createElement("tr");
 
-        const productCell = document.createElement("td");
-        productCell.textContent = item.name;
-        row.appendChild(productCell);
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.name;
+        row.appendChild(nameCell);
 
         const quantityCell = document.createElement("td");
         const quantityInput = document.createElement("div");
@@ -365,7 +369,7 @@
         quantityInput.appendChild(decreaseBtn);
 
         const quantityField = document.createElement("input");
-        quantityField.type = "text";
+        quantityField.type = "number";
         quantityField.value = item.quantity;
         quantityField.disabled = true;
         quantityInput.appendChild(quantityField);
@@ -411,9 +415,14 @@
         orderTableBody.appendChild(row);
 
         totalPrice += parseFloat(totalSum);
+        totalDeposit += parseFloat(totalItemPfand);
       });
 
+      const totalPayableAmount = totalPrice - totalDeposit;
+
       document.getElementById("totalPrice").textContent = totalPrice.toFixed(2);
+      document.getElementById("totalDeposit").textContent = totalDeposit.toFixed(2);
+      document.getElementById("totalPayableAmount").textContent = totalPayableAmount.toFixed(2);
     }
 
     function removeFromOrder(item) {
