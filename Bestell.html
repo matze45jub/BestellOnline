@@ -350,12 +350,63 @@
     }
 
     // Neues Kundenkonto starten
-    function startNewOrder() {
-      order = [];
-      pfandData = { bottle: 0, glass: 0, jug: 0, cup: 0, dish: 0 };
-      renderOrder();
-      resetPfandForm();
-    }
+function startNewOrder() {
+  order = [];
+  pfandData = { bottle: 0, glass: 0, jug: 0, cup: 0, dish: 0 };
+  
+  // Alle relevanten Felder zurücksetzen
+  document.querySelector("#totalAmount").textContent = '0.00';
+  document.querySelector("#pfandReturnAmount").textContent = '0.00';
+  document.querySelector("#amountToPay").textContent = '0.00';
+  document.querySelector("#paymentAmount").textContent = '0.00';
+  document.querySelector("#changeAmount").textContent = '0.00';
+
+  renderOrder();
+  resetPfandForm();
+}
+
+// Pfandformular zurücksetzen
+function resetPfandForm() {
+  document.querySelector("#bottleQuantity").value = 0;
+  document.querySelector("#glassQuantity").value = 0;
+  document.querySelector("#jugQuantity").value = 0;
+  document.querySelector("#cupQuantity").value = 0;
+  document.querySelector("#dishQuantity").value = 0;
+}
+
+// Bestellung rendern
+function renderOrder() {
+  const orderTableBody = document.querySelector('#orderTable tbody');
+  orderTableBody.innerHTML = '';
+  let totalPrice = 0;
+  let totalPfand = 0;
+
+  order.forEach(item => {
+    const totalItemPrice = item.price * item.quantity;
+    const totalItemPfand = item.deposit * item.quantity;
+    totalPrice += totalItemPrice;
+    totalPfand += totalItemPfand;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.quantity}</td>
+      <td>${item.price.toFixed(2)}</td>
+      <td>${item.deposit.toFixed(2)}</td>
+      <td>${totalItemPrice.toFixed(2)}</td>
+      <td>${totalItemPfand.toFixed(2)}</td>
+      <td>${(totalItemPrice + totalItemPfand).toFixed(2)}</td>
+      <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
+    `;
+    orderTableBody.appendChild(row);
+  });
+
+  // Gesamtbetrag
+  const totalAmount = totalPrice + totalPfand;
+  document.querySelector("#totalAmount").textContent = totalPrice.toFixed(2);
+  document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
+  document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
+}
 
     // Pfandmodal öffnen
     function openPfandModal() {
