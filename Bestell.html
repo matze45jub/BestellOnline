@@ -165,6 +165,28 @@
       padding: 5px;
       font-size: 14px;
     }
+
+    /* Stil für Plus/Minus Buttons in der Bestellspalte */
+    .quantity-control {
+      display: flex;
+      align-items: center;
+    }
+
+    .quantity-control button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .quantity-control input {
+      width: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -333,7 +355,13 @@
 
         row.innerHTML = `
           <td>${item.name}</td>
-          <td>${item.quantity}</td>
+          <td>
+            <div class="quantity-control">
+              <button onclick="updateOrderQuantity('${item.name}', -1)">-</button>
+              <input type="number" value="${item.quantity}" readonly>
+              <button onclick="updateOrderQuantity('${item.name}', 1)">+</button>
+            </div>
+          </td>
           <td>${item.price.toFixed(2)}</td>
           <td>${item.deposit.toFixed(2)}</td>
           <td>${totalItemPrice.toFixed(2)}</td>
@@ -352,49 +380,41 @@
       document.getElementById('amountToPay').innerText = totalPrice.toFixed(2);
     }
 
-    // Bestellung entfernen
-    function removeFromOrder(productName) {
+    // Bestellmenge aktualisieren
+    function updateOrderQuantity(productName, change) {
       const productIndex = order.findIndex(item => item.name === productName);
       if (productIndex !== -1) {
-        order.splice(productIndex, 1);
-        renderOrder();
+        order[productIndex].quantity += change;
+        if (order[productIndex].quantity <= 0) {
+          order[productIndex].quantity = 1;
+        }
       }
-    }
-
-    // Bestellung abschließen
-    function completeOrder() {
-      alert("Bestellung abgeschlossen!");
-      order = [];
       renderOrder();
     }
 
-    // Neuer Kunde
-    function startNewOrder() {
-      order = [];
+    // Produkt aus Bestellung entfernen
+    function removeFromOrder(productName) {
+      order = order.filter(item => item.name !== productName);
       renderOrder();
     }
 
-    // Rechnung drucken
-    function printReceipt() {
-      window.print();
-    }
-
-    // Pfandrückgabe Modal öffnen
+    // Modal für Pfandrückgabe öffnen
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Pfandrückgabe Modal schließen
+    // Modal für Pfandrückgabe schließen
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
-    // Pfandrückgabe Menge aktualisieren
-    function updatePfandQuantity(type, change) {
-      const quantityInput = document.getElementById(`${type}Quantity`);
-      let currentQuantity = parseInt(quantityInput.value);
-      currentQuantity = Math.max(0, currentQuantity + change); // Verhindert negative Werte
-      quantityInput.value = currentQuantity;
+    // Pfandmenge aktualisieren
+    function updatePfandQuantity(item, change) {
+      const input = document.getElementById(`${item}Quantity`);
+      let currentValue = parseInt(input.value);
+      if (currentValue + change >= 0) {
+        input.value = currentValue + change;
+      }
     }
 
     // Pfandrückgabe berechnen
@@ -407,6 +427,22 @@
 
       const totalReturnAmount = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
       document.getElementById('pfandReturnAmount').innerText = totalReturnAmount.toFixed(2);
+    }
+
+    // Bestellung abschließen
+    function completeOrder() {
+      alert('Bestellung abgeschlossen!');
+    }
+
+    // Neuen Kunden starten
+    function startNewOrder() {
+      order = [];
+      renderOrder();
+    }
+
+    // Rechnung drucken
+    function printReceipt() {
+      alert('Rechnung wird gedruckt...');
     }
 
     // Initiale Anzeige
