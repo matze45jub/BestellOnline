@@ -327,7 +327,7 @@ function renderOrder() {
       <td>${item.name}</td>
       <td>
         <button onclick="changeQuantity('${item.name}', -1)">-</button>
-        ${item.quantity}
+        <input type="text" value="${item.quantity}" readonly style="width: 30px; text-align: center; border: none; background: transparent;">
         <button onclick="changeQuantity('${item.name}', 1)">+</button>
       </td>
       <td>${item.price.toFixed(2)}</td>
