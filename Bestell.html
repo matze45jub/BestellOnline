@@ -6,6 +6,24 @@
   <title>Bestellung</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+
+@media print {
+  .button-container, .product-buttons-container, #pfandModal, .quantity-input, button {
+    display: none;
+  }
+
+@media print {
+  #printFooter {
+    font-size: 10px; /* Kleinere Schriftgröße für den Ausdruck */
+  }
+}
+  
+  /* Optional: Hier kannst du die Schriftart und Formatierung für den Druck anpassen */
+  body {
+    font-family: "Times New Roman", serif;
+  }
+}
+    
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -136,6 +154,15 @@
       margin-bottom: 10px;
     }
 
+
+#amountToPayWrapper {
+  background-color: #A9D0F5; /* Hellblauer Hintergrund */
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+    
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
@@ -272,7 +299,6 @@
  <script>
     const products = [
       { name: "Obatzter", price: 3.2, category: "essen", deposit: 0 },
-      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Weißwurst", price: 4.2, category: "essen", deposit: 5 },
       { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
@@ -460,5 +486,11 @@ function calculatePfandReturn() {
       });
     });
   </script>
+
+<div id="printFooter">
+  <p>Servus, vielen Dank, dass Du da bist und mit uns feierst <i class="fas fa-heart"></i></p>
+  <p>Bitte nimm den Ausdruck der Bestellung mit zu den jeweiligen Ausgabetheken <i class="fas fa-cash-register"></i></p>
+</div>
+  
 </body>
 </html>
