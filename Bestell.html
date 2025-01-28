@@ -6,24 +6,6 @@
   <title>Bestellung</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-
-@media print {
-  .button-container, .product-buttons-container, #pfandModal, .quantity-input, button {
-    display: none;
-  }
-
-@media print {
-  #printFooter {
-    font-size: 8px; /* Kleinere Schriftgröße für den Ausdruck */
-  }
-}
-  
-  /* Optional: Hier kannst du die Schriftart und Formatierung für den Druck anpassen */
-  body {
-    font-family: "Times New Roman", serif;
-  }
-}
-    
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -154,15 +136,6 @@
       margin-bottom: 10px;
     }
 
-
-#amountToPayWrapper {
-  background-color: #A9D0F5; /* Hellblauer Hintergrund */
-  padding: 5px;
-  border-radius: 5px;
-  display: inline-block;
-}
-
-    
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
@@ -232,12 +205,12 @@
   </table>
 
   <h3>
-  Gesamt: <span id="totalAmount">0.00</span>€ 
-  | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
-  | Zu zahlender Betrag: <span id="amountToPayWrapper"><span id="amountToPay">0.00</span>€</span>
-  | Zahlung: <span id="paymentAmount">0.00</span>€
-  | Rückgeld: <span id="changeAmount">0.00</span>€
-</h3>
+    Gesamt: <span id="totalAmount">0.00</span>€ 
+    | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
+    | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
+    | Zahlung: <span id="paymentAmount">0.00</span>€
+    | Rückgeld: <span id="changeAmount">0.00</span>€
+  </h3>
 
   <div class="button-container">
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
@@ -299,6 +272,7 @@
  <script>
     const products = [
       { name: "Obatzter", price: 3.2, category: "essen", deposit: 0 },
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Weißwurst", price: 4.2, category: "essen", deposit: 5 },
       { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
@@ -477,11 +451,6 @@ function calculatePfandReturn() {
         essenButtons.appendChild(button);
       });
 
-      <footer style="text-align: center; margin-top: 20px;">
-    <p id="date-time"></p>
-</footer>
-
-      
       products.filter(p => p.category === "getraenke").forEach(product => {
         const button = document.createElement("button");
         button.className = "product-button getraenke-button";
@@ -491,11 +460,5 @@ function calculatePfandReturn() {
       });
     });
   </script>
-
-<div style="text-align: center; background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-    <p>Servus, vielen Dank, dass Du da bist und mit uns feierst <i class="fas fa-heart"></i></p>
-    <p>Bitte nimm den Ausdruck der Bestellung mit zu den jeweiligen Ausgabetheken <i class="fas fa-cash-register"></i></p>
-</div>
-  
 </body>
 </html>
