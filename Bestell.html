@@ -481,28 +481,6 @@ function calculatePfandReturn() {
     <p id="date-time"></p>
 </footer>
 
-  
-
-    // Funktion, die das Datum und die Uhrzeit für den Druck setzt
-    function setDateTimeBeforePrint() {
-        document.getElementById("date-time").innerHTML = getCurrentDateTime();
-    }
-
-    // Event Listener für den Druckvorgang
-    window.onbeforeprint = setDateTimeBeforePrint;
-</script>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       
       products.filter(p => p.category === "getraenke").forEach(product => {
         const button = document.createElement("button");
