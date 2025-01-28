@@ -271,6 +271,7 @@
     window.onload = function() {
       // Pfandrückgabe auf 0 setzen
       document.getElementById('pfandReturnAmount').textContent = '0.00';
+      populateProductButtons();
     };
 
     const products = [
@@ -297,6 +298,32 @@
 
     let order = [];
 
+    function populateProductButtons() {
+      const essenButtons = document.getElementById("essenButtons");
+      const getraenkeButtons = document.getElementById("getraenkeButtons");
+
+      products.forEach(product => {
+        const button = document.createElement("button");
+        button.textContent = `${product.name} - ${product.price}€`;
+        button.classList.add("product-button");
+
+        if (product.category === "essen") {
+          button.classList.add("essen-button");
+          button.onclick = () => addToOrder(product);
+          essenButtons.appendChild(button);
+        } else if (product.category === "getraenke") {
+          button.classList.add("getraenke-button");
+          button.onclick = () => addToOrder(product);
+          getraenkeButtons.appendChild(button);
+        }
+      });
+    }
+
+    function addToOrder(product) {
+      // Hier fügen wir das Produkt zur Bestellung hinzu.
+    }
+
+    // Update der Pfandrückgabemenge
     function updatePfandQuantity(item, change) {
       const quantityInput = document.getElementById(`${item}Quantity`);
       let currentValue = parseInt(quantityInput.value);
