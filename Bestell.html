@@ -308,9 +308,17 @@
     let order = [];
 
     function startNewOrder() {
-      order = [];
-      renderOrder();
-    }
+  // Leere die Bestellliste
+  order = [];
+  renderOrder();
+
+  // Setze alle Beträge auf 0
+  document.getElementById("totalAmount").textContent = "0.00";
+  document.getElementById("pfandReturnAmount").textContent = "0.00";
+  document.getElementById("amountToPay").textContent = "0.00";
+  document.getElementById("paymentAmount").textContent = "0.00";
+  document.getElementById("changeAmount").textContent = "0.00";
+}
 
     function addProductToOrder(name) {
       const product = products.find(p => p.name === name);
