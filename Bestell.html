@@ -411,8 +411,15 @@ function calculatePfandReturn() {
   pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
   pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
 
-  // Aktualisiere den Pfandbetrag nur hier
+  // Aktualisiere den Pfandbetrag
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
+
+  // Berechne den zu zahlenden Betrag nach Abzug des Pfands
+  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
+  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount;
+
+  // Aktualisiere den zu zahlenden Betrag
+  document.getElementById("amountToPay").textContent = updatedAmountToPay.toFixed(2);
 }
 
     function handlePayment() {
