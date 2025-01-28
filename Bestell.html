@@ -211,11 +211,12 @@
   </h3>
 
   <div class="button-container">
-    <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
-    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
-    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
-    <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
-  </div>
+  <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+  <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
+  <button id="paymentBtn" onclick="handlePayment()">Zahlung</button>
+  <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+  <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
+</div>
 
   <!-- Pfandmodal -->
   <div id="pfandModal">
