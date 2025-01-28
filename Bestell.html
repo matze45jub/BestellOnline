@@ -405,19 +405,11 @@
       const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
       const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
 
-      const bottlePfand = bottleQuantity * 1.0;
-      const glassPfand = glassQuantity * 2.0;
-      const jugPfand = jugQuantity * 5.0;
-      const cupPfand = cupQuantity * 2.0;
-      const dishPfand = dishQuantity * 5.0;
-
-      const totalPfandReturn = bottlePfand + glassPfand + jugPfand + cupPfand + dishPfand;
-
-      document.getElementById('pfandReturnAmount').innerText = totalPfandReturn.toFixed(2);
-      document.getElementById('amountToPay').innerText = (parseFloat(document.getElementById('totalPrice').innerText) - totalPfandReturn).toFixed(2);
+      const totalReturnAmount = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5) + (cupQuantity * 2) + (dishQuantity * 5);
+      document.getElementById('pfandReturnAmount').innerText = totalReturnAmount.toFixed(2);
     }
 
-    // Initialisierung
+    // Initiale Anzeige
     displayProductButtons();
   </script>
 </body>
