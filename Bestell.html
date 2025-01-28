@@ -320,38 +320,55 @@
     }
 
     // Bestellung rendern
-    function renderOrder() {
-      const orderTableBody = document.querySelector('#orderTable tbody');
-      orderTableBody.innerHTML = '';
-      let totalPrice = 0;
-      let totalPfand = 0;
+function renderOrder() {
+  const orderTableBody = document.querySelector('#orderTable tbody');
+  orderTableBody.innerHTML = '';
+  let totalPrice = 0;
+  let totalPfand = 0;
 
-      order.forEach(item => {
-        const totalItemPrice = item.price * item.quantity;
-        const totalItemPfand = item.deposit * item.quantity;
-        totalPrice += totalItemPrice;
-        totalPfand += totalItemPfand;
+  order.forEach(item => {
+    const totalItemPrice = item.price * item.quantity;
+    const totalItemPfand = item.deposit * item.quantity;
+    totalPrice += totalItemPrice;
+    totalPfand += totalItemPfand;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>${item.price.toFixed(2)}</td>
-          <td>${item.deposit.toFixed(2)}</td>
-          <td>${totalItemPrice.toFixed(2)}</td>
-          <td>${totalItemPfand.toFixed(2)}</td>
-          <td>${(totalItemPrice + totalItemPfand).toFixed(2)}</td>
-          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
-        `;
-        orderTableBody.appendChild(row);
-      });
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>
+        <button onclick="updateQuantity('${item.name}', -1)">-</button>
+        ${item.quantity}
+        <button onclick="updateQuantity('${item.name}', 1)">+</button>
+      </td>
+      <td>${item.price.toFixed(2)}</td>
+      <td>${item.deposit.toFixed(2)}</td>
+      <td>${totalItemPrice.toFixed(2)}</td>
+      <td>${totalItemPfand.toFixed(2)}</td>
+      <td>${(totalItemPrice + totalItemPfand).toFixed(2)}</td>
+      <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
+    `;
+    orderTableBody.appendChild(row);
+  });
 
-      // Gesamtbetrag
-      const totalAmount = totalPrice + totalPfand;
-      document.querySelector("#totalAmount").textContent = totalPrice.toFixed(2);
-      document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
-      document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
+  // Gesamtbetrag
+  const totalAmount = totalPrice + totalPfand;
+  document.querySelector("#totalAmount").textContent = totalPrice.toFixed(2);
+  document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
+  document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
+}
+
+// Menge eines Produkts aktualisieren
+function updateQuantity(name, change) {
+  let orderItem = order.find(o => o.name === name);
+  if (orderItem) {
+    orderItem.quantity += change;
+    if (orderItem.quantity <= 0) {
+      removeFromOrder(name);  // Wenn die Menge 0 oder kleiner wird, das Produkt entfernen
+    } else {
+      renderOrder();
     }
+  }
+}
 
     // Bestellung entfernen
     function removeFromOrder(name) {
