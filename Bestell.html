@@ -12,7 +12,6 @@
       padding: 0;
     }
 
-
     .header {
       display: flex;
       align-items: center;
@@ -277,18 +276,9 @@
       { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
       { name: "VeggieBurger", price: 4.2, category: "essen", deposit: 0 },
       { name: "Hamburger", price: 4.2, category: "essen", deposit: 0 },
-      { name: "Weißwurst", price: 5.6, category: "essen", deposit: 5 },
-      { name: "Hähnchen", price: 5.4, category: "essen", deposit: 5 },
-      { name: "Forelle", price: 4.2, category: "essen", deposit: 5 },
-      { name: "Penne mit Linsen", price: 4.8, category: "essen", deposit: 5 },
-      { name: "geback. Camenbert", price: 5.2, category: "essen", deposit: 5 },
-      { name: "Hochzeitsessen", price: 7.2, category: "essen", deposit: 5 },
-      { name: "Kartoffelpuffer", price: 4.8, category: "essen", deposit: 5 },
-      { name: "Gemüsenudeln", price: 4.2, category: "essen", deposit: 0 },
-      { name: "Spinat-/Semmelknödel", price: 4.2, category: "essen", deposit: 0 },
       { name: "Cheeseburger", price: 4.6, category: "essen", deposit: 0 },
       { name: "Falafel mit Dip", price: 6.4, category: "essen", deposit: 5.0 },
-      { name: "Ochs an Spieß", price: 9.2, category: "essen", deposit: 5.0 },
+      { name: "Ochsenbraten", price: 9.2, category: "essen", deposit: 5.0 },
       { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
       { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
       { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
@@ -296,10 +286,9 @@
       { name: "Alkoholfreies Hefe", price: 3.6, category: "getraenke", deposit: 5.0 },
       { name: "Hefeweizen", price: 3.8, category: "getraenke", deposit: 5.0 },
       { name: "Radler", price: 3.6, category: "getraenke", deposit: 5.0 },
+      { name: "Apfelsaft", price: 2.5, category: "getraenke", deposit: 1.0 },
       { name: "Apfelschorle", price: 2.0, category: "getraenke", deposit: 1.0 },
       { name: "Cola", price: 3.0, category: "getraenke", deposit: 1.0 },
-      { name: "JBO-BIER", price: 5.2, category: "getraenke", deposit: 5.0 },
-      { name: "Spezi", price: 3.0, category: "getraenke", deposit: 1.0 },
       { name: "Fanta", price: 3.0, category: "getraenke", deposit: 1.0 },
       { name: "Wasser spritzig", price: 2.0, category: "getraenke", deposit: 1.0 },
       { name: "Wasser still", price: 2.0, category: "getraenke", deposit: 1.0 }
@@ -320,43 +309,40 @@
       renderOrder();
     }
 
- // Bestellung rendern
-function renderOrder() {
-  const orderTableBody = document.querySelector('#orderTable tbody');
-  orderTableBody.innerHTML = '';
-  let totalPrice = 0;
-  let totalPfand = 0;
+    // Bestellung rendern
+    function renderOrder() {
+      const orderTableBody = document.querySelector('#orderTable tbody');
+      orderTableBody.innerHTML = '';
+      let totalPrice = 0;
+      let totalPfand = 0;
 
-  order.forEach(item => {
-    const totalItemPrice = item.price * item.quantity;
-    const totalItemPfand = item.deposit * item.quantity;
-    totalPrice += totalItemPrice;
-    totalPfand += totalItemPfand;
+      order.forEach(item => {
+        const totalItemPrice = item.price * item.quantity;
+        const totalItemPfand = item.deposit * item.quantity;
+        totalPrice += totalItemPrice;
+        totalPfand += totalItemPfand;
 
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${item.name}</td>
-      <td>
-        <button onclick="changeQuantity('${item.name}', -1)">-</button>
-        <span>${item.quantity}</span>
-        <button onclick="changeQuantity('${item.name}', 1)">+</button>
-      </td>
-      <td>${item.price.toFixed(2)}</td>
-      <td>${item.deposit.toFixed(2)}</td>
-      <td>${totalItemPrice.toFixed(2)}</td>
-      <td>${totalItemPfand.toFixed(2)}</td>
-      <td>${(totalItemPrice + totalItemPfand).toFixed(2)}</td>
-      <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
-    `;
-    orderTableBody.appendChild(row);
-  });
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.price.toFixed(2)}</td>
+          <td>${item.deposit.toFixed(2)}</td>
+          <td>${totalItemPrice.toFixed(2)}</td>
+          <td>${totalItemPfand.toFixed(2)}</td>
+          <td>${(totalItemPrice + totalItemPfand).toFixed(2)}</td>
+          <td><button onclick="removeFromOrder('${item.name}')">Entfernen</button></td>
+        `;
+        orderTableBody.appendChild(row);
+      });
 
-  // Gesamtbetrag
-  const totalAmount = totalPrice + totalPfand;
-  document.querySelector("#totalAmount").textContent = totalPrice.toFixed(2);
-  document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
-  document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
-}
+      // Gesamtbetrag
+      const totalAmount = totalPrice + totalPfand;
+      document.querySelector("#totalAmount").textContent = totalPrice.toFixed(2);
+      document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
+      document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
+    }
+
     // Bestellung entfernen
     function removeFromOrder(name) {
       order = order.filter(o => o.name !== name);
