@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bestellung</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,6 +38,7 @@
       font-size: 18px;
       font-weight: bold;
       margin: 10px 0;
+      color: #101A4B;
     }
 
     .product-buttons-row {
@@ -173,7 +175,16 @@
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   </div>
 
-  <div id="productButtons" class="product-buttons-container"></div>
+  <div id="productButtons" class="product-buttons-container">
+    <div>
+      <h3 class="category-title"><i class="fas fa-hamburger"></i> Essen</h3>
+      <div class="product-buttons-row" id="essenButtons"></div>
+    </div>
+    <div>
+      <h3 class="category-title"><i class="fas fa-glass-cheers"></i> Getränke</h3>
+      <div class="product-buttons-row" id="getraenkeButtons"></div>
+    </div>
+  </div>
 
   <h2 style="color: #101A4B;">Bestellung</h2>
   <table id="orderTable">
@@ -282,13 +293,20 @@
 
     // Produkt-Buttons erstellen
     function createProductButtons() {
-      const buttonContainer = document.getElementById('productButtons');
+      const essenButtonsContainer = document.getElementById('essenButtons');
+      const getraenkeButtonsContainer = document.getElementById('getraenkeButtons');
+
       products.forEach(product => {
         const button = document.createElement('button');
         button.textContent = product.name;
         button.className = product.category === 'essen' ? 'product-button essen-button' : 'product-button getraenke-button';
         button.onclick = () => addToOrder(product);
-        buttonContainer.appendChild(button);
+
+        if (product.category === 'essen') {
+          essenButtonsContainer.appendChild(button);
+        } else {
+          getraenkeButtonsContainer.appendChild(button);
+        }
       });
     }
 
