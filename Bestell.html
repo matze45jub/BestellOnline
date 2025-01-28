@@ -472,5 +472,30 @@ function calculatePfandReturn() {
       });
     });
   </script>
+
+<div id="printFooter">
+  <p>Servus, vielen Dank, dass Du da bist und mit uns feierst <i class="fas fa-heart"></i></p>
+  <p>Bitte nimm den Ausdruck der Bestellung mit zu den jeweiligen Ausgabetheken <i class="fas fa-cash-register"></i></p>
+</div>
+
+  @media print {
+  .button-container, .product-buttons-container, #pfandModal, .quantity-input, button {
+    display: none;
+  }
+
+  /* Druckspezifische Formatierung */
+  #printFooter {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #101A4B;
+  }
+
+  #printFooter i {
+    color: #E74C3C;
+    margin-left: 5px;
+  }
+}
+  
 </body>
 </html>
