@@ -167,6 +167,140 @@
       padding: 5px;
       font-size: 14px;
     }
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestellung</title>
+
+    <!-- CSS-Styles im head-Bereich -->
+    <style>
+        .food-header,
+        .food-selection,
+        .drink-header,
+        .drink-selection,
+        .footer-row,
+        .actions-column {
+            display: block; /* Diese Elemente sind normal sichtbar */
+        }
+
+        /* CSS für den Druck */
+        @media print {
+            .food-header {
+                display: none;
+            }
+
+            .food-selection {
+                display: none;
+            }
+
+            .drink-header {
+                display: none;
+            }
+
+            .drink-selection {
+                display: none;
+            }
+
+            .footer-row {
+                display: none;
+            }
+
+            .actions-column {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Bestellung</h1>
+
+    <!-- Überschrift "Essen" -->
+    <div class="food-header">
+        <h2>Essen <span class="icon">🍴</span></h2>
+    </div>
+
+    <!-- Essensauswahlfelder -->
+    <div class="food-selection">
+        <label for="essen">Essen auswählen:</label>
+        <select id="essen" name="essen">
+            <option value="pizza">Pizza</option>
+            <option value="burger">Burger</option>
+            <option value="salad">Salat</option>
+        </select>
+    </div>
+
+    <!-- Überschrift "Getränke" -->
+    <div class="drink-header">
+        <h2>Getränke <span class="icon">🥤</span></h2>
+    </div>
+
+    <!-- Getränkeauswahlfelder -->
+    <div class="drink-selection">
+        <label for="getraenke">Getränk auswählen:</label>
+        <select id="getraenke" name="getraenke">
+            <option value="cola">Cola</option>
+            <option value="water">Wasser</option>
+            <option value="juice">Saft</option>
+        </select>
+    </div>
+
+    <!-- Zeile für die Pfandrückgabe -->
+    <div>
+        <label for="pfand">Pfandrückgabe:</label>
+        <span id="pfand">0,00 €</span>
+    </div>
+
+    <!-- Zeile für die Endsumme -->
+    <div>
+        <label for="total">Gesamtsumme:</label>
+        <span id="total">0,00 €</span>
+    </div>
+
+    <!-- Letzte Zeile mit "Neuer Kunde" bis "Bestellung abschließen" -->
+    <div class="footer-row">
+        <button id="newCustomer" onclick="newCustomer()">Neuer Kunde</button>
+        <button id="completeOrder" onclick="completeOrder()">Bestellung abschließen</button>
+    </div>
+
+    <!-- Spalte "Aktionen" für Produkte -->
+    <table>
+        <thead>
+            <tr>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="actions-column">
+                <td><button onclick="removeProduct('pizza')">Entfernen</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- JavaScript kurz vor dem schließenden </body>-Tag -->
+    <script>
+        function newCustomer() {
+            document.getElementById('pfand').innerText = "0,00 €";
+            document.getElementById('total').innerText = "0,00 €";
+            document.getElementById('essen').value = '';
+            document.getElementById('getraenke').value = '';
+        }
+
+        function completeOrder() {
+            alert("Bestellung abgeschlossen!");
+        }
+
+        function removeProduct(product) {
+            alert(product + " entfernt!");
+        }
+    </script>
+</body>
+</html>
+
+
+
+    
   </style>
 </head>
 <body>
