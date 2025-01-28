@@ -397,16 +397,17 @@
       }
     }
 
-    function calculatePfandReturn() {
-      let pfandReturnAmount = 0;
-      pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
-      pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
-      pfandReturnAmount += parseInt(document.getElementById("jugQuantity").value) * 5;
-      pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
-      pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
+function calculatePfandReturn() {
+  let pfandReturnAmount = 0;
+  pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
+  pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
+  pfandReturnAmount += parseInt(document.getElementById("jugQuantity").value) * 5;
+  pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
+  pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
 
-      document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
-    }
+  // Aktualisiere den angezeigten Pfandbetrag
+  document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
+}
 
     function handlePayment() {
       let amountToPay = parseFloat(document.getElementById("amountToPay").textContent);
