@@ -194,7 +194,7 @@
   </table>
 
   <h3>
-    Gesamt: <span id="totalPrice">0.00</span>€ 
+    Gesamt: <span id="totalAmount">0.00</span>€ 
     | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
     | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
   </h3>
@@ -280,39 +280,26 @@
 
     let order = [];
 
-    // Produkt Buttons anzeigen
-    function displayProductButtons() {
-      const productButtonsDiv = document.getElementById('productButtons');
-      const categories = ['essen', 'getraenke'];
-
-      categories.forEach(category => {
-        const categoryTitle = document.createElement('div');
-        categoryTitle.classList.add('category-title');
-        categoryTitle.innerHTML = category.charAt(0).toUpperCase() + category.slice(1);
-
-        const productButtonsRow = document.createElement('div');
-        productButtonsRow.classList.add('product-buttons-row');
-
-        products.filter(product => product.category === category).forEach(product => {
-          const productButton = document.createElement('button');
-          productButton.classList.add('product-button', `${category}-button`);
-          productButton.innerText = `${product.name} - ${product.price}€`;
-          productButton.onclick = () => addToOrder(product);
-          productButtonsRow.appendChild(productButton);
-        });
-
-        productButtonsDiv.appendChild(categoryTitle);
-        productButtonsDiv.appendChild(productButtonsRow);
+    // Produkt-Buttons erstellen
+    function createProductButtons() {
+      const buttonContainer = document.getElementById('productButtons');
+      products.forEach(product => {
+        const button = document.createElement('button');
+        button.textContent = product.name;
+        button.className = product.category === 'essen' ? 'product-button essen-button' : 'product-button getraenke-button';
+        button.onclick = () => addToOrder(product);
+        buttonContainer.appendChild(button);
       });
     }
 
     // Produkt zur Bestellung hinzufügen
     function addToOrder(product) {
-      const existingProductIndex = order.findIndex(item => item.name === product.name);
-      if (existingProductIndex !== -1) {
-        order[existingProductIndex].quantity++;
+      let item = order.find(o => o.name === product.name);
+      if (item) {
+        item.quantity++;
       } else {
-        order.push({ ...product, quantity: 1 });
+        item = { ...product, quantity: 1 };
+        order.push(item);
       }
       renderOrder();
     }
@@ -347,78 +334,75 @@
         totalPfand += totalItemPfand;
       });
 
-      // Gesamtberechnung
-      document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
-      document.getElementById('amountToPay').innerText = totalPrice.toFixed(2);
+      // Gesamtberechnung für Gesamtpreis und Gesamtpfand
+      const totalAmount = totalPrice + totalPfand;
+
+      // Anzeige des Gesamtbetrags (Gesamtpreis + Gesamtpfand)
+      document.getElementById('totalAmount').innerText = totalAmount.toFixed(2);
+      
+      // Zu zahlender Betrag: Gesamtbetrag - Pfandrückgabe
+      document.getElementById('amountToPay').innerText = (totalAmount - parseFloat(document.getElementById('pfandReturnAmount').innerText)).toFixed(2);
     }
 
-    // Bestellung entfernen
-    function removeFromOrder(productName) {
-      const productIndex = order.findIndex(item => item.name === productName);
-      if (productIndex !== -1) {
-        order.splice(productIndex, 1);
-        renderOrder();
-      }
+    // Produkt aus der Bestellung entfernen
+    function removeFromOrder(name) {
+      order = order.filter(item => item.name !== name);
+      renderOrder();
     }
 
     // Bestellung abschließen
     function completeOrder() {
-      alert("Bestellung abgeschlossen!");
-      order = [];
-      renderOrder();
+      alert('Bestellung abgeschlossen!');
+      startNewOrder();
     }
 
-    // Neuer Kunde
+    // Neuer Kunde starten
     function startNewOrder() {
       order = [];
+      document.getElementById('pfandReturnAmount').innerText = '0.00';
       renderOrder();
     }
 
-    // Rechnung drucken
+    // Drucke Rechnung (nur als Demo)
     function printReceipt() {
-      window.print();
+      alert('Rechnung wird gedruckt...');
     }
 
-    // Pfandrückgabe Modal öffnen
+    // Öffne Pfandmodal
     function openPfandModal() {
       document.getElementById('pfandModal').style.display = 'flex';
     }
 
-    // Pfandrückgabe Modal schließen
+    // Schließe Pfandmodal
     function closePfandModal() {
       document.getElementById('pfandModal').style.display = 'none';
     }
 
-    // Pfandrückgabe Menge aktualisieren
+    // Pfandmenge aktualisieren
     function updatePfandQuantity(type, change) {
-      const quantityInput = document.getElementById(`${type}Quantity`);
-      let currentQuantity = parseInt(quantityInput.value);
-      currentQuantity = Math.max(0, currentQuantity + change); // Verhindert negative Werte
-      quantityInput.value = currentQuantity;
+      const input = document.getElementById(`${type}Quantity`);
+      let newQuantity = parseInt(input.value) + change;
+      if (newQuantity >= 0) {
+        input.value = newQuantity;
+      }
     }
 
-    // Pfandrückgabe berechnen
+    // Berechne Pfandrückgabe
     function calculatePfandReturn() {
-      const bottleQuantity = parseInt(document.getElementById('bottleQuantity').value);
-      const glassQuantity = parseInt(document.getElementById('glassQuantity').value);
-      const jugQuantity = parseInt(document.getElementById('jugQuantity').value);
-      const cupQuantity = parseInt(document.getElementById('cupQuantity').value);
-      const dishQuantity = parseInt(document.getElementById('dishQuantity').value);
+      const bottleReturn = parseInt(document.getElementById('bottleQuantity').value) * 1;
+      const glassReturn = parseInt(document.getElementById('glassQuantity').value) * 2;
+      const jugReturn = parseInt(document.getElementById('jugQuantity').value) * 5;
+      const cupReturn = parseInt(document.getElementById('cupQuantity').value) * 2;
+      const dishReturn = parseInt(document.getElementById('dishQuantity').value) * 5;
 
-      const bottlePfand = bottleQuantity * 1.0;
-      const glassPfand = glassQuantity * 2.0;
-      const jugPfand = jugQuantity * 5.0;
-      const cupPfand = cupQuantity * 2.0;
-      const dishPfand = dishQuantity * 5.0;
-
-      const totalPfandReturn = bottlePfand + glassPfand + jugPfand + cupPfand + dishPfand;
-
+      const totalPfandReturn = bottleReturn + glassReturn + jugReturn + cupReturn + dishReturn;
       document.getElementById('pfandReturnAmount').innerText = totalPfandReturn.toFixed(2);
-      document.getElementById('amountToPay').innerText = (parseFloat(document.getElementById('totalPrice').innerText) - totalPfandReturn).toFixed(2);
+      renderOrder();
+      closePfandModal();
     }
 
     // Initialisierung
-    displayProductButtons();
+    createProductButtons();
   </script>
 </body>
 </html>
