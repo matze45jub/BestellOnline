@@ -333,45 +333,43 @@
       }
     }
 
-    function renderOrder() {
-      const orderTableBody = document.querySelector("#orderTable tbody");
-      orderTableBody.innerHTML = "";
+function renderOrder() {
+  const orderTableBody = document.querySelector("#orderTable tbody");
+  orderTableBody.innerHTML = "";
 
-      let totalAmount = 0;
-      let pfandAmount = 0;
-      let totalPayAmount = 0;
+  let totalAmount = 0;
+  let pfandAmount = 0;
+  let totalPayAmount = 0;
 
-      order.forEach(item => {
-        const totalProductPrice = item.price * item.quantity;
-        const totalProductDeposit = item.deposit * item.quantity;
-        const totalItemPrice = totalProductPrice + totalProductDeposit;
+  order.forEach(item => {
+    const totalProductPrice = item.price * item.quantity;
+    const totalProductDeposit = item.deposit * item.quantity;
+    const totalItemPrice = totalProductPrice + totalProductDeposit;
 
-        totalAmount += totalProductPrice;
-        pfandAmount += totalProductDeposit;
-        totalPayAmount += totalItemPrice;
+    totalAmount += totalProductPrice;
+    totalPayAmount += totalItemPrice;
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.name}</td>
-          <td>
-            <button onclick="updateQuantity('${item.name}', -1)">-</button>
-            ${item.quantity}
-            <button onclick="updateQuantity('${item.name}', 1)">+</button>
-          </td>
-          <td>${item.price.toFixed(2)}</td>
-          <td>${item.deposit.toFixed(2)}</td>
-          <td>${totalProductPrice.toFixed(2)}</td>
-          <td>${totalProductDeposit.toFixed(2)}</td>
-          <td>${totalItemPrice.toFixed(2)}</td>
-          <td><button onclick="removeProduct('${item.name}')">Entfernen</button></td>
-        `;
-        orderTableBody.appendChild(row);
-      });
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>
+        <button onclick="updateQuantity('${item.name}', -1)">-</button>
+        ${item.quantity}
+        <button onclick="updateQuantity('${item.name}', 1)">+</button>
+      </td>
+      <td>${item.price.toFixed(2)}</td>
+      <td>${item.deposit.toFixed(2)}</td>
+      <td>${totalProductPrice.toFixed(2)}</td>
+      <td>${totalProductDeposit.toFixed(2)}</td>
+      <td>${totalItemPrice.toFixed(2)}</td>
+      <td><button onclick="removeProduct('${item.name}')">Entfernen</button></td>
+    `;
+    orderTableBody.appendChild(row);
+  });
 
-      document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
-      document.getElementById("pfandReturnAmount").textContent = pfandAmount.toFixed(2);
-      document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
-    }
+  document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
+  document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
+}
 
     function updateQuantity(name, change) {
       const product = order.find(p => p.name === name);
@@ -413,7 +411,7 @@ function calculatePfandReturn() {
   pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
   pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
 
-  // Aktualisiere den angezeigten Pfandbetrag
+  // Aktualisiere den Pfandbetrag nur hier
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
 }
 
