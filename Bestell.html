@@ -481,19 +481,7 @@ function calculatePfandReturn() {
     <p id="date-time"></p>
 </footer>
 
-                              <script>
-    // Funktion, die das aktuelle Datum und die Uhrzeit holt
-    function getCurrentDateTime() {
-        var currentDate = new Date();
-        var date = currentDate.toLocaleDateString('de-DE', {
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric'
-        });
-        var time = currentDate.toLocaleTimeString('de-DE');
-        return "Ausdruck erstellt am: " + date + " um " + time;
-    }
+  
 
     // Funktion, die das Datum und die Uhrzeit für den Druck setzt
     function setDateTimeBeforePrint() {
