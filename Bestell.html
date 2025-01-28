@@ -366,10 +366,13 @@
     }
 
     // Neuer Kunde
-    function startNewOrder() {
-      order = [];
-      renderOrder();
-    }
+function startNewOrder() {
+  order = [];  // Leeren der Bestellung
+  pfandData = { bottle: 0, glass: 0, jug: 0, cup: 0, dish: 0 };  // Zurücksetzen der Pfandrückgabe
+  renderOrder();  // Bestellung neu rendern
+  document.getElementById('pfandReturnAmount').innerText = '0.00';  // Zurücksetzen des Pfandrückgabebetrags
+  document.getElementById('amountToPay').innerText = '0.00';  // Zurücksetzen des zu zahlenden Betrags
+}
 
     // Rechnung drucken
     function printReceipt() {
