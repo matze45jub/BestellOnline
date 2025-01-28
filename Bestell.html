@@ -309,7 +309,7 @@
       renderOrder();
     }
 
-    // Bestellung rendern
+ // Bestellung rendern
 function renderOrder() {
   const orderTableBody = document.querySelector('#orderTable tbody');
   orderTableBody.innerHTML = '';
@@ -327,7 +327,7 @@ function renderOrder() {
       <td>${item.name}</td>
       <td>
         <button onclick="changeQuantity('${item.name}', -1)">-</button>
-        <input type="text" value="${item.quantity}" readonly style="width: 30px; text-align: center; border: none; background: transparent;">
+        <span>${item.quantity}</span>
         <button onclick="changeQuantity('${item.name}', 1)">+</button>
       </td>
       <td>${item.price.toFixed(2)}</td>
@@ -346,7 +346,6 @@ function renderOrder() {
   document.querySelector("#pfandReturnAmount").textContent = totalPfand.toFixed(2);
   document.querySelector("#amountToPay").textContent = totalAmount.toFixed(2);
 }
-
     // Bestellung entfernen
     function removeFromOrder(name) {
       order = order.filter(o => o.name !== name);
