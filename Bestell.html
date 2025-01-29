@@ -16,13 +16,21 @@
   body * {
     visibility: hidden;
   }
+  .header, .header *,
   #orderTable, #orderTable * {
     visibility: visible;
   }
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
   #orderTable {
     position: absolute;
+    top: 80px; /* Abstand zur Überschrift */
     left: 0;
-    top: 0;
     width: 100%;
   }
 }
