@@ -443,6 +443,35 @@ function renderOrder() {
       renderOrder();
     }
 
+
+function updateTotal() {
+    // Werte abrufen
+    let gesamtSumme = parseFloat(document.getElementById("gesamtSumme").textContent.replace(',', '.')) || 0;
+    let pfandRueckgabe = parseFloat(document.getElementById("pfandRueckgabe").textContent.replace(',', '.')) || 0;
+    
+    // Neuen zu zahlenden Betrag berechnen
+    let zuZahlen = gesamtSumme - pfandRueckgabe;
+
+    // Ergebnis aktualisieren
+    document.getElementById("zuZahlenderBetrag").textContent = zuZahlen.toFixed(2).replace('.', ',') + " €";
+}
+
+// Event-Listener hinzufügen, wenn sich die Werte ändern
+document.addEventListener("DOMContentLoaded", function() {
+    updateTotal(); // Initial berechnen
+
+    // Falls sich die Gesamtsumme oder Pfandrückgabe ändert, neu berechnen
+    let gesamtSummeElement = document.getElementById("gesamtSumme");
+    let pfandRueckgabeElement = document.getElementById("pfandRueckgabe");
+
+    let observer = new MutationObserver(updateTotal);
+    observer.observe(gesamtSummeElement, { childList: true, subtree: true });
+    observer.observe(pfandRueckgabeElement, { childList: true, subtree: true });
+})
+
+
+
+   
     function openPfandModal() {
       document.getElementById("pfandModal").style.display = "flex";
     }
