@@ -389,7 +389,74 @@ function startNewOrder() {
       }
     }
 
-function renderOrder() {
+
+   <script>
+  // Funktion zum Aktualisieren der Pfandmenge
+  function updatePfandQuantity(type, delta) {
+    let inputElement = document.getElementById(type + 'Quantity');
+    let currentValue = parseInt(inputElement.value);
+    let newValue = currentValue + delta;
+
+    // Sicherstellen, dass der Wert nicht negativ wird
+    if (newValue >= 0) {
+      inputElement.value = newValue;
+    }
+
+    // Berechnung der Gesamtpfandbeträge
+    calculatePfandReturn();
+  }
+
+  // Funktion zum Berechnen des Gesamtpfandes
+  function calculatePfandReturn() {
+    let bottleQuantity = parseInt(document.getElementById('bottleQuantity').value);
+    let glassQuantity = parseInt(document.getElementById('glassQuantity').value);
+    let jugQuantity = parseInt(document.getElementById('jugQuantity').value);
+
+    let bottleReturn = bottleQuantity * 1;
+    let glassReturn = glassQuantity * 2;
+    let jugReturn = jugQuantity * 5;
+
+    let totalPfand = bottleReturn + glassReturn + jugReturn;
+    document.getElementById('pfandReturnAmount').innerText = totalPfand.toFixed(2);
+
+    // Gesamtbetrag mit Pfand berücksichtigen
+    let totalAmount = parseFloat(document.getElementById('totalSum').innerText);
+    let amountToPay = totalAmount - totalPfand;
+
+    document.getElementById('amountToPay').innerText = amountToPay.toFixed(2);
+  }
+
+  // Funktion zum Öffnen des Pfandmodals
+  function openPfandModal() {
+    document.getElementById('pfandModal').style.display = 'flex';
+  }
+
+  // Funktion zum Schließen des Pfandmodals
+  function closePfandModal() {
+    document.getElementById('pfandModal').style.display = 'none';
+  }
+
+  // Funktion zum Zurücksetzen der Pfandinputs (bei Schließen oder Neuberechnung)
+  function resetPfandInputs() {
+    document.getElementById('bottleQuantity').value = 0;
+    document.getElementById('glassQuantity').value = 0;
+    document.getElementById('jugQuantity').value = 0;
+
+    // Zurücksetzen der Berechnung
+    calculatePfandReturn();
+  }
+
+  // Funktion zur Neuberechnung und zum Zurücksetzen beim "Bestellung abschließen"
+  function completeOrder() {
+    // Reset der Pfandinputs
+    resetPfandInputs();
+    // Hier kannst du auch alle anderen Felder zurücksetzen oder eine neue Bestellung starten
+  }
+</script>
+   
+   
+   
+   function renderOrder() {
   const orderTableBody = document.querySelector("#orderTable tbody");
   orderTableBody.innerHTML = "";  // Leert die Tabelle vor jeder neuen Darstellung.
 
