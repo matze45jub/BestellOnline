@@ -490,7 +490,21 @@ function calculatePfandReturn() {
       document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
     }
 
-    function printReceipt() {
+    
+   function updatePfandQuantity(type, change) {
+  let quantityInput = document.getElementById(type + 'Quantity');
+  let currentValue = parseInt(quantityInput.value) || 0;
+  let newValue = currentValue + change;
+
+  // Stelle sicher, dass der Wert nicht unter 0 fällt
+  if (newValue >= 0) {
+    quantityInput.value = newValue;
+  }
+}
+   
+   
+   
+   function printReceipt() {
       window.print();
     }
 
