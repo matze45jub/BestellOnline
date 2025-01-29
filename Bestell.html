@@ -449,7 +449,7 @@ function updateTotal() {
     let gesamtSumme = parseFloat(document.getElementById("gesamtSumme").textContent.replace(',', '.')) || 0;
     let pfandRueckgabe = parseFloat(document.getElementById("pfandRueckgabe").textContent.replace(',', '.')) || 0;
     
-    // Neuen zu zahlenden Betrag berechnen
+    // Neuen zu zahlenden Betrag berechnen (Gesamtsumme - Pfandrückgabe)
     let zuZahlen = gesamtSumme - pfandRueckgabe;
 
     // Ergebnis aktualisieren
@@ -467,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let observer = new MutationObserver(updateTotal);
     observer.observe(gesamtSummeElement, { childList: true, subtree: true });
     observer.observe(pfandRueckgabeElement, { childList: true, subtree: true });
-}
+});
 
 
 
