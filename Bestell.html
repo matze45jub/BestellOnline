@@ -173,7 +173,8 @@
       color: white;
     }
 
-/* Modal Styling */
+    
+    /* Modal Styling */
 .modal {
   display: none; /* Modal initially hidden */
   position: fixed;
@@ -214,6 +215,12 @@
   width: 60px;
   padding: 5px;
   text-align: center;
+}
+
+/* Total Amount */
+.total-amount p {
+  font-weight: bold;
+  margin-top: 20px;
 }
 
 /* Close Button */
@@ -320,8 +327,7 @@
   <p>Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit! <i class="fas fa-cash-register"></i></p>
 </div>
 
-  
-<!-- Modal -->
+  <!-- Modal -->
 <div id="pfandModal" class="modal">
   <div class="modal-content">
     <h2>Pfandrückgabe</h2>
@@ -355,6 +361,9 @@
           <img src="path_to_geschirr_icon.png" alt="Geschirr Icon"> Geschirr
         </label>
         <input type="number" id="geschirr" name="geschirr" value="0" min="0" step="1">
+      </div>
+      <div class="total-amount">
+        <p>Total: €<span id="totalAmount">0.00</span></p>
       </div>
     </form>
     <button id="closeModal" class="close-btn">Schließen</button>
