@@ -451,6 +451,24 @@ function renderOrder() {
       document.getElementById("pfandModal").style.display = "none";
     }
 
+// Annahme: 'bestellformular' enthält die Anzahl der Artikel und 'pfandModal' das Modal zum Berechnen der Pfandrückgabe
+function berechnePfandRueckgabe() {
+    let gesamtPfandRueckgabe = 0;
+
+    // Durchlaufe alle bestellten Artikel im Formular
+    document.querySelectorAll('.bestellartikel').forEach(artikel => {
+        let artikelMenge = parseInt(artikel.querySelector('.menge').value, 10);
+        let pfandProArtikel = parseFloat(artikel.querySelector('.pfand').textContent);
+
+        // Berechne die Pfandrückgabe basierend auf der Menge des Artikels
+        gesamtPfandRueckgabe += artikelMenge * pfandProArtikel;
+    });
+
+    // Setze den berechneten Pfandbetrag im Modal
+    document.querySelector('#pfandBetragModal').textContent = gesamtPfandRueckgabe.toFixed(2);
+}
+
+   
     function updatePfandQuantity(type, change) {
       let quantityInput = document.getElementById(`${type}Quantity`);
       let newQuantity = parseInt(quantityInput.value) + change;
