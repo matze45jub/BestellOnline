@@ -216,11 +216,6 @@
     <h1>45 Jahre Jugendblasorchester Kürnach</h1>
   </div>
 
-<div class="header">
-    <p>Schön, dass Du da bist und mit uns feierst! 🍷</p>
-    <p>Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit! 🛒</p>
-</div>
-  
   <div id="productButtons" class="product-buttons-container">
     <div>
       <h3 class="category-title"><i class="fas fa-hamburger"></i> Essen</h3>
@@ -265,6 +260,11 @@
     <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
   </div>
+
+<div class="footer-message">
+  <p>Schön, dass Du da bist und mit uns feierst! ❤️</p>
+  <p>Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit! <i class="fas fa-cash-register"></i></p>
+</div>
 
   
   <!-- Pfandmodal -->
@@ -373,9 +373,6 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
-
-
-   
     function addProductToOrder(name) {
       const product = products.find(p => p.name === name);
       if (product) {
@@ -440,19 +437,7 @@ function renderOrder() {
       }
       renderOrder();
     }
-   
-function updateTotalAmount() {
-  var pfandValue = parseFloat(document.getElementById('pfandrueckgabe').value) || 0;
-  var otherAmount = parseFloat(document.getElementById('otherAmount').value) || 0;
 
-  // Gesamtbetrag berechnen, z.B.:
-  var totalAmount = otherAmount - pfandValue;
-
-  // Zu zahlenden Betrag aktualisieren
-  document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-}
-
-   
     function removeProduct(name) {
       order = order.filter(p => p.name !== name);
       renderOrder();
