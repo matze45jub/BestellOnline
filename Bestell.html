@@ -340,7 +340,7 @@ function renderOrder() {
   let totalAmount = 0;
   let pfandAmount = 0;
   let totalPayAmount = 0;
-  let totalPriceWithDeposit = 0; // Neue Variable für die Summe der Gesamtspalte
+  let totalPriceWithDeposit = 0; // Neue Variable für die Summe der Gesamtspalte (Spalte 7)
 
   order.forEach(item => {
     const totalProductPrice = item.price * item.quantity;
@@ -369,7 +369,6 @@ function renderOrder() {
     orderTableBody.appendChild(row);
   });
 
-  // Aktualisiere die Anzeige der Summen
   document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
   document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
 
