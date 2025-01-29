@@ -454,9 +454,14 @@ function calculatePfandReturn() {
       document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
     }
 
-    function printReceipt() {
-      window.print();
-    }
+  function printReceipt() {
+  document.querySelector('.button-container').style.display = 'none';
+  document.getElementById('pfandModal').style.display = 'none';
+  window.print();
+  // Optional: Danach wieder anzeigen, falls du es auf der Seite behalten möchtest
+  document.querySelector('.button-container').style.display = '';
+  document.getElementById('pfandModal').style.display = '';
+}
 
     function completeOrder() {
       alert("Bestellung abgeschlossen!");
