@@ -184,7 +184,30 @@
           <button onclick="updatePfandQuantity('bottle', 1)">+</button>
         </div>
       </div>
-      <!-- Weitere Pfandartikel... -->
+      <div class="pfand-item">
+        <label for="krugQuantity">Krug (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('krug', -1)">-</button>
+          <input type="number" id="krugQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('krug', 1)">+</button>
+        </div>
+      </div>
+      <div class="pfand-item">
+        <label for="geschirrQuantity">Geschirr (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('geschirr', -1)">-</button>
+          <input type="number" id="geschirrQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('geschirr', 1)">+</button>
+        </div>
+      </div>
+      <div class="pfand-item">
+        <label for="glasQuantity">Glas (2€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('glas', -1)">-</button>
+          <input type="number" id="glasQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('glas', 1)">+</button>
+        </div>
+      </div>
       <button onclick="calculatePfandReturn()">Berechnen</button>
       <button onclick="closePfandModal()">Schließen</button>
     </div>
@@ -199,31 +222,10 @@
       { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
       { name: "Penne mit Linsenbolognese", price: 7.4, category: "essen", deposit: 5 },
       { name: "gebackener Camenbert", price: 4.2, category: "essen", deposit: 5 },
-      { name: "Spinat-/Semmelknödel", price: 4.8, category: "essen", deposit: 5 },
-      { name: "Hochzeitsessen", price: 7.2, category: "essen", deposit: 5 },
-      { name: "Gemüsenudeln", price: 5.5, category: "essen", deposit: 5 },
-      { name: "Kartoffelpuffer", price: 5.2, category: "essen", deposit: 5 },
-      { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
-      { name: "VeggieBurger", price: 4.2, category: "essen", deposit: 0 },
-      { name: "Hamburger", price: 4.2, category: "essen", deposit: 0 },
-      { name: "Cheeseburger", price: 4.6, category: "essen", deposit: 0 },
-      { name: "Falafel mit Dip", price: 6.4, category: "essen", deposit: 5.0 },
-      { name: "Ochs vom Spieß", price: 9.2, category: "essen", deposit: 5.0 },
-      { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
-      { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
-      { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
-      { name: "Jubiläums-Bier", price: 5.2, category: "getraenke", deposit: 5 },
-      { name: "Alkoholfreies Bier", price: 3.6, category: "getraenke", deposit: 5.0 },
-      { name: "Bier", price: 4.8, category: "getraenke", deposit: 5 },
-      { name: "Alkoholfreies Hefe", price: 3.6, category: "getraenke", deposit: 5.0 },
-      { name: "Hefeweizen", price: 3.8, category: "getraenke", deposit: 5.0 },
-      { name: "Radler", price: 3.6, category: "getraenke", deposit: 5.0 },
-      { name: "Spezi", price: 2.5, category: "getraenke", deposit: 1.0 },
-      { name: "Apfelschorle", price: 2.0, category: "getraenke", deposit: 1.0 },
-      { name: "Cola", price: 3.0, category: "getraenke", deposit: 1.0 },
-      { name: "Fanta", price: 3.0, category: "getraenke", deposit: 1.0 },
-      { name: "Wasser spritzig", price: 2.0, category: "getraenke", deposit: 1.0 },
-      { name: "Wasser still", price: 2.0, category: "getraenke", deposit: 1.0 }
+      { name: "Weißbier", price: 3.0, category: "getraenke", deposit: 0.5 },
+      { name: "Bier", price: 2.5, category: "getraenke", deposit: 0.5 },
+      { name: "Limonade", price: 2.0, category: "getraenke", deposit: 0 },
+      { name: "Cola", price: 2.0, category: "getraenke", deposit: 0 }
     ];
 
     let order = [];
@@ -328,7 +330,10 @@
 
     // Pfand Rückgabe Logik
     let pfandQuantities = {
-      bottle: 0
+      bottle: 0,
+      krug: 0,
+      geschirr: 0,
+      glas: 0
     };
 
     function openPfandModal() {
@@ -347,15 +352,21 @@
 
     function calculatePfandReturn() {
       let totalPfandReturn = 0;
-      if (pfandQuantities.bottle) totalPfandReturn += pfandQuantities.bottle * 1;
+      totalPfandReturn += pfandQuantities.bottle * 1;
+      totalPfandReturn += pfandQuantities.krug * 5;
+      totalPfandReturn += pfandQuantities.geschirr * 5;
+      totalPfandReturn += pfandQuantities.glas * 2;
       document.getElementById("pfandReturnAmount").textContent = totalPfandReturn.toFixed(2);
       updateTotals();
       closePfandModal();
     }
 
     function resetPfandInputs() {
-      pfandQuantities = { bottle: 0 };
+      pfandQuantities = { bottle: 0, krug: 0, geschirr: 0, glas: 0 };
       document.getElementById("bottleQuantity").value = 0;
+      document.getElementById("krugQuantity").value = 0;
+      document.getElementById("geschirrQuantity").value = 0;
+      document.getElementById("glasQuantity").value = 0;
     }
 
     function handlePayment() {
@@ -380,7 +391,7 @@
       startNewOrder();
     }
 
-    // Lade die Produktbuttons bei Initialisierung
+    // Initiale Anzeige der Produktbuttons
     displayProductButtons();
   </script>
 
