@@ -369,6 +369,7 @@ function renderOrder() {
     orderTableBody.appendChild(row);
   });
 
+  // Aktualisiere die Anzeige der Summen
   document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
   document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
 
