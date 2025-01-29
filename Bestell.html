@@ -386,6 +386,13 @@ function startNewOrder() {
       }
     }
 
+
+   <div>
+    <span id="gesamtbetrag">0.00</span> <!-- Gesamtsumme -->
+    <span id="pfandRueckgabe">0.00</span> <!-- Pfandrückgabe -->
+    <span id="zuZahlenderBetrag">0.00</span> <!-- Zu zahlender Betrag -->
+</div>
+
 function renderOrder() {
   const orderTableBody = document.querySelector("#orderTable tbody");
   orderTableBody.innerHTML = "";  // Leert die Tabelle vor jeder neuen Darstellung.
