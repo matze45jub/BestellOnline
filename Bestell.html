@@ -82,6 +82,274 @@
       padding-top: 20px;
     }
 
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #E74C3C;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button-container button:hover {
+      background-color: #C0392B;
+    }
+
+    /* Menge-Input mit Pfeilen */
+    .quantity-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 80px;
+    }
+
+    .quantity-input button {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .quantity-input input {
+      width: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="logo.png" alt="Logo">
+    <h1>45 Jahre Jugendblasorchester Kürnach</h1>
+  </div>
+
+  <div id="productButtons" class="product-buttons-container">
+    <div>
+      <h3 class="category-title"><i class="fas fa-hamburger"></i> Essen</h3>
+      <div class="product-buttons-row" id="essenButtons"></div>
+    </div>
+    <div>
+      <h3 class="category-title"><i class="fas fa-glass-cheers"></i> Getränke</h3>
+      <div class="product-buttons-row" id="getraenkeButtons"></div>
+    </div>
+  </div>
+
+  <h2 style="color: #101A4B;">Bestellung</h2>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Produkt</th>
+        <th>Menge</th>
+        <th>Einzelpreis (€)</th>
+        <th>Einzelpfand (€)</th>
+        <th>Gesamtpreis (€)</th>
+        <th>Gesamtpfand (€)</th>
+        <th>Gesamt (€)</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <h3>
+    Gesamt: <span id="totalAmount">0.00</span>€ 
+    | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
+    | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
+    | Zahlung: <span id="paymentAmount">0.00</span>€
+    | Rückgeld: <span id="changeAmount">0.00</span>€
+  </h3>
+
+  <div class="button-container">
+    <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
+    <button id="pfandReturnBtn" class="pfand-button" onclick="openPfandModal()">Pfandrückgabe</button>
+    <button id="paymentBtn" onclick="handlePayment()">Zahlung</button>
+    <button id="printReceiptBtn" onclick="printReceipt()">Drucke Rechnung</button>
+    <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
+  </div>
+
+  <script>
+    const products = [
+      { name: "Obatzter", price: 3.2, category: "essen", deposit: 0 },
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
+      { name: "Weißwurst", price: 4.2, category: "essen", deposit: 5 },
+      { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
+      { name: "Penne mit Linsenbolognese", price: 7.4, category: "essen", deposit: 5 },
+      { name: "gebackener Camembert", price: 4.2, category: "essen", deposit: 5 },
+      { name: "Spinat-/Semmelknödel", price: 4.8, category: "essen", deposit: 5 },
+      { name: "Hochzeitsessen", price: 7.2, category: "essen", deposit: 5 },
+      { name: "Gemüsenudeln", price: 5.5, category: "essen", deposit: 5 },
+      { name: "Kartoffelpuffer", price: 5.2, category: "essen", deposit: 5 },
+      { name: "Currywurst", price: 4.5, category: "essen", deposit: 0 },
+      { name: "VeggieBurger", price: 4.2, category: "essen", deposit: 0 },
+      { name: "Hamburger", price: 4.2, category: "essen", deposit: 0 },
+      { name: "Cheeseburger", price: 4.6, category: "essen", deposit: 0 },
+      { name: "Falafel mit Dip", price: 6.4, category: "essen", deposit: 5.0 },
+      { name: "Ochs vom Spieß", price: 9.2, category: "essen", deposit: 5.0 },
+      { name: "Pommes", price: 2.5, category: "essen", deposit: 0 },
+      { name: "Salat", price: 4.0, category: "essen", deposit: 5.0 },
+      { name: "Schnitzel", price: 8.5, category: "essen", deposit: 5.0 },
+      { name: "Jubiläums-Bier", price: 5.2, category: "getraenke", deposit: 5 },
+      { name: "Alkoholfreies Bier", price: 3.6, category: "getraenke", deposit: 5.0 },
+      { name: "Cola", price: 3.4, category: "getraenke", deposit: 5.0 },
+      { name: "Fanta", price: 3.5, category: "getraenke", deposit: 5.0 },
+      { name: "Apfelschorle", price: 3.8, category: "getraenke", deposit: 5.0 },
+      { name: "Wasser", price: 2.0, category: "getraenke", deposit: 5.0 },
+      { name: "Limo", price: 2.5, category: "getraenke", deposit: 5.0 }
+    ];
+
+    let order = [];
+
+    // Funktion zur Berechnung der Gesamtbeträge
+    function calculateTotal() {
+      let totalAmount = 0;
+      let pfandAmount = 0;
+
+      order.forEach(item => {
+        totalAmount += item.totalPrice;
+        pfandAmount += item.deposit * item.quantity;
+      });
+
+      document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
+      document.getElementById("pfandReturnAmount").textContent = pfandAmount.toFixed(2);
+
+      // Berechnung zu zahlender Betrag und Rückgeld
+      const paymentAmount = parseFloat(document.getElementById("paymentAmount").textContent) || 0;
+      const changeAmount = paymentAmount - totalAmount;
+      document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
+      document.getElementById("amountToPay").textContent = totalAmount.toFixed(2);
+    }
+
+    // Bestellprozess und Rendern
+    function renderOrder() {
+      let tbody = document.querySelector("#orderTable tbody");
+      tbody.innerHTML = ""; // Tabelle leeren
+      order.forEach((item, index) => {
+        let row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${item.product.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.product.price}</td>
+          <td>${item.product.deposit}</td>
+          <td>${item.totalPrice}</td>
+          <td>${item.depositTotal}</td>
+          <td>${item.totalPrice + item.depositTotal}</td>
+          <td><button onclick="removeItem(${index})">Entfernen</button></td>
+        `;
+      });
+
+      calculateTotal();
+    }
+
+    function addItem(product, quantity) {
+      const totalPrice = product.price * quantity;
+      const depositTotal = product.deposit * quantity;
+      const newItem = { product, quantity, totalPrice, depositTotal };
+      order.push(newItem);
+      renderOrder();
+    }
+
+    function removeItem(index) {
+      order.splice(index, 1);
+      renderOrder();
+    }
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bestellung</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      width: 67px;
+      height: auto;
+      margin-right: 10px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin: 0;
+      color: #101A4B;
+    }
+
+    .product-buttons-container {
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #101A4B;
+    }
+
+    .product-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .product-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .essen-button {
+      background-color: #E74C3C;
+      color: #FFFFFF;
+    }
+
+    .getraenke-button {
+      background-color: #377EBF;
+      color: #FFFFFF;
+    }
+
+    #orderTable, #orderTable th, #orderTable td {
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+
+    #orderTable th {
+      background-color: #f8f8f8;
+    }
+
+    .order-summary {
+      margin-top: 20px;
+      border-top: 2px solid #ccc;
+      padding-top: 20px;
+    }
+
     .hidden {
       display: none;
     }
