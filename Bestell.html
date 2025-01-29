@@ -339,6 +339,7 @@ function renderOrder() {
 
   let totalSum = 0;  // Variable, um die Summe der 7. Spalte zu berechnen.
 
+  // Gehe alle Artikel durch und berechne die Gesamtsumme jedes Produkts.
   order.forEach(item => {
     const totalProductPrice = item.price * item.quantity;
     const totalProductDeposit = item.deposit * item.quantity;
@@ -346,41 +347,24 @@ function renderOrder() {
 
     totalSum += totalItemPrice;  // Addiere die Gesamtsumme des Artikels zur Gesamt-Summe.
 
-    // Erstelle die Zeile der Bestellung
+    // Füge die Reihen in die Tabelle ein.
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${item.name}</td>
       <td>
-        <button class="quantity-btn" data-name="${item.name}" data-action="-1">-</button>
+        <button onclick="updateQuantity('${item.name}', -1)">-</button>
         ${item.quantity}
-        <button class="quantity-btn" data-name="${item.name}" data-action="1">+</button>
+        <button onclick="updateQuantity('${item.name}', 1)">+</button>
       </td>
       <td>${item.price.toFixed(2)}</td>
       <td>${item.deposit.toFixed(2)}</td>
       <td>${totalProductPrice.toFixed(2)}</td>
       <td>${totalProductDeposit.toFixed(2)}</td>
       <td>${totalItemPrice.toFixed(2)}</td>
-      <td><button class="remove-product-btn" data-name="${item.name}">Entfernen</button></td>
+      <td><button onclick="removeProduct('${item.name}')">Entfernen</button></td>
     `;
     orderTableBody.appendChild(row);
   });
-
-  // Setze die berechneten Werte für "totalAmount" und "amountToPay" (falls benötigt).
-  document.getElementById("totalSum").textContent = totalSum.toFixed(2);
-  document.getElementById("amountToPay").textContent = totalSum.toFixed(2);  // Falls du den Gesamtbetrag auch hier anzeigen möchtest.
-}
-
-// Event Listener für die Buttons
-document.querySelector('#orderTable').addEventListener('click', function(e) {
-  if (e.target.classList.contains('quantity-btn')) {
-    const action = parseInt(e.target.dataset.action);
-    const name = e.target.dataset.name;
-    updateQuantity(name, action);
-  } else if (e.target.classList.contains('remove-product-btn')) {
-    const name = e.target.dataset.name;
-    removeProduct(name);
-  }
-});
 
   // Setze die berechneten Werte für "totalAmount" und "amountToPay" (falls benötigt).
   document.getElementById("totalSum").textContent = totalSum.toFixed(2);
