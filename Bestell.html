@@ -8,13 +8,49 @@
   <style>
 
 @media print {
-  .button-container, .product-buttons-container, #pfandModal, .quantity-input, button {
-    display: none;
+  body {
+    font-family: "Times New Roman", serif;
+    font-size: 14px;
+    color: black;
   }
 
-@media print {
+  .button-container, 
+  .product-buttons-container, 
+  #pfandModal, 
+  .quantity-input, 
+  button {
+    display: none; /* Alle interaktiven Elemente ausblenden */
+  }
+
+  #orderTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  #orderTable th, #orderTable td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+  #orderTable th {
+    background-color: #ddd;
+    font-weight: bold;
+  }
+
+  h2, h3 {
+    color: black;
+    font-size: 18px;
+    margin-top: 10px;
+  }
+
   #printFooter {
-    font-size: 10px; /* Kleinere Schriftgröße für den Ausdruck */
+    text-align: center;
+    font-size: 12px;
+    margin-top: 20px;
+    border-top: 1px solid black;
+    padding-top: 10px;
   }
 }
   
@@ -457,8 +493,8 @@ function calculatePfandReturn() {
     }
 
     function printReceipt() {
-      window.print();
-    }
+  window.print(); // Startet den Druck
+}
 
     function completeOrder() {
       alert("Bestellung abgeschlossen!");
