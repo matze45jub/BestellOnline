@@ -275,6 +275,7 @@
         <label for="bottleQuantity">Flasche (1€ Pfand):</label>
         <div class="quantity-input">
           <button onclick="updatePfandQuantity('bottle', -1)">-</button>
+          <input type="number" id="bottleQuantity" value="0" readonly>
           <button onclick="updatePfandQuantity('bottle', 1)">+</button>
         </div>
       </div>
@@ -282,7 +283,7 @@
         <label for="glassQuantity">Glas (2€ Pfand):</label>
         <div class="quantity-input">
           <button onclick="updatePfandQuantity('glass', -1)">-</button>
-          
+          <input type="number" id="glassQuantity" value="0" readonly>
           <button onclick="updatePfandQuantity('glass', 1)">+</button>
         </div>
       </div>
@@ -290,6 +291,7 @@
         <label for="jugQuantity">Krug (5€ Pfand):</label>
         <div class="quantity-input">
           <button onclick="updatePfandQuantity('jug', -1)">-</button>
+          <input type="number" id="jugQuantity" value="0" readonly>
           <button onclick="updatePfandQuantity('jug', 1)">+</button>
         </div>
       </div>
@@ -464,7 +466,13 @@ function updateTotalAmount() {
       document.getElementById("pfandModal").style.display = "none";
     }
 
-
+    function updatePfandQuantity(type, change) {
+      let quantityInput = document.getElementById(`${type}Quantity`);
+      let newQuantity = parseInt(quantityInput.value) + change;
+      if (newQuantity >= 0) {
+        quantityInput.value = newQuantity;
+      }
+    }
 
 function calculatePfandReturn() {
   let pfandReturnAmount = 0;
@@ -478,8 +486,11 @@ function calculatePfandReturn() {
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
 
   // Berechne den zu zahlenden Betrag nach Abzug des Pfands
-  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent) - pfandReturnAmount;
-  document.getElementById("amountToPay").textContent = totalAmountToPay.toFixed(2);
+  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
+  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount;
+
+  // Aktualisiere den zu zahlenden Betrag
+  document.getElementById("amountToPay").textContent = updatedAmountToPay.toFixed(2);
 }
 
     function handlePayment() {
@@ -490,21 +501,7 @@ function calculatePfandReturn() {
       document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
     }
 
-    
-   function updatePfandQuantity(type, change) {
-  let quantityInput = document.getElementById(type + 'Quantity');
-  let currentValue = parseInt(quantityInput.value) || 0;
-  let newValue = currentValue + change;
-
-  // Stelle sicher, dass der Wert nicht unter 0 fällt
-  if (newValue >= 0) {
-    quantityInput.value = newValue;
-  }
-}
-   
-   
-   
-   function printReceipt() {
+    function printReceipt() {
       window.print();
     }
 
