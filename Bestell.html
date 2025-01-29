@@ -276,13 +276,14 @@
     </tbody>
   </table>
 
-  <h3>
-    Gesamt: <span id="totalAmount">0.00</span>€ 
-    | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
-    | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
-    | Zahlung: <span id="paymentAmount">0.00</span>€
-    | Rückgeld: <span id="changeAmount">0.00</span>€
-  </h3>
+<h3>
+  Gesamt: <span id="totalAmount">0.00</span>€ 
+  | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
+  | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
+  | Zahlung: <span id="paymentAmount">0.00</span>€
+  | Rückgeld: <span id="changeAmount">0.00</span>€
+  | Summe: <span id="totalSum">0.00</span>€
+</h3>
 
   <div class="button-container">
     <button id="newCustomerBtn" onclick="startNewOrder()">Neuer Kunde</button>
@@ -411,6 +412,7 @@ function renderOrder() {
   let totalAmount = 0;
   let pfandAmount = 0;
   let totalPayAmount = 0;
+  let totalSum = 0;  // Variable für die Summe der Gesamtbeträge
 
   order.forEach(item => {
     const totalProductPrice = item.price * item.quantity;
@@ -419,6 +421,7 @@ function renderOrder() {
 
     totalAmount += totalProductPrice;
     totalPayAmount += totalItemPrice;
+    totalSum += totalItemPrice;  // Summe der Gesamtbeträge addieren
 
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -440,6 +443,9 @@ function renderOrder() {
 
   document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
   document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
+
+  // Aktualisiere den Gesamtbetrag unterhalb der Tabelle
+  document.getElementById("totalSum").textContent = totalSum.toFixed(2);
 }
 
     function updateQuantity(name, change) {
