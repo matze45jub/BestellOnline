@@ -373,6 +373,13 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
+
+// Beispiel: Event-Listener für Änderungen der Pfandrückgabe
+document.getElementById('pfandrueckgabe').addEventListener('change', function() {
+  updateTotalAmount(); // Funktion zur Neuberechnung des Gesamtbetrags
+});
+
+   
     function addProductToOrder(name) {
       const product = products.find(p => p.name === name);
       if (product) {
@@ -437,7 +444,19 @@ function renderOrder() {
       }
       renderOrder();
     }
+   
+function updateTotalAmount() {
+  var pfandValue = parseFloat(document.getElementById('pfandrueckgabe').value) || 0;
+  var otherAmount = parseFloat(document.getElementById('otherAmount').value) || 0;
 
+  // Gesamtbetrag berechnen, z.B.:
+  var totalAmount = otherAmount - pfandValue;
+
+  // Zu zahlenden Betrag aktualisieren
+  document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+}
+
+   
     function removeProduct(name) {
       order = order.filter(p => p.name !== name);
       renderOrder();
