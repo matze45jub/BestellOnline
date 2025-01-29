@@ -468,28 +468,6 @@ function updateTotalAmount() {
 
 
 
-let lastCalculatedAmount = 0;  // Variable zur Speicherung des zuletzt berechneten Betrags
-
-function calculatePfandReturn() {
-  // Hole die aktuellen Eingabewerte
-  let bottleQuantity = parseInt(document.getElementById('bottleQuantity').value) || 0;
-  let glassQuantity = parseInt(document.getElementById('glassQuantity').value) || 0;
-  let jugQuantity = parseInt(document.getElementById('jugQuantity').value) || 0;
-
-  // Berechne den Pfandbetrag basierend auf den aktuellen Werten
-  let totalPfandReturn = (bottleQuantity * 1) + (glassQuantity * 2) + (jugQuantity * 5);
-
-  // Verhindern, dass der Betrag mehrfach verringert wird
-  if (lastCalculatedAmount !== totalPfandReturn) {
-    lastCalculatedAmount = totalPfandReturn;
-    // Zeige den berechneten Betrag an
-    document.getElementById("pfandReturnAmount").textContent = totalPfandReturn.toFixed(2);
-  }
-  
-  // Schließe das Modal nach der Berechnung
-  closePfandModal();
-}
-
 function calculatePfandReturn() {
   let pfandReturnAmount = 0;
   pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
@@ -502,11 +480,8 @@ function calculatePfandReturn() {
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
 
   // Berechne den zu zahlenden Betrag nach Abzug des Pfands
-  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
-  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount;
-
-  // Aktualisiere den zu zahlenden Betrag
-  document.getElementById("amountToPay").textContent = updatedAmountToPay.toFixed(2);
+  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent) - pfandReturnAmount;
+  document.getElementById("amountToPay").textContent = totalAmountToPay.toFixed(2);
 }
 
     function handlePayment() {
