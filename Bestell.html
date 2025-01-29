@@ -282,7 +282,7 @@
   | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
   | Zahlung: <span id="paymentAmount">0.00</span>€
   | Rückgeld: <span id="changeAmount">0.00</span>€
-  | Summe: <span id="totalSum">0.00</span>€
+  | Gesamt (Spalte 7): <span id="totalSum">0.00</span>€
 </h3>
 
   <div class="button-container">
@@ -412,7 +412,7 @@ function renderOrder() {
   let totalAmount = 0;
   let pfandAmount = 0;
   let totalPayAmount = 0;
-  let totalSum = 0;  // Variable für die Summe der Gesamtbeträge
+  let totalSum = 0;  // Variable für die Summe der Werte aus der 7. Spalte (Gesamt)
 
   order.forEach(item => {
     const totalProductPrice = item.price * item.quantity;
@@ -421,7 +421,7 @@ function renderOrder() {
 
     totalAmount += totalProductPrice;
     totalPayAmount += totalItemPrice;
-    totalSum += totalItemPrice;  // Summe der Gesamtbeträge addieren
+    totalSum += totalItemPrice;  // Hier addieren wir die Werte der Spalte 7
 
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -435,7 +435,7 @@ function renderOrder() {
       <td>${item.deposit.toFixed(2)}</td>
       <td>${totalProductPrice.toFixed(2)}</td>
       <td>${totalProductDeposit.toFixed(2)}</td>
-      <td>${totalItemPrice.toFixed(2)}</td>
+      <td>${totalItemPrice.toFixed(2)}</td> <!-- Gesamt (Spalte 7) -->
       <td><button onclick="removeProduct('${item.name}')">Entfernen</button></td>
     `;
     orderTableBody.appendChild(row);
@@ -444,7 +444,7 @@ function renderOrder() {
   document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
   document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
 
-  // Aktualisiere den Gesamtbetrag unterhalb der Tabelle
+  // Anzeige der Summe aus der Spalte 7 (Gesamt)
   document.getElementById("totalSum").textContent = totalSum.toFixed(2);
 }
 
