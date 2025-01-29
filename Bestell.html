@@ -320,7 +320,6 @@
     const products = [
       { name: "Obatzter", price: 3.2, category: "essen", deposit: 0 },
       { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
-      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Weißwurst", price: 4.2, category: "essen", deposit: 5 },
       { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
       { name: "Penne mit Linsenbolognese", price: 7.4, category: "essen", deposit: 5 },
@@ -354,17 +353,24 @@
 
     let order = [];
 
-    function startNewOrder() {
+function startNewOrder() {
   // Leere die Bestellliste
   order = [];
   renderOrder();
 
   // Setze alle Beträge auf 0
-  document.getElementById("totalsum").textContent = "0.00";
+  document.getElementById("totalSum").textContent = "0.00";
   document.getElementById("pfandReturnAmount").textContent = "0.00";
   document.getElementById("amountToPay").textContent = "0.00";
   document.getElementById("paymentAmount").textContent = "0.00";
   document.getElementById("changeAmount").textContent = "0.00";
+
+  // Setze alle Modal-Werte für Pfandrückgabe auf 0
+  document.getElementById("bottleQuantity").value = 0;
+  document.getElementById("glassQuantity").value = 0;
+  document.getElementById("jugQuantity").value = 0;
+  document.getElementById("cupQuantity").value = 0;
+  document.getElementById("dishQuantity").value = 0;
 }
 
     function addProductToOrder(name) {
