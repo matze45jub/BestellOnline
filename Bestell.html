@@ -488,9 +488,32 @@ function calculatePfandReturn() {
   // Aktualisiere den Pfandbetrag
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
 
-  // Berechne den zu zahlenden Betrag nach Abzug des Pfands
-  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
-  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount;
+// Berechne die Gesamtsumme, die Pfandrückgabe und den zu zahlenden Betrag
+function berechneGesamtbetrag() {
+    let gesamtSumme = 0;
+    let gesamtPfandRueckgabe = 0;
+
+    // Berechne die Gesamtsumme basierend auf der Bestellmenge und dem Preis der Artikel
+    document.querySelectorAll('.bestellartikel').forEach(artikel => {
+        let artikelMenge = parseInt(artikel.querySelector('.menge').value, 10);
+        let artikelPreis = parseFloat(artikel.querySelector('.preis').textContent);
+        let pfandProArtikel = parseFloat(artikel.querySelector('.pfand').textContent);
+
+        // Gesamtsumme der Artikel
+        gesamtSumme += artikelMenge * artikelPreis;
+
+        // Berechne die Pfandrückgabe für den Artikel
+        gesamtPfandRueckgabe += artikelMenge * pfandProArtikel;
+    });
+
+    // Berechne den zu zahlenden Betrag
+    let zuZahlenderBetrag = gesamtSumme - gesamtPfandRueckgabe;
+
+    // Aktualisiere die Anzeige im HTML
+    document.querySelector('#gesamtbetrag').textContent = gesamtSumme.toFixed(2);
+    document.querySelector('#pfandRueckgabe').textContent = gesamtPfandRueckgabe.toFixed(2);
+    document.querySelector('#zuZahlenderBetrag').textContent = zuZahlenderBetrag.toFixed(2);
+}
 
   // Aktualisiere den zu zahlenden Betrag
   document.getElementById("amountToPay").textContent = updatedAmountToPay.toFixed(2);
