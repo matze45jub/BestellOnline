@@ -454,13 +454,19 @@ function calculatePfandReturn() {
       document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
     }
 
-  function printReceipt() {
+function printReceipt() {
+  // Schaltflächen und Modals ausblenden
   document.querySelector('.button-container').style.display = 'none';
   document.getElementById('pfandModal').style.display = 'none';
-  window.print();
-  // Optional: Danach wieder anzeigen, falls du es auf der Seite behalten möchtest
-  document.querySelector('.button-container').style.display = '';
-  document.getElementById('pfandModal').style.display = '';
+
+  // Warte ein wenig, bis die Änderungen übernommen werden, dann den Druck auslösen
+  setTimeout(function() {
+    window.print();
+    
+    // Schaltflächen und Modals nach dem Drucken wieder anzeigen
+    document.querySelector('.button-container').style.display = '';
+    document.getElementById('pfandModal').style.display = '';
+  }, 500);
 }
 
     function completeOrder() {
