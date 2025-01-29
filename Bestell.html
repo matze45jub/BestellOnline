@@ -12,6 +12,21 @@
       padding: 0;
     }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #orderTable, #orderTable * {
+    visibility: visible;
+  }
+  #orderTable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+    
     .header {
       display: flex;
       align-items: center;
