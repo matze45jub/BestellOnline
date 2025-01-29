@@ -154,95 +154,29 @@
     }
 
     /* Modal */
-    modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    justify-content: center;
-    align-items: center;
-  }
+    #pfandModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
 
-  .modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    text-align: center;
-  }
+    #pfandModalContent {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
 
-  .pfand-item {
-    margin-bottom: 15px;
-  }
+    .pfand-item {
+      margin-bottom: 10px;
+    }
 
-  .pfand-item label {
-    font-size: 16px;
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-  }
-
-  .quantity-input {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .quantity-btn {
-    background-color: #E74C3C;
-    color: white;
-    border: none;
-    padding: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  .quantity-btn:hover {
-    background-color: #C0392B;
-  }
-
-  .quantity-input input {
-    width: 50px;
-    text-align: center;
-    font-size: 16px;
-    margin: 0 10px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-
-  .modal-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-
-  .modal-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .cancel-btn {
-    background-color: #BDC3C7;
-    color: white;
-    border: none;
-  }
-
-  .confirm-btn {
-    background-color: #27AE60;
-    color: white;
-    border: none;
-  }
-
-  .modal-btn:hover {
-    opacity: 0.8;
-  }
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
       .product-buttons-row {
@@ -333,46 +267,54 @@
 </div>
 
   
-<!-- Pfandmodal -->
-<div id="pfandModal" class="modal">
-  <div id="pfandModalContent" class="modal-content">
-    <h3>Pfandrückgabe</h3>
-    <p>Gib bitte die Anzahl der zurückgegebenen Flaschen, Gläser oder Krüge ein:</p>
-    
-    <div class="pfand-item">
-      <label for="bottleQuantity">Flasche (1€ Pfand):</label>
-      <div class="quantity-input">
-        <button class="quantity-btn" onclick="updatePfandQuantity('bottle', -1)">-</button>
-        <input type="number" id="bottleQuantity" value="0" readonly>
-        <button class="quantity-btn" onclick="updatePfandQuantity('bottle', 1)">+</button>
+  <!-- Pfandmodal -->
+  <div id="pfandModal">
+    <div id="pfandModalContent">
+      <h3>Pfandrückgabe</h3>
+      <div class="pfand-item">
+        <label for="bottleQuantity">Flasche (1€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('bottle', -1)">-</button>
+          <input type="number" id="bottleQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('bottle', 1)">+</button>
+        </div>
       </div>
-    </div>
-
-    <div class="pfand-item">
-      <label for="glassQuantity">Glas (2€ Pfand):</label>
-      <div class="quantity-input">
-        <button class="quantity-btn" onclick="updatePfandQuantity('glass', -1)">-</button>
-        <input type="number" id="glassQuantity" value="0" readonly>
-        <button class="quantity-btn" onclick="updatePfandQuantity('glass', 1)">+</button>
+      <div class="pfand-item">
+        <label for="glassQuantity">Glas (2€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('glass', -1)">-</button>
+          <input type="number" id="glassQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('glass', 1)">+</button>
+        </div>
       </div>
-    </div>
-
-    <div class="pfand-item">
-      <label for="jugQuantity">Krug (5€ Pfand):</label>
-      <div class="quantity-input">
-        <button class="quantity-btn" onclick="updatePfandQuantity('jug', -1)">-</button>
-        <input type="number" id="jugQuantity" value="0" readonly>
-        <button class="quantity-btn" onclick="updatePfandQuantity('jug', 1)">+</button>
+      <div class="pfand-item">
+        <label for="jugQuantity">Krug (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('jug', -1)">-</button>
+          <input type="number" id="jugQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('jug', 1)">+</button>
+        </div>
       </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="modal-btn cancel-btn" onclick="closePfandModal()">Abbrechen</button>
-      <button class="modal-btn confirm-btn" onclick="completePfandReturn()">Bestätigen</button>
+      <div class="pfand-item">
+        <label for="cupQuantity">Tasse (2€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('cup', -1)">-</button>
+          <input type="number" id="cupQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('cup', 1)">+</button>
+        </div>
+      </div>
+      <div class="pfand-item">
+        <label for="dishQuantity">Geschirr (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('dish', -1)">-</button>
+          <input type="number" id="dishQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('dish', 1)">+</button>
+        </div>
+      </div>
+      <button onclick="calculatePfandReturn()">Berechnen</button>
+      <button onclick="closePfandModal()">Schließen</button>
     </div>
   </div>
-</div>
-
 
  <script>
     const products = [
