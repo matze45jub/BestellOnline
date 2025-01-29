@@ -287,6 +287,24 @@
       document.getElementById("amountToPay").textContent = totalAmountToPay.toFixed(2);
     }
 
+    // Anzeige der Produktbuttons für Essen und Getränke
+    function displayProductButtons() {
+      const essenContainer = document.getElementById("essenButtons");
+      const getraenkeContainer = document.getElementById("getraenkeButtons");
+
+      products.forEach(product => {
+        const button = document.createElement("button");
+        button.textContent = `${product.name} (${product.price}€)`;
+        button.onclick = () => addProductToOrder(product.name);
+
+        if (product.category === "essen") {
+          essenContainer.appendChild(button);
+        } else if (product.category === "getraenke") {
+          getraenkeContainer.appendChild(button);
+        }
+      });
+    }
+
     // Pfand Rückgabe Logik
     let pfandQuantities = {
       bottle: 0
@@ -340,6 +358,9 @@
       alert("Bestellung abgeschlossen.");
       startNewOrder();
     }
+
+    // Lade die Produktbuttons bei Initialisierung
+    displayProductButtons();
   </script>
 
 </body>
