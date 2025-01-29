@@ -37,16 +37,21 @@
   #orderTable th:last-child,
   #orderTable td:last-child {
     display: none;
-  }
-  .print-message {
-    position: absolute;
-    top: calc(100% + 10px); /* Direkt unter der Tabelle */
-    width: 100%;
-    text-align: center;
-    font-family: "Arial", sans-serif;
-    font-size: 18px;
-    font-weight: bold;
-  }
+
+    
+ .print-message {
+  position: absolute;
+  bottom: 20px;  /* Positioniere die Nachricht näher am unteren Rand der Seite */
+  width: 100%;
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 24px;  /* Größere Schrift */
+  font-weight: bold;
+  color: #101A4B;  /* Farbton angepasst für bessere Sichtbarkeit */
+  background-color: #FFEB3B;  /* Heller Hintergrund für bessere Lesbarkeit */
+  padding: 10px;
+  border-radius: 10px;
+}
   .print-message .heart {
     color: red;
     font-size: 24px;
