@@ -34,26 +34,6 @@
   #orderTable, #orderTable * {
     visibility: visible;
   }
-
-  
-  .receipt-container {
-    width: 148mm;
-    height: 105mm;
-    overflow: hidden;
-  }
-
-  .modal {
-  animation: fadeIn 0.3s ease-in-out;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-  
   .header {
     position: absolute;
     top: 0;
@@ -173,70 +153,29 @@
       color: white;
     }
 
-    
-    /* Modal Styling */
-.modal {
-  display: none; /* Modal initially hidden */
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+    /* Modal */
+    #pfandModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
 
-.modal-content {
-  background-color: white;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 400px;
-}
+    #pfandModalContent {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
 
-.pfand-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.pfand-item img {
-  width: 30px; /* Set the icon size */
-  height: auto;
-  margin-right: 10px; /* Space between icon and label */
-}
-
-.pfand-item label {
-  flex: 1;
-}
-
-.pfand-item input {
-  width: 60px;
-  padding: 5px;
-  text-align: center;
-}
-
-/* Total Amount */
-.total-amount p {
-  font-weight: bold;
-  margin-top: 20px;
-}
-
-/* Close Button */
-.close-btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.close-btn:hover {
-  background-color: #45a049;
-}
+    .pfand-item {
+      margin-bottom: 10px;
+    }
 
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
@@ -327,48 +266,55 @@
   <p>Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit! <i class="fas fa-cash-register"></i></p>
 </div>
 
-  <!-- Modal -->
-<div id="pfandModal" class="modal">
-  <div class="modal-content">
-    <h2>Pfandrückgabe</h2>
-    <form id="pfandForm">
+  
+  <!-- Pfandmodal -->
+  <div id="pfandModal">
+    <div id="pfandModalContent">
+      <h3>Pfandrückgabe</h3>
       <div class="pfand-item">
-        <label for="flasche">
-          <img src="path_to_flasche_icon.png" alt="Flasche Icon"> Flasche
-        </label>
-        <input type="number" id="flasche" name="flasche" value="0" min="0" step="1">
-      </div>
-      <div class="pfand-item">
-        <label for="glas">
-          <img src="path_to_glas_icon.png" alt="Glas Icon"> Glas
-        </label>
-        <input type="number" id="glas" name="glas" value="0" min="0" step="1">
+        <label for="bottleQuantity">Flasche (1€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('bottle', -1)">-</button>
+          <input type="number" id="bottleQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('bottle', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
-        <label for="krug">
-          <img src="path_to_krug_icon.png" alt="Krug Icon"> Krug
-        </label>
-        <input type="number" id="krug" name="krug" value="0" min="0" step="1">
+        <label for="glassQuantity">Glas (2€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('glass', -1)">-</button>
+          <input type="number" id="glassQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('glass', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
-        <label for="tasse">
-          <img src="path_to_tasse_icon.png" alt="Tasse Icon"> Tasse
-        </label>
-        <input type="number" id="tasse" name="tasse" value="0" min="0" step="1">
+        <label for="jugQuantity">Krug (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('jug', -1)">-</button>
+          <input type="number" id="jugQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('jug', 1)">+</button>
+        </div>
       </div>
       <div class="pfand-item">
-        <label for="geschirr">
-          <img src="path_to_geschirr_icon.png" alt="Geschirr Icon"> Geschirr
-        </label>
-        <input type="number" id="geschirr" name="geschirr" value="0" min="0" step="1">
+        <label for="cupQuantity">Tasse (2€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('cup', -1)">-</button>
+          <input type="number" id="cupQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('cup', 1)">+</button>
+        </div>
       </div>
-      <div class="total-amount">
-        <p>Total: €<span id="totalAmount">0.00</span></p>
+      <div class="pfand-item">
+        <label for="dishQuantity">Geschirr (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('dish', -1)">-</button>
+          <input type="number" id="dishQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('dish', 1)">+</button>
+        </div>
       </div>
-    </form>
-    <button id="closeModal" class="close-btn">Schließen</button>
+      <button onclick="calculatePfandReturn()">Berechnen</button>
+      <button onclick="closePfandModal()">Schließen</button>
+    </div>
   </div>
-</div>
 
  <script>
     const products = [
@@ -427,18 +373,7 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
-// Modal öffnen
-function openPfandModal() {
-  document.getElementById('pfandModal').style.display = 'block';
-}
 
-// Modal schließen
-document.getElementById('closeModal').addEventListener('click', function() {
-  document.getElementById('pfandModal').style.display = 'none';
-});
-
-// Beispiel: Öffnen des Modals
-openPfandModal();
 
    
     function addProductToOrder(name) {
@@ -539,60 +474,7 @@ function updateTotalAmount() {
       }
     }
 
-
-   
-   // Preiszuweisungen für Pfand
-const pfandPrices = {
-  flasche: 1,   // 1 Euro für Flasche
-  glas: 2,      // 2 Euro für Glas
-  krug: 5,      // 5 Euro für Krug
-  tasse: 2,     // 2 Euro für Tasse
-  geschirr: 5   // 5 Euro für Geschirr
-};
-
-// Funktion zur Berechnung des Gesamtbetrags
-function calculateTotal() {
-  const flascheQty = parseInt(document.getElementById('flasche').value) || 0;
-  const glasQty = parseInt(document.getElementById('glas').value) || 0;
-  const krugQty = parseInt(document.getElementById('krug').value) || 0;
-  const tasseQty = parseInt(document.getElementById('tasse').value) || 0;
-  const geschirrQty = parseInt(document.getElementById('geschirr').value) || 0;
-
-  const total = (flascheQty * pfandPrices.flasche) +
-                (glasQty * pfandPrices.glas) +
-                (krugQty * pfandPrices.krug) +
-                (tasseQty * pfandPrices.tasse) +
-                (geschirrQty * pfandPrices.geschirr);
-
-  // Gesamtbetrag anzeigen
-  document.getElementById('totalAmount').textContent = total.toFixed(2);
-}
-
-// Event Listener für Eingabefelder
-document.querySelectorAll('.pfand-item input').forEach(input => {
-  input.addEventListener('input', calculateTotal);
-});
-
-// Modal schließen und Wert hinter "Pfandrückgabe" setzen
-document.getElementById('closeModal').addEventListener('click', function() {
-  const totalAmount = document.getElementById('totalAmount').textContent;
-  // Hier den Gesamtbetrag hinter "Pfandrückgabe" setzen
-  document.getElementById('pfandLabel').textContent = "Pfandrückgabe: €" + totalAmount;
-  // Modal schließen
-  document.getElementById('pfandModal').style.display = 'none';
-});
-
-// Modal öffnen
-function openPfandModal() {
-  document.getElementById('pfandModal').style.display = 'block';
-}
-
-// Beispiel: Öffnen des Modals
-openPfandModal();
-   
-   
-   
-   function calculatePfandReturn() {
+function calculatePfandReturn() {
   let pfandReturnAmount = 0;
   pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
   pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
