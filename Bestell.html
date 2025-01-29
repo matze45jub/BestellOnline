@@ -17,8 +17,7 @@
     visibility: hidden;
   }
   .header, .header *,
-  #orderTable, #orderTable *, 
-  .print-message {
+  #orderTable, #orderTable * {
     visibility: visible;
   }
   .header {
@@ -37,24 +36,6 @@
   #orderTable th:last-child,
   #orderTable td:last-child {
     display: none;
-
-    
- .print-message {
-  position: absolute;
-  bottom: 20px;  /* Positioniere die Nachricht näher am unteren Rand der Seite */
-  width: 100%;
-  text-align: center;
-  font-family: "Arial", sans-serif;
-  font-size: 24px;  /* Größere Schrift */
-  font-weight: bold;
-  color: #101A4B;  /* Farbton angepasst für bessere Sichtbarkeit */
-  background-color: #FFEB3B;  /* Heller Hintergrund für bessere Lesbarkeit */
-  padding: 10px;
-  border-radius: 10px;
-}
-  .print-message .heart {
-    color: red;
-    font-size: 24px;
   }
 }
     
@@ -266,12 +247,6 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
   </div>
 
-<div class="print-message">
-  Schön, dass Du da bist und mit uns feierst! ❤️ <br>
-  Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit!
-</div>
-
-  
   <!-- Pfandmodal -->
   <div id="pfandModal">
     <div id="pfandModalContent">
@@ -324,6 +299,7 @@
  <script>
     const products = [
       { name: "Obatzter", price: 3.2, category: "essen", deposit: 0 },
+      { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Bratwurst", price: 3.5, category: "essen", deposit: 0 },
       { name: "Weißwurst", price: 4.2, category: "essen", deposit: 5 },
       { name: "Hähnchen", price: 6.8, category: "essen", deposit: 5 },
