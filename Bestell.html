@@ -418,7 +418,18 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
+// Modal öffnen
+function openPfandModal() {
+  document.getElementById('pfandModal').style.display = 'block';
+}
 
+// Modal schließen
+document.getElementById('closeModal').addEventListener('click', function() {
+  document.getElementById('pfandModal').style.display = 'none';
+});
+
+// Beispiel: Öffnen des Modals
+openPfandModal();
 
    
     function addProductToOrder(name) {
