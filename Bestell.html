@@ -11,7 +11,130 @@
       margin: 20px;
       padding: 0;
     }
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bestellübersicht</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
 
+    /* Bereich, der beim Drucken nicht erscheinen soll */
+    #nonPrintableContent {
+      margin-bottom: 20px;
+    }
+
+    /* Bereich, der beim Drucken nicht erscheinen soll */
+    @media print {
+      #nonPrintableContent {
+        display: none; /* Versteckt den Bereich mit Schaltflächen */
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    /* Tabelle */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Bereich, der beim Drucken nicht erscheinen soll -->
+<div id="nonPrintableContent">
+  <div class="button-container">
+    <!-- Schaltfläche zum Drucken -->
+    <button onclick="printReceipt()">Drucke Rechnung</button>
+  </div>
+</div>
+
+<!-- Bereich, der beim Drucken erscheinen soll -->
+<div id="contentToPrint">
+  <img src="logo.png" alt="Logo" id="logo" style="width: 150px;">
+  <h1>Bestellübersicht</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Produkt</th>
+        <th>Menge</th>
+        <th>Preis</th>
+        <th>Gesamt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Hier werden deine Bestellprodukte angezeigt -->
+      <tr>
+        <td>Produkt 1</td>
+        <td>2</td>
+        <td>10€</td>
+        <td>20€</td>
+      </tr>
+      <tr>
+        <td>Produkt 2</td>
+        <td>1</td>
+        <td>5€</td>
+        <td>5€</td>
+      </tr>
+      <tr>
+        <td>Produkt 3</td>
+        <td>3</td>
+        <td>7€</td>
+        <td>21€</td>
+      </tr>
+      <!-- Weitere Produkte können hier hinzugefügt werden -->
+    </tbody>
+  </table>
+  <br>
+  <div><strong>Gesamtbetrag:</strong> 46€</div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  function printReceipt() {
+    // Den Inhalt holen, der gedruckt werden soll (Logo, Überschrift, Tabelle)
+    var logo = document.getElementById('logo').outerHTML;
+    var heading = document.querySelector('h1').outerHTML;
+    var orderTable = document.getElementById('orderTable').outerHTML;
+
+    // Den gesamten zu druckenden Inhalt zusammenstellen
+    var content = logo + heading + orderTable;
+
+    // Ein neues Fenster öffnen
+    var printWindow = window.open('', '', 'height=600,width=800');
+
+    // Den HTML-Inhalt in das neue Fenster einfügen
+    printWindow.document.write('<html><head><title>Rechnung drucken</title>');
+    printWindow.document.write('<style>body {font-family: Arial, sans-serif;}</style>'); // Optional: Stil hinzufügen
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(content); // Nur das Logo, die Überschrift und die Bestelltabelle
+    printWindow.document.write('</body></html>');
+
+    // Warten, bis das Dokument vollständig geladen ist, und dann drucken
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script>
+
+</body>
+</html>
     .header {
       display: flex;
       align-items: center;
