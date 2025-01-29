@@ -335,22 +335,19 @@
 
 function renderOrder() {
   const orderTableBody = document.querySelector("#orderTable tbody");
-  orderTableBody.innerHTML = "";
+  orderTableBody.innerHTML = "";  // Leert die Tabelle vor jeder neuen Darstellung.
 
-  let totalAmount = 0;
-  let pfandAmount = 0;
-  let totalPayAmount = 0;
-  let totalPriceWithDeposit = 0; // Neue Variable für die Summe der Gesamtspalte (Spalte 7)
+  let totalSum = 0;  // Variable, um die Summe der 7. Spalte zu berechnen.
 
+  // Gehe alle Artikel durch und berechne die Gesamtsumme jedes Produkts.
   order.forEach(item => {
     const totalProductPrice = item.price * item.quantity;
     const totalProductDeposit = item.deposit * item.quantity;
     const totalItemPrice = totalProductPrice + totalProductDeposit;
 
-    totalAmount += totalProductPrice;
-    totalPayAmount += totalItemPrice;
-    totalPriceWithDeposit += totalItemPrice; // Addiere die Gesamtpreise zu totalPriceWithDeposit
+    totalSum += totalItemPrice;  // Addiere die Gesamtsumme des Artikels zur Gesamt-Summe.
 
+    // Füge die Reihen in die Tabelle ein.
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${item.name}</td>
@@ -369,11 +366,12 @@ function renderOrder() {
     orderTableBody.appendChild(row);
   });
 
-  document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
-  document.getElementById("amountToPay").textContent = totalPayAmount.toFixed(2);
+  // Setze die berechneten Werte für "totalAmount" und "amountToPay" (falls benötigt).
+  document.getElementById("totalAmount").textContent = totalSum.toFixed(2);
+  document.getElementById("amountToPay").textContent = totalSum.toFixed(2);  // Falls du den Gesamtbetrag auch hier anzeigen möchtest.
 
-  // Zeige die Summe der "Gesamt (€)"-Spalte unter der Tabelle an
-  document.getElementById("totalSum").textContent = totalPriceWithDeposit.toFixed(2);
+  // Zeige die Gesamtsumme unterhalb der Tabelle an.
+  document.getElementById("totalSum").textContent = totalSum.toFixed(2);  // Gesamtsumme der 7. Spalte.
 }
 
     function updateQuantity(name, change) {
