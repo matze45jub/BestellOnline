@@ -539,7 +539,60 @@ function updateTotalAmount() {
       }
     }
 
-function calculatePfandReturn() {
+
+   
+   // Preiszuweisungen für Pfand
+const pfandPrices = {
+  flasche: 1,   // 1 Euro für Flasche
+  glas: 2,      // 2 Euro für Glas
+  krug: 5,      // 5 Euro für Krug
+  tasse: 2,     // 2 Euro für Tasse
+  geschirr: 5   // 5 Euro für Geschirr
+};
+
+// Funktion zur Berechnung des Gesamtbetrags
+function calculateTotal() {
+  const flascheQty = parseInt(document.getElementById('flasche').value) || 0;
+  const glasQty = parseInt(document.getElementById('glas').value) || 0;
+  const krugQty = parseInt(document.getElementById('krug').value) || 0;
+  const tasseQty = parseInt(document.getElementById('tasse').value) || 0;
+  const geschirrQty = parseInt(document.getElementById('geschirr').value) || 0;
+
+  const total = (flascheQty * pfandPrices.flasche) +
+                (glasQty * pfandPrices.glas) +
+                (krugQty * pfandPrices.krug) +
+                (tasseQty * pfandPrices.tasse) +
+                (geschirrQty * pfandPrices.geschirr);
+
+  // Gesamtbetrag anzeigen
+  document.getElementById('totalAmount').textContent = total.toFixed(2);
+}
+
+// Event Listener für Eingabefelder
+document.querySelectorAll('.pfand-item input').forEach(input => {
+  input.addEventListener('input', calculateTotal);
+});
+
+// Modal schließen und Wert hinter "Pfandrückgabe" setzen
+document.getElementById('closeModal').addEventListener('click', function() {
+  const totalAmount = document.getElementById('totalAmount').textContent;
+  // Hier den Gesamtbetrag hinter "Pfandrückgabe" setzen
+  document.getElementById('pfandLabel').textContent = "Pfandrückgabe: €" + totalAmount;
+  // Modal schließen
+  document.getElementById('pfandModal').style.display = 'none';
+});
+
+// Modal öffnen
+function openPfandModal() {
+  document.getElementById('pfandModal').style.display = 'block';
+}
+
+// Beispiel: Öffnen des Modals
+openPfandModal();
+   
+   
+   
+   function calculatePfandReturn() {
   let pfandReturnAmount = 0;
   pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
   pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
