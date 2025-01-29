@@ -466,6 +466,22 @@ function updateTotalAmount() {
       document.getElementById("pfandModal").style.display = "none";
     }
 
+
+
+
+function calculatePfandReturn() {
+  let totalPfandReturn = 0;
+  totalPfandReturn += parseInt(document.getElementById('bottleQuantity').value) * 1;
+  totalPfandReturn += parseInt(document.getElementById('glassQuantity').value) * 2;
+  totalPfandReturn += parseInt(document.getElementById('jugQuantity').value) * 5;
+
+  // Zeigt die berechnete Pfandrückgabe in der Tabelle an, ohne die Menge zu ändern
+  document.getElementById("pfandReturnAmount").textContent = totalPfandReturn.toFixed(2);
+  closePfandModal();
+}
+
+
+   
     function updatePfandQuantity(type, change) {
       let quantityInput = document.getElementById(`${type}Quantity`);
       let newQuantity = parseInt(quantityInput.value) + change;
