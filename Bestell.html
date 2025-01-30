@@ -251,7 +251,7 @@
   </table>
 
  <h3>
-  <p>Gesamtsumme: <span id="totalAmount">0,00 €</span></p>
+  Gesamtsumme (€): <span id="totalSum">0.00</span>€
   | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
   | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
   | Zahlung: <span id="paymentAmount">0.00</span>€
@@ -373,25 +373,7 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
-function berechneGesamtsumme() {
-    let summe = 0;
-    const tabelle = document.querySelector("table"); // Falls deine Tabelle eine ID hat, passe dies an
-    const zeilen = tabelle.querySelectorAll("tr"); // Alle Zeilen in der Tabelle
 
-    zeilen.forEach((zeile, index) => {
-        if (index === 0) return; // Erste Zeile (Header) überspringen
-        const zellen = zeile.querySelectorAll("td");
-        if (zellen.length >= 7) {
-            let betrag = parseFloat(zellen[6].textContent.replace(",", "."));
-            if (!isNaN(betrag)) summe += betrag;
-        }
-    });
-
-    document.getElementById("gesamtsumme").textContent = summe.toFixed(2) + " €";
-}
-
-// Rufe die Funktion auf, wenn sich die Tabelle ändert
-document.addEventListener("DOMContentLoaded", berechneGesamtsumme);
 
    
     function addProductToOrder(name) {
@@ -519,40 +501,7 @@ function calculatePfandReturn() {
       document.getElementById("changeAmount").textContent = changeAmount.toFixed(2);
     }
 
-    function calculateTotal() {
-    let total = 0;
-
-    // Alle ausgewählten Produkte durchgehen und Preise berechnen
-    document.querySelectorAll(".product").forEach(product => {
-        let price = parseFloat(product.dataset.price); // Preis aus HTML-Datenattribut
-        let quantity = parseInt(product.querySelector(".quantity").value) || 0; // Menge
-
-        total += price * quantity;
-    });
-
-    // Pfandrückgabe berücksichtigen
-    let totalDepositReturn = 0;
-    document.querySelectorAll(".deposit-return").forEach(deposit => {
-        let depositValue = parseFloat(deposit.dataset.deposit); // Pfandwert
-        let returnQuantity = parseInt(deposit.querySelector(".return-quantity").value) || 0; // Rückgabemenge
-
-        totalDepositReturn += depositValue * returnQuantity;
-    });
-
-    // Endsumme berechnen (Produkte - Pfandrückgabe)
-    total -= totalDepositReturn;
-
-    // Betrag in HTML aktualisieren
-    document.getElementById("totalAmount").textContent = total.toFixed(2) + " €";
-}
-   
-   
-   
-   
-   
-   
-   
-   function printReceipt() {
+    function printReceipt() {
       window.print();
     }
 
