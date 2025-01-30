@@ -26,14 +26,26 @@
 }
 
     
+/* Drucklayout verbessert */
 @media print {
   body * {
-    visibility: hidden;
+    display: none;
   }
-  .header, .header *,
-  #orderTable, #orderTable * {
-    visibility: visible;
+  .header, #orderTable {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
   }
+  #orderTable th:last-child,
+  #orderTable td:last-child {
+    display: none;
+  }
+}
+
+/* Modal Overflow hinzugefügt */
+#pfandModal {
+  overflow: auto;
+}
   .header {
     position: absolute;
     top: 0;
