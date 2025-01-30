@@ -267,7 +267,7 @@
   </div>
 
   
-  <!-- Pfandmodal -->
+<!-- Pfandmodal -->
   <div id="pfandModal">
     <div id="pfandModalContent">
       <h3>Pfandrückgabe</h3>
@@ -287,6 +287,18 @@
           <button onclick="updatePfandQuantity('glass', 1)">+</button>
         </div>
       </div>
+      <div class="pfand-item">
+        <label for="jugQuantity">Krug (5€ Pfand):</label>
+        <div class="quantity-input">
+          <button onclick="updatePfandQuantity('jug', -1)">-</button>
+          <input type="number" id="jugQuantity" value="0" readonly>
+          <button onclick="updatePfandQuantity('jug', 1)">+</button>
+        </div>
+      </div>
+      <button onclick="confirmPfandReturn()">Rückgabe bestätigen</button>
+      <button onclick="closePfandModal()">Abbrechen</button>
+    </div>
+  </div>
       <div class="pfand-item">
         <label for="jugQuantity">Krug (5€ Pfand):</label>
         <div class="quantity-input">
