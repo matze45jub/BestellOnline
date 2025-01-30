@@ -251,7 +251,7 @@
   </table>
 
  <h3>
-  Gesamtsumme (€): <span id="totalSum">0.00</span>€
+  <p><strong>Gesamtsumme (€): </strong><span id="gesamtsumme">0.00 €</span></p>
   | Pfandrückgabe: <span id="pfandReturnAmount">0.00</span>€ 
   | Zu zahlender Betrag: <span id="amountToPay">0.00</span>€
   | Zahlung: <span id="paymentAmount">0.00</span>€
@@ -373,7 +373,25 @@ function startNewOrder() {
   document.getElementById("dishQuantity").value = 0;
 }
 
+function berechneGesamtsumme() {
+    let summe = 0;
+    const tabelle = document.querySelector("table"); // Falls deine Tabelle eine ID hat, passe dies an
+    const zeilen = tabelle.querySelectorAll("tr"); // Alle Zeilen in der Tabelle
 
+    zeilen.forEach((zeile, index) => {
+        if (index === 0) return; // Erste Zeile (Header) überspringen
+        const zellen = zeile.querySelectorAll("td");
+        if (zellen.length >= 7) {
+            let betrag = parseFloat(zellen[6].textContent.replace(",", "."));
+            if (!isNaN(betrag)) summe += betrag;
+        }
+    });
+
+    document.getElementById("gesamtsumme").textContent = summe.toFixed(2) + " €";
+}
+
+// Rufe die Funktion auf, wenn sich die Tabelle ändert
+document.addEventListener("DOMContentLoaded", berechneGesamtsumme);
 
    
     function addProductToOrder(name) {
