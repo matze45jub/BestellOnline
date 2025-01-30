@@ -25,6 +25,72 @@
   color: #101A4B;
 }
 
+ /* Pfandmodal Styles */
+    #pfandModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header, .modal-footer {
+      text-align: center;
+    }
+
+    .modal-body {
+      margin-top: 20px;
+    }
+
+    .modal-body label {
+      font-size: 16px;
+    }
+
+    .modal-body input[type="number"] {
+      margin-top: 10px;
+      padding: 5px;
+      width: 50px;
+      text-align: center;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-footer button:hover {
+      background-color: #0056b3;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #333;
+      cursor: pointer;
+    }
+    
     
 @media print {
   body * {
@@ -267,18 +333,25 @@
   </div>
 
   
-<!-- Pfandmodal -->
-<div id="pfandModal">
-  <div id="pfandModalContent">
-    <h3>Pfandrückgabe</h3> 
-    <div class="pfand-item">
-      <label for="bottleQuantity">Flasche (1€ Pfand):</label>
-      <div class="quantity-input">
-        <button onclick="updatePfandQuantity('bottle', -1)">-</button>
-        <input type="number" id="bottleQuantity" value="0" readonly>
-        <button onclick="updatePfandQuantity('bottle', 1)">+</button>
+  <!-- Pfand Modal -->
+  <div id="pfandModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closePfandModal()">×</button>
+      <div class="modal-header">
+        <h3>Pfandrückgabe</h3>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label for="pfandValue">Pfandbetrag (€):</label>
+          <input type="number" id="pfandValue" min="0" step="0.01" value="0.00">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="applyPfand()">Berechnen</button>
       </div>
     </div>
+  </div>
+
     <div class="pfand-item">
       <label for="glassQuantity">Glas (2€ Pfand):</label>
       <div class="quantity-input">
@@ -458,20 +531,33 @@ function updateTotalAmount() {
       renderOrder();
     }
 
+     // JavaScript für das Pfandmodal
     function openPfandModal() {
-      document.getElementById("pfandModal").style.display = "flex";
+      document.getElementById('pfandModal').style.display = 'flex';
     }
 
     function closePfandModal() {
-      document.getElementById("pfandModal").style.display = "none";
+      document.getElementById('pfandModal').style.display = 'none';
     }
 
-    function updatePfandQuantity(type, change) {
-      let quantityInput = document.getElementById(`${type}Quantity`);
-      let newQuantity = parseInt(quantityInput.value) + change;
-      if (newQuantity >= 0) {
-        quantityInput.value = newQuantity;
+    function applyPfand() {
+      const pfandValue = parseFloat(document.getElementById('pfandValue').value);
+      if (!isNaN(pfandValue) && pfandValue >= 0) {
+        // Hier kannst du den Betrag anpassen, der vom Gesamtbetrag abgezogen wird
+        updateTotalAmount(pfandValue);
+        closePfandModal();
+      } else {
+        alert('Bitte einen gültigen Pfandbetrag eingeben.');
       }
+    }
+
+    function updateTotalAmount(pfandValue) {
+      // Beispiel: Reduziere den zu zahlenden Betrag
+      const totalAmountElement = document.getElementById('totalAmount');
+      let totalAmount = parseFloat(totalAmountElement.textContent.replace('€', ''));
+      totalAmount -= pfandValue;
+      totalAmountElement.textContent = totalAmount.toFixed(2) + ' €';
+    }
     }
 
 function calculatePfandReturn() {
