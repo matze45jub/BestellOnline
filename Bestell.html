@@ -475,6 +475,7 @@ function updateTotalAmount() {
     }
 
 function calculatePfandReturn() {
+  // Berechnung des Pfandrückgabe-Betrags
   let pfandReturnAmount = 0;
   pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
   pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
@@ -482,14 +483,14 @@ function calculatePfandReturn() {
   pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
   pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
 
-  // Aktualisiere den Pfandbetrag
+  // Setzen des berechneten Pfandbetrags
   document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
 
-  // Berechne den zu zahlenden Betrag nach Abzug des Pfands
-  let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
-  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount;
+  // Berechnung des neuen zu zahlenden Betrags
+  let totalAmountToPay = parseFloat(document.getElementById("totalSum").textContent); // Gesamtsumme
+  let updatedAmountToPay = totalAmountToPay - pfandReturnAmount; // Abzug des Pfandbetrags
 
-  // Aktualisiere den zu zahlenden Betrag
+  // Setze den neuen zu zahlenden Betrag
   document.getElementById("amountToPay").textContent = updatedAmountToPay.toFixed(2);
 }
 
