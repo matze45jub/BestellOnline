@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JBO feiert mit Freunden</title>
+  <title>JBO Kürnach feiert mit Freunden</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
  
   <style>
@@ -153,7 +153,7 @@
       color: white;
     }
 
-    /* Modal */
+ /* Pfandmodal Styles */
     #pfandModal {
       display: none;
       position: fixed;
@@ -161,21 +161,62 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
       justify-content: center;
       align-items: center;
     }
 
-    #pfandModalContent {
+       .modal-content {
       background-color: white;
       padding: 20px;
-      border-radius: 10px;
-      width: 300px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .pfand-item {
-      margin-bottom: 10px;
+    .modal-header, .modal-footer {
+      text-align: center;
     }
+
+    .modal-body {
+      margin-top: 20px;
+    }
+
+    .modal-body label {
+      font-size: 16px;
+    }
+
+    .modal-body input[type="number"] {
+      margin-top: 10px;
+      padding: 5px;
+      width: 50px;
+      text-align: center;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-footer button:hover {
+      background-color: #0056b3;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #333;
+      cursor: pointer;
 
     /* Responsive Anpassungen */
     @media (max-width: 768px) {
@@ -266,6 +307,37 @@
     <button id="completeOrderBtn" onclick="completeOrder()">Bestellung abschließen</button>
   </div>
 
+
+   <!-- Zu zahlender Betrag -->
+  <div>
+    <label for="totalAmount">Zu zahlender Betrag (€):</label>
+    <span id="totalAmount">50.00</span> <!-- Beispielwert -->
+  </div>
+
+  <!-- Zahlungsbetrag -->
+  <div>
+    <label for="paymentAmount">Zahlungsbetrag (€):</label>
+    <input type="number" id="paymentAmount" min="0" step="0.01" value="0.00">
+  </div>
+
+  <!-- Pfand Modal -->
+  <div id="pfandModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closePfandModal()">×</button>
+      <div class="modal-header">
+        <h3>Pfandrückgabe</h3>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label for="pfandValue">Pfandbetrag (€):</label>
+          <input type="number" id="pfandValue" min="0" step="0.01" value="0.00">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="applyPfand()">Berechnen</button>
+      </div>
+    </div>
+  </div>
   
 <!-- Pfandmodal -->
 <div id="pfandModal">
@@ -459,19 +531,31 @@ function updateTotalAmount() {
     }
 
     function openPfandModal() {
-      document.getElementById("pfandModal").style.display = "flex";
+      document.getElementById('pfandModal').style.display = 'flex';
     }
 
     function closePfandModal() {
-      document.getElementById("pfandModal").style.display = "none";
+      document.getElementById('pfandModal').style.display = 'none';
     }
 
-    function updatePfandQuantity(type, change) {
-      let quantityInput = document.getElementById(`${type}Quantity`);
-      let newQuantity = parseInt(quantityInput.value) + change;
-      if (newQuantity >= 0) {
-        quantityInput.value = newQuantity;
+    function applyPfand() {
+      const pfandValue = parseFloat(document.getElementById('pfandValue').value);
+      if (!isNaN(pfandValue) && pfandValue >= 0) {
+        // Hier kannst du den Betrag anpassen, der vom Gesamtbetrag abgezogen wird
+        updateTotalAmount(pfandValue);
+        closePfandModal();
+      } else {
+        alert('Bitte einen gültigen Pfandbetrag eingeben.');
       }
+    }
+
+    function updateTotalAmount(pfandValue) {
+      // Beispiel: Reduziere den zu zahlenden Betrag
+      const totalAmountElement = document.getElementById('totalAmount');
+      let totalAmount = parseFloat(totalAmountElement.textContent.replace('€', ''));
+      totalAmount -= pfandValue;
+      totalAmountElement.textContent = totalAmount.toFixed(2) + ' €';
+    }
     }
 
 function calculatePfandReturn() {
@@ -506,7 +590,32 @@ function calculatePfandReturn() {
       window.print();
     }
 
-    function completeOrder() {
+      // Validierung der Zahlung
+    function validatePayment() {
+      const totalAmountElement = document.getElementById('totalAmount');
+      const paymentAmountElement = document.getElementById('paymentAmount');
+      let totalAmount = parseFloat(totalAmountElement.textContent.replace('€', ''));
+      let paymentAmount = parseFloat(paymentAmountElement.value);
+
+      if (paymentAmount < totalAmount) {
+        alert('Der Zahlungsbetrag muss gleich oder größer als der zu zahlende Betrag sein.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Funktion, um den Abschluss der Bestellung zu überprüfen
+    function finalizeOrder() {
+      if (validatePayment()) {
+        // Hier kannst du den Abschluss der Bestellung verarbeiten
+        alert('Bestellung abgeschlossen!');
+      }
+    } 
+   
+   
+   
+   function completeOrder() {
       alert("Bestellung abgeschlossen!");
       startNewOrder();
     }
