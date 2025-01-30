@@ -113,6 +113,37 @@
       padding: 10px;
     }
 
+ /* Layout für das Icon und den Text */
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border-bottom: 2px solid #ddd;
+    }
+
+     /* Stil für das Jubiläums-Icon */
+    .jubilee-text {
+      font-size: 18px;
+      font-weight: normal;
+      color: #555;
+    }
+    
+    
+    
+    .header-container .icon {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+
+    .header-container .text {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    
     #orderTable th {
       background-color: #f8f8f8;
     }
@@ -252,9 +283,15 @@
   </style>
 </head>
 <body>
-  <div class="header">
+  <div class="header-containers">
     <img src="logo.png" alt="Logo">
-    <h1>45 Jahre Jugendblasorchester Kürnach</h1>
+   <div class="text">
+      Schön, dass Du da bist und mit uns feierst! 🍷
+      <br>
+      Bitte nimm Deinen Ausdruck zur jeweiligen Ausgabetheke mit! 🛒
+      <br>
+      <span class="jubilee-text">45 Jahre Jugendblasorchester Kürnach</span>
+    </div>
   </div>
 
 <div class="header">
