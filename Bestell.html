@@ -267,54 +267,21 @@
   </div>
 
   
-  <!-- Pfandmodal -->
-  <div id="pfandModal">
-    <div id="pfandModalContent">
-      <h3>Pfandrückgabe</h3>
-      <div class="pfand-item">
-        <label for="bottleQuantity">Flasche (1€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('bottle', -1)">-</button>
-          <input type="number" id="bottleQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('bottle', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="glassQuantity">Glas (2€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('glass', -1)">-</button>
-          <input type="number" id="glassQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('glass', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="jugQuantity">Krug (5€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('jug', -1)">-</button>
-          <input type="number" id="jugQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('jug', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="cupQuantity">Tasse (2€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('cup', -1)">-</button>
-          <input type="number" id="cupQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('cup', 1)">+</button>
-        </div>
-      </div>
-      <div class="pfand-item">
-        <label for="dishQuantity">Geschirr (5€ Pfand):</label>
-        <div class="quantity-input">
-          <button onclick="updatePfandQuantity('dish', -1)">-</button>
-          <input type="number" id="dishQuantity" value="0" readonly>
-          <button onclick="updatePfandQuantity('dish', 1)">+</button>
-        </div>
-      </div>
-      <button onclick="calculatePfandReturn()">Berechnen</button>
-      <button onclick="closePfandModal()">Schließen</button>
-    </div>
+<!-- Pfand Modal -->
+<div id="pfandModal" class="modal">
+  <div class="modal-content">
+    <h4>Pfandrückgabe</h4>
+    <form id="pfandForm">
+      <div id="pfandItems"></div>
+      <button type="submit">Pfand zurückgeben</button>
+    </form>
   </div>
+</div>
+
+<!-- Pfandbetrag-Anzeige -->
+<div id="pfandSumme">
+  <p>Zurückgegebene Pfandbeträge: <span id="zurueckgegebenPfand">0,00 €</span></p>
+</div>
 
  <script>
     const products = [
@@ -452,38 +419,68 @@ function updateTotalAmount() {
   document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
 }
 
-   
-    function removeProduct(name) {
-      order = order.filter(p => p.name !== name);
-      renderOrder();
+// Beispielartikel mit Deposit (Pfand)
+const artikelMitPfand = [
+  { id: 1, name: 'Flasche Cola', preis: 2.50, deposit: 0.25 },  // Deposit (Pfand) für Cola
+  { id: 2, name: 'Flasche Wasser', preis: 1.80, deposit: 0.25 }, // Deposit (Pfand) für Wasser
+  { id: 3, name: 'Dose Bier', preis: 3.00, deposit: 0.50 }       // Deposit (Pfand) für Bier
+];
+
+// Funktion, um das Modal mit den Artikeln und deren Deposit zu laden
+function openPfandModal() {
+  const pfandItemsContainer = document.getElementById("pfandItems");
+  pfandItemsContainer.innerHTML = ''; // Container leeren
+
+  artikelMitPfand.forEach(artikel => {
+    const pfandCheckbox = document.createElement('input');
+    pfandCheckbox.type = 'checkbox';
+    pfandCheckbox.id = 'pfand-' + artikel.id;
+    pfandCheckbox.value = artikel.deposit;  // Deposit Betrag wird hier als value gesetzt
+    const pfandLabel = document.createElement('label');
+    pfandLabel.innerHTML = `${artikel.name} - ${artikel.deposit} €`;  // Anzeige des Depositbetrages
+
+    const itemDiv = document.createElement('div');
+    itemDiv.appendChild(pfandCheckbox);
+    itemDiv.appendChild(pfandLabel);
+    pfandItemsContainer.appendChild(itemDiv);
+  });
+
+  // Modal anzeigen
+  document.getElementById("pfandModal").style.display = 'block';
+}
+
+// Funktion zur Berechnung des zurückgegebenen Pfandbetrags
+function berechnePfandRückgabe() {
+  let gesamtPfand = 0;
+  artikelMitPfand.forEach(artikel => {
+    const checkbox = document.getElementById('pfand-' + artikel.id);
+    if (checkbox && checkbox.checked) {
+      gesamtPfand += parseFloat(checkbox.value);  // Depositbetrag wird hier verwendet
     }
+  });
+  
+  // Anzeige des zurückgegebenen Pfands aktualisieren
+  document.getElementById("zurueckgegebenPfand").textContent = gesamtPfand.toFixed(2) + ' €';
 
-    function openPfandModal() {
-      document.getElementById("pfandModal").style.display = "flex";
-    }
+  // Modal schließen
+  document.getElementById("pfandModal").style.display = 'none';
 
-    function closePfandModal() {
-      document.getElementById("pfandModal").style.display = "none";
-    }
+  // Gesamtbetrag der Bestellung anpassen (Pfand wird abgezogen)
+  updateGesamtbetrag(gesamtPfand);
+}
 
-    function updatePfandQuantity(type, change) {
-      let quantityInput = document.getElementById(`${type}Quantity`);
-      let newQuantity = parseInt(quantityInput.value) + change;
-      if (newQuantity >= 0) {
-        quantityInput.value = newQuantity;
-      }
-    }
+// Gesamtbetrag der Bestellung nach Pfandrückgabe aktualisieren
+function updateGesamtbetrag(pfandBetrag) {
+  let gesamtBetrag = parseFloat(document.getElementById("gesamtBetrag").textContent); // Beispiel: Gesamtsumme der Bestellung
+  gesamtBetrag -= pfandBetrag;  // Zurückgegebenes Pfand wird vom Gesamtbetrag abgezogen
+  document.getElementById("gesamtBetrag").textContent = gesamtBetrag.toFixed(2) + ' €';
+}
 
-function calculatePfandReturn() {
-  let pfandReturnAmount = 0;
-  pfandReturnAmount += parseInt(document.getElementById("bottleQuantity").value) * 1;
-  pfandReturnAmount += parseInt(document.getElementById("glassQuantity").value) * 2;
-  pfandReturnAmount += parseInt(document.getElementById("jugQuantity").value) * 5;
-  pfandReturnAmount += parseInt(document.getElementById("cupQuantity").value) * 2;
-  pfandReturnAmount += parseInt(document.getElementById("dishQuantity").value) * 5;
-
-  // Aktualisiere den Pfandbetrag
-  document.getElementById("pfandReturnAmount").textContent = pfandReturnAmount.toFixed(2);
+// Formular für die Pfandrückgabe
+document.getElementById("pfandForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  berechnePfandRückgabe();
+});
 
   // Berechne den zu zahlenden Betrag nach Abzug des Pfands
   let totalAmountToPay = parseFloat(document.getElementById("amountToPay").textContent);
