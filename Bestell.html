@@ -53,24 +53,34 @@
   }
 }
     
-    .header {
-      display: flex;
-      align-items: center;
+       .header {
+      display: flex; /* Flexbox für horizontale Ausrichtung */
+      align-items: center; /* Vertikale Zentrierung */
       margin-bottom: 20px;
     }
 
     .header img {
-      width: 67px;
+      width: 67px; /* Größe des Icons */
       height: auto;
-      margin-right: 10px;
+      margin-right: 10px; /* Abstand zwischen Icon und Text */
     }
 
-    .header h1 {
-      font-size: 24px;
-      margin: 0;
-      color: #101A4B;
+    .header-text {
+      display: flex; /* Flexbox für den Textblock */
+      flex-direction: column; /* Mehrzeilige Ausrichtung */
     }
 
+    .header-text h1 {
+      font-size: 24px; /* Schriftgröße der Hauptüberschrift */
+      margin: 0; /* Kein zusätzlicher Abstand */
+      color: #101A4B; /* Textfarbe */
+    }
+
+    .header-text p {
+      margin: 5px 0; /* Abstand zwischen den Zeilen */
+      color: #101A4B; /* Textfarbe */
+    }
+    
     .product-buttons-container {
       margin-bottom: 20px;
     }
